@@ -386,7 +386,7 @@ function ExamRunner({ items, onAnswer, empty, subject }) {
             {timed ? 'Timed test on' : 'Timed test'}
           </button>
           {timed && !revealed && (
-            <span className={`rounded-full px-2.5 py-0.5 text-xs font-extrabold tabular-nums ${left === 0 ? 'bg-r1-solid text-[#0b0f14]' : left <= budget * 0.2 ? 'bg-r2-shaky text-[#0b0f14]' : 'bg-brand-soft text-brand-strong'}`}>
+            <span className={`rounded-full px-2.5 py-0.5 text-xs font-extrabold tabular-nums ${left === 0 ? 'bg-r3-solid text-on-paper' : left <= budget * 0.2 ? 'bg-r2-shaky text-on-paper' : 'bg-brand-soft text-brand-strong'}`}>
               {left === 0 ? "Time's up" : `${Math.floor(left / 60)}:${String(left % 60).padStart(2, '0')}`}
             </span>
           )}

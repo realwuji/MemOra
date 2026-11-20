@@ -62,15 +62,15 @@ const stat = (pack, id) => {
 }
 
 const ICON_TINT = {
-  notes: '#2f8bd4',
-  flashcards: '#7c6cf0',
-  'exam-questions': '#d9557f',
-  mcq: '#2e9e6b',
-  'essay-plans': '#b45309',
-  'diagram-revision': '#0e7490',
-  application: '#c2410c',
-  'diagram-bank': '#0f766e',
-  mock: '#4f46e5',
+  notes: 'var(--tint-notes)',
+  flashcards: 'var(--tint-flashcards)',
+  'exam-questions': 'var(--tint-exam-questions)',
+  mcq: 'var(--tint-mcq)',
+  'essay-plans': 'var(--tint-essay-plans)',
+  'diagram-revision': 'var(--tint-diagram-revision)',
+  application: 'var(--tint-application)',
+  'diagram-bank': 'var(--tint-diagram-bank)',
+  mock: 'var(--tint-mock)',
 }
 
 export default function Start() {
@@ -271,7 +271,7 @@ export default function Start() {
                   <span
                     aria-hidden="true"
                     className="absolute bottom-4 right-4 grid h-8 w-8 place-items-center rounded-full opacity-0 transition-opacity group-hover:opacity-100"
-                    style={{ background: tint, color: '#fff' }}
+                    style={{ background: tint, color: 'var(--on-scrim)' }}
                   >
                     <Icon name="arrowRight" className="h-4 w-4" />
                   </span>

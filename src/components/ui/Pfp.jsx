@@ -106,13 +106,13 @@ export default function Pfp({
         disabled={busy}
         title={photo ? 'Change profile pic' : 'Add profile pic'}
         aria-label={photo ? 'Change profile picture' : 'Add a profile picture'}
-        className="absolute inset-0 flex flex-col items-center justify-center gap-1 rounded-full bg-black/0 text-center opacity-0 transition-[opacity,background-color] duration-150 focus:outline-none focus-visible:opacity-100 focus-visible:bg-black/55 group-hover:opacity-100 group-hover:bg-black/55 disabled:cursor-wait"
+        className="absolute inset-0 flex flex-col items-center justify-center gap-1 rounded-full bg-scrim/0 text-center opacity-0 transition-[opacity,background-color] duration-150 focus:outline-none focus-visible:opacity-100 focus-visible:bg-scrim/55 group-hover:opacity-100 group-hover:bg-scrim/55 disabled:cursor-wait"
         style={{ containerType: 'inline-size' }}
       >
-        <span className="text-white" style={{ width: '26cqw', height: '26cqw' }}>
+        <span className="text-on-scrim" style={{ width: '26cqw', height: '26cqw' }}>
           <Icon name={busy ? 'refresh' : 'camera'} className={`h-full w-full ${busy ? 'animate-spin' : ''}`} />
         </span>
-        <span className="px-1 font-bold leading-tight text-white" style={{ fontSize: 'clamp(0.55rem, 13cqw, 0.8rem)' }}>
+        <span className="px-1 font-bold leading-tight text-on-scrim" style={{ fontSize: 'clamp(0.55rem, 13cqw, 0.8rem)' }}>
           {busy ? 'Uploading…' : photo ? 'Change profile pic' : 'Add profile pic'}
         </span>
       </button>

@@ -349,7 +349,7 @@ export default function FocusMusic() {
             )}
             <span aria-hidden="true" className="music-hero-scrim absolute inset-0" />
             <div className="relative flex items-center justify-between gap-2">
-              <p className="flex min-w-0 items-center gap-1.5 text-[0.66rem] font-extrabold uppercase tracking-[0.14em] text-white/85">
+              <p className="flex min-w-0 items-center gap-1.5 text-[0.66rem] font-extrabold uppercase tracking-[0.14em] text-on-scrim/85">
                 <span className="truncate">Your music</span>
                 {playing && <Equaliser />}
               </p>
@@ -358,14 +358,14 @@ export default function FocusMusic() {
                   href={`https://open.spotify.com/${state.uri}`}
                   target="_blank"
                   rel="noreferrer"
-                  className="rounded-full bg-white/15 px-2.5 py-1 text-[0.68rem] font-bold text-white backdrop-blur-sm transition-colors hover:bg-white/25"
+                  className="rounded-full bg-on-scrim/15 px-2.5 py-1 text-[0.68rem] font-bold text-on-scrim backdrop-blur-sm transition-colors hover:bg-on-scrim/25"
                 >
                   Open in Spotify
                 </a>
                 <button
                   type="button"
                   onClick={() => setState((s) => ({ ...s, open: false }))}
-                  className="grid h-7 w-7 place-items-center rounded-full bg-white/15 text-white backdrop-blur-sm transition-colors hover:bg-white/25"
+                  className="grid h-7 w-7 place-items-center rounded-full bg-on-scrim/15 text-on-scrim backdrop-blur-sm transition-colors hover:bg-on-scrim/25"
                   aria-label="Minimise music player"
                 >
                   <Icon name="chevronDown" className="h-4 w-4" />

@@ -48,7 +48,7 @@ export default function FriendCard({
       >
         <span aria-hidden="true" className="banner-scrim absolute inset-0" />
         {mine && (
-          <span className="absolute right-3 top-3 rounded-full bg-black/25 px-2 py-0.5 text-[0.65rem] font-bold uppercase tracking-wide text-white">
+          <span className="absolute right-3 top-3 rounded-full bg-scrim/25 px-2 py-0.5 text-[0.65rem] font-bold uppercase tracking-wide text-on-scrim">
             you
           </span>
         )}

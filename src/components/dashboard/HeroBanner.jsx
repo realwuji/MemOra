@@ -95,13 +95,13 @@ export default function HeroBanner({
       <Banner src={banner} pos={bannerPos} className="aspect-[24/7] w-full">
         <span aria-hidden="true" className="banner-scrim absolute inset-0" />
         <div className="relative flex h-full items-start justify-between p-4 sm:p-5">
-          <p className="rounded-full bg-black/25 px-3 py-1 text-[0.7rem] font-bold uppercase tracking-widest text-white backdrop-blur-sm">
+          <p className="rounded-full bg-scrim/25 px-3 py-1 text-[0.7rem] font-bold uppercase tracking-widest text-on-scrim backdrop-blur-sm">
             {new Date(now).toLocaleDateString(undefined, { weekday: 'long', day: 'numeric', month: 'long' })}
           </p>
           {showSetup && (
             <Link
               to="/profile"
-              className="inline-flex items-center gap-1.5 rounded-full bg-black/25 px-3 py-1 text-[0.7rem] font-bold text-white backdrop-blur-sm transition-colors hover:bg-black/40"
+              className="inline-flex items-center gap-1.5 rounded-full bg-scrim/25 px-3 py-1 text-[0.7rem] font-bold text-on-scrim backdrop-blur-sm transition-colors hover:bg-scrim/40"
             >
               <Icon name="user" className="h-3.5 w-3.5" />
               Set up profile

@@ -152,7 +152,7 @@ function SubjectCard({ pack, spec, topics, hasActivity, pace, counts, value, cha
       <SpineCard color={color} className="p-5 pl-6">
         <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-3">
           <div className="flex min-w-0 items-center gap-3.5">
-            <span aria-hidden="true" className="subject-card-tile grid h-12 w-12 shrink-0 place-items-center rounded-2xl text-white">
+            <span aria-hidden="true" className="subject-card-tile grid h-12 w-12 shrink-0 place-items-center rounded-2xl text-on-scrim">
               <Icon name={subjectIcon(pack.name)} className="h-6 w-6" />
             </span>
             <div className="min-w-0">

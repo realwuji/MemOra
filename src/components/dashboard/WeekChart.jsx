@@ -104,7 +104,7 @@ export default function WeekChart({ sessions, now, weeks = 8, goalMinutes = 125 
                 tabIndex={0}
                 role="graphics-symbol"
                 aria-label={`Week of ${label(d)}: ${d.minutes} minutes`}
-                className="outline-none"
+                className="week-bar"
               >
                 {/* hit target bigger than the bar */}
                 <rect x={padL + i * slot} y={padT} width={slot} height={plotH} fill="transparent" />

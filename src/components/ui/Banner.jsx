@@ -86,7 +86,7 @@ export default function Banner({
             disabled={busy}
             title={src ? 'Change banner' : 'Add a banner'}
             aria-label={src ? 'Change banner image' : 'Add a banner image'}
-            className="absolute inset-0 flex items-center justify-center gap-2 bg-black/0 text-sm font-bold text-white opacity-0 transition-[opacity,background-color] duration-150 focus:outline-none focus-visible:opacity-100 focus-visible:bg-black/45 hover:opacity-100 hover:bg-black/45 disabled:cursor-wait"
+            className="absolute inset-0 flex items-center justify-center gap-2 bg-scrim/0 text-sm font-bold text-on-scrim opacity-0 transition-[opacity,background-color] duration-150 focus:outline-none focus-visible:opacity-100 focus-visible:bg-scrim/45 hover:opacity-100 hover:bg-scrim/45 disabled:cursor-wait"
           >
             <Icon name={busy ? 'refresh' : 'camera'} className={`h-4 w-4 ${busy ? 'animate-spin' : ''}`} />
             {busy ? 'Uploading…' : src ? 'Change banner' : 'Add a banner'}
@@ -103,7 +103,7 @@ export default function Banner({
               onClick={() => setAdjusting({ url: src })}
               title="Adjust position"
               aria-label="Adjust how the banner is positioned"
-              className="absolute bottom-2 left-2 inline-flex items-center gap-1.5 rounded-full border border-white/30 bg-black/45 px-2.5 py-1 text-[0.68rem] font-bold text-white shadow backdrop-blur-sm transition-colors hover:bg-black/65"
+              className="absolute bottom-2 left-2 inline-flex items-center gap-1.5 rounded-full border border-on-scrim/30 bg-scrim/45 px-2.5 py-1 text-[0.68rem] font-bold text-on-scrim shadow backdrop-blur-sm transition-colors hover:bg-scrim/65"
             >
               <Icon name="motion" className="h-3 w-3" />
               Adjust

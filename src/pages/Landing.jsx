@@ -4,6 +4,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import Button from '@/components/ui/Button'
 import Icon from '@/components/ui/Icon'
 import AtmosphereBackground from '@/components/ui/AtmosphereBackground'
+import KineticBurst from '@/components/ui/KineticBurst'
 import Footer from '@/components/layout/Footer'
 import SigilMark from '@/components/ui/SigilMark'
 import SigilWordmark from '@/components/ui/SigilWordmark'
@@ -189,6 +190,7 @@ export default function Landing() {
   return (
     <div className="relative min-h-screen">
       <AtmosphereBackground />
+      <KineticBurst />
       <MarketingHeader showHowItWorks />
 
       {/* Hero - centered, one-line subtitle, matching the reference layout */}

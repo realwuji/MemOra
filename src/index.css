@@ -55,6 +55,22 @@
      below), so each gets its own on-color, picked for actual contrast. */
   --on-danger: #ffffff;
   --on-flash: #ffffff;
+  /* Ink for text on --paper and on the readiness ramp pills (always dark). */
+  --on-paper: #0b0f14;
+  /* Scrim: the dim wash and white ink used over photos, video and image
+     overlays. Tokenised so high-contrast can own it. */
+  --scrim: #000000;
+  --on-scrim: #ffffff;
+  /* Study-method tints (Start page). */
+  --tint-notes: #2f8bd4;
+  --tint-flashcards: #7c6cf0;
+  --tint-exam-questions: #d9557f;
+  --tint-mcq: #2e9e6b;
+  --tint-essay-plans: #b45309;
+  --tint-diagram-revision: #0e7490;
+  --tint-application: #c2410c;
+  --tint-diagram-bank: #0f766e;
+  --tint-mock: #4f46e5;
   --on-quiz: #0b0f14;
   /* Readiness scale (§5.3) - deliberately its own ramp, not the accent and
      not reused from --success/--quiz/--warning above: those collide with
@@ -129,6 +145,15 @@
      dark ground - never inverted, so "which band is which" stays learnable
      across a theme switch. */
   --r0-not-started: #554d41;
+  --tint-notes: #5aa9ea;
+  --tint-flashcards: #a79bf7;
+  --tint-exam-questions: #f07ea0;
+  --tint-mcq: #4fc79a;
+  --tint-essay-plans: #f0a93a;
+  --tint-diagram-revision: #38bdd8;
+  --tint-application: #fb8a55;
+  --tint-diagram-bank: #3cc4b6;
+  --tint-mock: #8f88f5;
   --r1-seen: #7c8db5;
   --r2-shaky: #f0b94a;
   --r3-solid: #4fc2a0;
@@ -268,6 +293,15 @@
      clickable). */
   --r0-not-started: #5a5a5a;
   --r1-seen: #b3b3b3;
+  --tint-notes: var(--brand);
+  --tint-flashcards: var(--brand);
+  --tint-exam-questions: var(--brand);
+  --tint-mcq: var(--brand);
+  --tint-essay-plans: var(--brand);
+  --tint-diagram-revision: var(--brand);
+  --tint-application: var(--brand);
+  --tint-diagram-bank: var(--brand);
+  --tint-mock: var(--brand);
   --r2-shaky: #ff8c00;
   --r3-solid: #00c2ff;
   --r4-exam-ready: #39ff6a;
@@ -306,6 +340,9 @@
   --color-on-danger: var(--on-danger);
   --color-on-flash: var(--on-flash);
   --color-on-quiz: var(--on-quiz);
+  --color-on-paper: var(--on-paper);
+  --color-scrim: var(--scrim);
+  --color-on-scrim: var(--on-scrim);
   --color-r0-not-started: var(--r0-not-started);
   --color-r1-seen: var(--r1-seen);
   --color-r2-shaky: var(--r2-shaky);
@@ -2349,3 +2386,49 @@ html.theme-switching :not(.theme-toggle, .theme-toggle *)::before,
 html.theme-switching :not(.theme-toggle, .theme-toggle *)::after {
   transition: none !important;
 }
+
+/* WeekChart bars: keyboard focus ring (the <g> is tabbable). */
+.week-bar { outline: none; }
+.week-bar:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; border-radius: 4px; }
+
+/* ------------------------------------------------------- KINETIC BURST
+   Hero motion graphic (src/components/ui/KineticBurst.jsx). Pure transform
+   and opacity animation, all colours from tokens. Off under reduced motion
+   and in high-contrast. */
+.kb { position: absolute; inset: 0; overflow: hidden; pointer-events: none; perspective: 900px; }
+.kb-stage { position: absolute; left: 50%; top: 42%; width: 0; height: 0; transform-style: preserve-3d; }
+.kb-ring {
+  position: absolute; left: 0; top: 0; width: var(--s); height: var(--s);
+  margin: calc(var(--s) / -2) 0 0 calc(var(--s) / -2); border-radius: 50%;
+  border: 1.5px solid var(--c); opacity: 0;
+  animation: kb-pulse 7s cubic-bezier(0.16, 0.6, 0.3, 1) infinite; animation-delay: var(--d);
+}
+.kb-orbit {
+  position: absolute; left: 0; top: 0; width: var(--s); height: var(--s);
+  margin: calc(var(--s) / -2) 0 0 calc(var(--s) / -2); border-radius: 50%;
+  border: 1px dashed color-mix(in srgb, var(--c) 40%, transparent);
+  animation: kb-spin var(--t) linear infinite; animation-direction: var(--dir, normal);
+  transform: rotateX(var(--tilt, 68deg));
+}
+.kb-dot {
+  position: absolute; top: -5px; left: calc(50% - 5px); width: 10px; height: 10px; border-radius: 50%;
+  background: var(--c); box-shadow: 0 0 18px 4px var(--c);
+}
+.kb-beam {
+  position: absolute; left: 0; top: 0; width: 140vmax; height: 2px; margin-top: -1px;
+  transform-origin: 0 50%; transform: rotate(var(--a));
+  background: linear-gradient(90deg, var(--c), transparent 55%); opacity: 0.35;
+  animation: kb-beam 5s ease-in-out infinite; animation-delay: var(--d);
+}
+.kb-glow {
+  position: absolute; left: 0; top: 0; width: 46vmin; height: 46vmin; margin: -23vmin 0 0 -23vmin; border-radius: 50%;
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--brand) 45%, transparent), transparent);
+  filter: blur(30px); animation: kb-breathe 5s ease-in-out infinite;
+}
+@keyframes kb-pulse { 0% { transform: scale(0.15); opacity: 0.9; } 70% { opacity: 0.25; } 100% { transform: scale(1.6); opacity: 0; } }
+@keyframes kb-spin { to { transform: rotateX(var(--tilt, 68deg)) rotateZ(360deg); } }
+@keyframes kb-beam { 0%, 100% { opacity: 0.08; transform: rotate(var(--a)) scaleX(0.6); } 50% { opacity: 0.5; transform: rotate(calc(var(--a) + 12deg)) scaleX(1); } }
+@keyframes kb-breathe { 0%, 100% { transform: scale(0.85); opacity: 0.7; } 50% { transform: scale(1.15); opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .kb { display: none; } }
+[data-reduce-motion='true'] .kb { display: none; }
+[data-theme='high-contrast'] .kb { display: none; }
