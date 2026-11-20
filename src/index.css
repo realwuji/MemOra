@@ -2132,6 +2132,45 @@ html {
 }
 @media (prefers-reduced-motion: reduce) { .confetti { display: none; } }
 
+/* Level-up FX (src/components/ui/LevelUp.jsx): god-rays, shockwaves, a
+   glowing number and a light that circles the card. */
+.lu-fx { position: fixed; inset: 0; overflow: hidden; pointer-events: none; }
+.lu-fx .kb { opacity: 0.9; }
+.lu-rays {
+  position: absolute; left: 50%; top: 50%; width: 170vmax; aspect-ratio: 1; margin: -85vmax 0 0 -85vmax;
+  background: repeating-conic-gradient(from var(--ang), color-mix(in srgb, var(--paper) 55%, transparent) 0 4deg, transparent 4deg 18deg);
+  -webkit-mask: radial-gradient(closest-side, #000 0, transparent 62%); mask: radial-gradient(closest-side, #000 0, transparent 62%);
+  opacity: 0.35; animation: fx-spin 22s linear infinite, lu-rays-in 1.2s ease-out both;
+}
+.lu-shock {
+  position: absolute; left: 50%; top: 50%; width: 30vmin; height: 30vmin; margin: -15vmin 0 0 -15vmin;
+  border-radius: 50%; border: 3px solid var(--brand); box-shadow: 0 0 40px var(--brand), inset 0 0 40px var(--brand);
+  opacity: 0; animation: lu-shock 1.6s cubic-bezier(0.16, 0.7, 0.3, 1) forwards;
+}
+.lu-number {
+  display: inline-block; color: var(--brand-strong); font-size: 1.35em;
+  text-shadow: 0 0 24px color-mix(in srgb, var(--brand) 70%, transparent);
+  animation: lu-pop 0.9s cubic-bezier(0.34, 1.56, 0.64, 1) 0.3s both, lu-glow 2.4s ease-in-out 1.2s infinite;
+}
+.lu-card::before {
+  content: ''; position: absolute; inset: 0; border-radius: inherit; padding: 2px; pointer-events: none;
+  background: conic-gradient(from var(--ang), var(--brand), var(--flash), var(--paper), var(--quiz), var(--brand));
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+  animation: fx-spin 5s linear infinite;
+}
+@keyframes lu-rays-in { from { opacity: 0; transform: scale(0.3); } to { opacity: 0.35; transform: scale(1); } }
+@keyframes lu-shock { 0% { transform: scale(0.2); opacity: 0.95; } 100% { transform: scale(7); opacity: 0; } }
+@keyframes lu-pop { 0% { transform: scale(0.2) rotate(-18deg); opacity: 0; } 100% { transform: scale(1) rotate(0); opacity: 1; } }
+@keyframes lu-glow { 0%, 100% { text-shadow: 0 0 14px color-mix(in srgb, var(--brand) 50%, transparent); } 50% { text-shadow: 0 0 38px var(--brand); } }
+@media (prefers-reduced-motion: reduce) {
+  .lu-fx { display: none; }
+  .lu-number, .lu-card::before { animation: none; }
+}
+[data-reduce-motion='true'] .lu-fx { display: none; }
+[data-reduce-motion='true'] .lu-number, [data-reduce-motion='true'] .lu-card::before { animation: none; }
+[data-theme='high-contrast'] .lu-fx, [data-theme='high-contrast'] .lu-card::before { display: none; }
+
 /*
   Settings: a Discord-style sidebar of sections on the left, one section
   at a time on the right. Collapses to a scrolling tab strip on narrow

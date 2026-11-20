@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
-import { AnimatePresence, motion } from 'framer-motion'
+import { AnimatePresence, animate, motion } from 'framer-motion'
+import KineticBurst from '@/components/ui/KineticBurst'
 import Button from '@/components/ui/Button'
 import Icon from '@/components/ui/Icon'
 import useMe from '@/hooks/useMe'
@@ -18,12 +19,22 @@ import { levelTitle, LEVEL_REWARDS } from '@/lib/xp'
   this shipped, when it is set to the current level silently - nobody is
   congratulated for levels they had last week.
 */
-const CONFETTI = ['#f97316', '#22c55e', '#3b82f6', '#ec4899', '#facc15', '#a855f7']
+const CONFETTI = ['var(--brand)', 'var(--flash)', 'var(--quiz)', 'var(--paper)', 'var(--brand-strong)', 'var(--danger)']
+
+/* The level number rolls up from the old level to the new one. */
+function RollingLevel({ from, to }) {
+  const [n, setN] = useState(from)
+  useEffect(() => {
+    const c = animate(from, to, { duration: 1.1, delay: 0.35, ease: [0.22, 1, 0.36, 1], onUpdate: (v) => setN(Math.round(v)) })
+    return () => c.stop()
+  }, [from, to])
+  return <span className="lu-number tabular-nums">{n}</span>
+}
 
 function Confetti() {
   const pieces = useMemo(
     () =>
-      Array.from({ length: 42 }, (_, i) => ({
+      Array.from({ length: 110 }, (_, i) => ({
         id: i,
         left: `${(i * 37) % 100}%`,
         dx: `${((i * 53) % 120) - 60}px`,
@@ -92,17 +103,27 @@ export default function LevelUp() {
           aria-modal="true"
           aria-labelledby="levelup-title"
         >
+          <div className="lu-fx" aria-hidden="true">
+            <span className="lu-rays" />
+            <KineticBurst />
+            <span className="lu-shock" />
+            <span className="lu-shock" style={{ animationDelay: '0.25s' }} />
+            <span className="lu-shock" style={{ animationDelay: '0.5s' }} />
+          </div>
           <Confetti />
           <motion.div
             initial={{ scale: 0.8, y: 30, opacity: 0 }}
             animate={{ scale: 1, y: 0, opacity: 1 }}
             exit={{ scale: 0.9, opacity: 0 }}
             transition={{ type: 'spring', stiffness: 260, damping: 22 }}
-            className="card relative w-full max-w-sm overflow-hidden p-6 text-center"
+            className="card lu-card relative w-full max-w-sm overflow-hidden p-6 text-center"
           >
             <p className="text-xs font-bold uppercase tracking-widest text-brand-strong">Level up</p>
             <h2 id="levelup-title" className="mt-3 text-4xl font-extrabold text-fg">
-              Level {shown.to}
+              <span className="sr-only">Level {shown.to}</span>
+              <span aria-hidden="true">
+                Level <RollingLevel from={shown.from} to={shown.to} />
+              </span>
             </h2>
             <p className="mt-1 text-base font-bold text-brand-strong">{levelTitle(shown.to)}</p>
             {unlocks.length > 0 && (
