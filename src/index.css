@@ -43,12 +43,12 @@
   --success: #128a5a;
   --warning: #b45309;
   --danger: #dc2626;
-  --flash: #db2777;
-  --flash-soft: #fce7f3;
-  --quiz: #0e9f6e;
-  --quiz-soft: #d7f5e9;
-  --paper: #dd8109;
-  --paper-soft: #fdeecf;
+  --flash: #c23492;
+  --flash-soft: #fff0f8;
+  --quiz: #007d50;
+  --quiz-soft: #d9f7e5;
+  --paper: #9a5d08;
+  --paper-soft: #fff6e6;
   /* --on-brand is tuned for --brand's own lightness only - it goes wrong
      when reused on these other saturated tokens (each has its own
      lightness curve across themes, see the dark/high-contrast blocks
@@ -56,7 +56,9 @@
   --on-danger: #ffffff;
   --on-flash: #ffffff;
   /* Ink for text on --paper and on the readiness ramp pills (always dark). */
-  --on-paper: #0b0f14;
+  --on-paper: #ffffff;
+  /* Always-dark ink for the readiness ramp pills (r2/r3 stay light in every theme). */
+  --on-ramp: #0b0f14;
   /* Scrim: the dim wash and white ink used over photos, video and image
      overlays. Tokenised so high-contrast can own it. */
   --scrim: #000000;
@@ -71,7 +73,7 @@
   --tint-application: #c2410c;
   --tint-diagram-bank: #0f766e;
   --tint-mock: #4f46e5;
-  --on-quiz: #0b0f14;
+  --on-quiz: #ffffff;
   /* Readiness scale (§5.3) - deliberately its own ramp, not the accent and
      not reused from --success/--quiz/--warning above: those collide with
      each other in cream and high-contrast (quiz and success are literally
@@ -130,8 +132,8 @@
   --success: #34d399;
   --warning: #fbbf24;
   --danger: #f87171;
-  --flash: #f472b6;
-  --flash-soft: #3b1530;
+  --flash: #ec81c0;
+  --flash-soft: #351428;
   --quiz: #2dd4a0;
   --quiz-soft: #0f3a2e;
   --paper: #f0a93a;
@@ -141,6 +143,7 @@
   --on-danger: #0b0f14;
   --on-flash: #0b0f14;
   --on-quiz: #0b0f14;
+  --on-paper: #0b0f14;
   /* Same five hues as light, lifted lighter and slightly desaturated for a
      dark ground - never inverted, so "which band is which" stays learnable
      across a theme switch. */
@@ -184,12 +187,12 @@
   --success: #1a7a4f;
   --warning: #9a5b09;
   --danger: #b4402f;
-  --flash: #a8285f;
-  --flash-soft: #f6dbe9;
+  --flash: #a12d79;
+  --flash-soft: #f9daeb;
   --quiz: #1a7a4f;
   --quiz-soft: #dcf0e2;
-  --paper: #b7770c;
-  --paper-soft: #f6e8c9;
+  --paper: #94590a;
+  --paper-soft: #fbf0da;
   --on-danger: #ffffff;
   --on-flash: #ffffff;
   --on-quiz: #ffffff;
@@ -287,6 +290,7 @@
   --on-danger: #0b0f14;
   --on-flash: #0b0f14;
   --on-quiz: #0b0f14;
+  --on-paper: #000000;
   /* High-contrast needs function over subtlety: five fully saturated,
      maximally distinct hues against pure black, none of them the brand
      yellow (so a readiness segment is never mistaken for something
@@ -341,6 +345,7 @@
   --color-on-flash: var(--on-flash);
   --color-on-quiz: var(--on-quiz);
   --color-on-paper: var(--on-paper);
+  --color-on-ramp: var(--on-ramp);
   --color-scrim: var(--scrim);
   --color-on-scrim: var(--on-scrim);
   --color-r0-not-started: var(--r0-not-started);
@@ -1001,8 +1006,8 @@
    (also lightened there). --paper and --r2-shaky read best in a fixed dark
    ink in every theme, so they skip a token and go straight to that ink. */
 .hero-type-brand { background: var(--brand); color: var(--on-brand); }
-.hero-type-paper { background: var(--paper); color: #0b0f14; }
-.hero-type-shaky { background: var(--r2-shaky); color: #0b0f14; }
+.hero-type-paper { background: var(--paper); color: var(--on-paper); }
+.hero-type-shaky { background: var(--r2-shaky); color: var(--on-ramp); }
 .hero-type-danger { background: var(--danger); color: var(--on-danger); }
 @media (prefers-reduced-motion: reduce) {
   .hero-banner-wash, .hero-mascot { animation: none; }
