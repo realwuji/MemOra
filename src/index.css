@@ -988,6 +988,9 @@ html {
 body {
   margin: 0;
   min-height: 100vh;
+  /* Soft glows are allowed to bleed past the edge of a section; they must never
+     make the page scroll sideways (clip, unlike hidden, keeps sticky working). */
+  overflow-x: clip;
   background-color: var(--page);
   /* One very faint tint at the top, and nothing else. There used to be a
      second peach wash on the right as well: together they tinted the whole
@@ -1053,6 +1056,22 @@ body {
     box-shadow:
       0 8px 32px color-mix(in srgb, var(--fg) 10%, transparent),
       inset 0 1px 0 color-mix(in srgb, white 28%, transparent);
+  }
+  /* The app header: the glass look without the blur. A full-width sticky layer
+     with backdrop-filter is re-blurred on every scroll frame, and at this
+     opacity the blur cannot be seen anyway. */
+  .glass-bar {
+    position: relative;
+    background-color: color-mix(in srgb, var(--surface) 94%, transparent);
+    border: 1px solid color-mix(in srgb, var(--fg) 12%, transparent);
+    box-shadow:
+      0 10px 40px color-mix(in srgb, var(--fg) 12%, transparent),
+      inset 0 1px 0 color-mix(in srgb, white 22%, transparent);
+  }
+  [data-theme='high-contrast'] .glass-bar {
+    background-color: var(--surface);
+    border: 1px solid var(--line);
+    box-shadow: none;
   }
   .glass-strong {
     position: relative;
@@ -1122,7 +1141,16 @@ body {
       var(--btn-tint)
     );
     filter: blur(6px) saturate(1.6);
+    /* The current only turns while the button is being hovered or focused.
+       Left running on every button, it kept dozens of blurred layers (each under
+       a backdrop-blur cover) redrawing on every frame, which is what made busy
+       pages stutter. At rest it simply holds its position. */
     animation: btn-charge-spin 6s linear infinite;
+    animation-play-state: paused;
+  }
+  .btn-charge:hover .btn-charge-current,
+  .btn-charge:focus-visible .btn-charge-current {
+    animation-play-state: running;
   }
   @keyframes btn-charge-spin {
     to { transform: rotate(360deg); }
@@ -1279,28 +1307,39 @@ body {
      big directional light bands, and then only a light blur is needed to
      erase the remaining weave. Heavy blur on an unzoomed frame just muddies
      everything into one flat gradient. */
+  /* The blur is the costly part of this backdrop (it is redone for every video
+     frame), and its cost grows with the area blurred. So the video is laid out
+     at half size, centred, with half the blur, and then scaled up by double:
+     the same crop and the same softness on screen, for about a quarter of the
+     pixels to blur. */
   .hero-video {
     display: block;
+    position: absolute;
+    left: 25%;
+    top: 25%;
+    width: 50%;
+    height: 50%;
     object-position: center;
-    filter: blur(14px) saturate(1.4) contrast(1.18);
+    filter: blur(7px) saturate(1.4) contrast(1.18);
     animation: hero-breathe 26s ease-in-out infinite;
+    will-change: transform;
   }
   /* A slow, near-imperceptible zoom/drift so the backdrop is never fully
      static even before the cursor moves anything - the "detail" is in the
      video itself, not another CSS shape layered on top of it. Small enough
      range that it reads as alive, not as a Ken Burns effect. */
   @keyframes hero-breathe {
-    0%, 100% { transform: scale(1.9) translate(0, 0); }
-    50% { transform: scale(1.97) translate(-0.6%, 0.4%); }
+    0%, 100% { transform: scale(3.8) translate(0, 0); }
+    50% { transform: scale(3.94) translate(-0.3%, 0.2%); }
   }
   [data-theme='dark'] .hero-video {
     /* The footage is naturally blue. Both themes strip that to grey and
        re-warm it with a little sepia, so the backdrop sits in the black /
        cream palette instead of reading as a blue wash behind it. */
-    filter: blur(14px) grayscale(1) sepia(0.4) brightness(0.6) contrast(1.25);
+    filter: blur(7px) grayscale(1) sepia(0.4) brightness(0.6) contrast(1.25);
   }
   [data-theme='cream'] .hero-video {
-    filter: blur(14px) grayscale(1) sepia(0.45) brightness(1.1) contrast(0.95);
+    filter: blur(7px) grayscale(1) sepia(0.45) brightness(1.1) contrast(0.95);
   }
   .hero-video-tint {
     background: color-mix(in srgb, var(--page) 30%, transparent);
@@ -1310,25 +1349,33 @@ body {
      rather than a shape sitting on top of it. Biggest legibility win in
      light mode, where the video's own contrast has less room to work with
      against an already-bright page. */
+  /* The band is drawn once on a larger layer that is slid across (a transform,
+     which the GPU does), instead of animating background-position, which made
+     the browser repaint the whole viewport on every frame. */
   .hero-sweep {
+    overflow: hidden;
+    mix-blend-mode: soft-light;
+  }
+  .hero-sweep::before {
+    content: '';
+    position: absolute;
+    inset: -80%;
     background: linear-gradient(
       115deg,
       transparent 30%,
       color-mix(in srgb, white 55%, transparent) 48%,
       transparent 66%
     );
-    background-size: 260% 260%;
-    mix-blend-mode: soft-light;
     animation: hero-sweep-drift 34s ease-in-out infinite;
+    will-change: transform;
   }
   [data-theme='dark'] .hero-sweep {
     mix-blend-mode: overlay;
     opacity: 0.7;
   }
   @keyframes hero-sweep-drift {
-    0% { background-position: 0% 0%; }
-    50% { background-position: 100% 55%; }
-    100% { background-position: 0% 0%; }
+    0%, 100% { transform: translate3d(-9%, -6%, 0); }
+    50% { transform: translate3d(9%, 6%, 0); }
   }
 }
 

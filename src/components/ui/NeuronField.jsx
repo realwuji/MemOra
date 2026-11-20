@@ -30,6 +30,7 @@ export default function NeuronField({ enabled = true }) {
 
     let nodes = []
     let rafId
+    let running = false
     let lastSpawn = 0
     let dpr = 1
 
@@ -70,6 +71,11 @@ export default function NeuronField({ enabled = true }) {
         born: now,
       })
       if (nodes.length > MAX_NODES) nodes.splice(0, nodes.length - MAX_NODES)
+      // The loop only runs while there is something to draw, so an untouched page costs nothing.
+      if (!running) {
+        running = true
+        rafId = requestAnimationFrame(tick)
+      }
     }
     window.addEventListener('pointermove', onPointerMove)
 
@@ -77,6 +83,10 @@ export default function NeuronField({ enabled = true }) {
       const now = performance.now()
       nodes = nodes.filter((n) => now - n.born < LIFETIME_MS)
       ctx.clearRect(0, 0, canvas.width, canvas.height)
+      if (!nodes.length) {
+        running = false
+        return
+      }
 
       for (const n of nodes) {
         n.x += n.vx
@@ -114,7 +124,6 @@ export default function NeuronField({ enabled = true }) {
 
       rafId = requestAnimationFrame(tick)
     }
-    rafId = requestAnimationFrame(tick)
 
     return () => {
       cancelAnimationFrame(rafId)

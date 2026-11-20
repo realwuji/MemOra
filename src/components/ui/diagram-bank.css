@@ -231,6 +231,7 @@
   display: grid;
   gap: 1.4rem;
   align-items: start;
+  grid-template-columns: minmax(0, 1fr);
 }
 @media (min-width: 1000px) {
   .db-detail {
@@ -240,6 +241,7 @@
 .db-detail-main,
 .db-detail-side {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 1.1rem;
   min-width: 0;
 }

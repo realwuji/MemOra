@@ -351,6 +351,147 @@
   }
 }
 
+/* your own plan: a box per point, an Add diagram under each */
+.pp-box,
+.pp-box.ep-good,
+.pp-box.ep-bad {
+  display: grid;
+  gap: 0.8rem;
+  padding: 0.9rem 1.05rem 1rem;
+  border: 1px solid var(--line);
+  border-radius: 1.1rem;
+  background: var(--surface);
+  box-shadow: none;
+}
+.pp-box.ep-good {
+  border-top: 3px solid var(--r3-solid);
+}
+.pp-box.ep-bad {
+  border-top: 3px solid var(--r2-shaky);
+}
+.pp-box.ep-good .ep-n {
+  background: var(--r3-solid);
+}
+.pp-box.ep-bad .ep-n {
+  background: var(--r2-shaky);
+}
+.pp-head {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+}
+.pp-title {
+  flex: 1;
+  color: var(--fg);
+  font-size: 1rem;
+  font-weight: 750;
+}
+.pp-remove {
+  display: grid;
+  place-items: center;
+  width: 1.9rem;
+  height: 1.9rem;
+  border: 0;
+  border-radius: 999px;
+  background: none;
+  color: var(--muted);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.pp-remove:hover,
+.pp-remove:focus-visible {
+  background: color-mix(in srgb, var(--danger) 16%, transparent);
+  color: var(--danger);
+}
+.pp-text {
+  width: 100%;
+  min-height: 5.2rem;
+  padding: 0.7rem 0.85rem;
+  border: 1px solid var(--line);
+  border-radius: 0.8rem;
+  background: var(--page, var(--surface));
+  color: var(--fg);
+  font: inherit;
+  font-size: 0.97rem;
+  line-height: 1.55;
+  resize: vertical;
+  field-sizing: content;
+}
+.pp-text::placeholder {
+  color: color-mix(in srgb, var(--muted) 85%, transparent);
+}
+.pp-text:focus {
+  outline: 2px solid var(--brand);
+  outline-offset: 1px;
+}
+.pp-add,
+.pp-more {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  padding: 0.55rem 0.9rem;
+  border: 1.5px dashed color-mix(in srgb, var(--brand) 55%, var(--line));
+  border-radius: 0.8rem;
+  background: none;
+  color: var(--brand-strong);
+  font-size: 0.88rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: background 0.18s, border-color 0.18s, transform 0.18s;
+}
+.pp-add {
+  justify-self: start;
+}
+.pp-add:hover,
+.pp-more:hover,
+.pp-add:focus-visible,
+.pp-more:focus-visible {
+  border-style: solid;
+  border-color: var(--brand);
+  background: var(--brand-soft);
+}
+.pp-more {
+  width: 100%;
+  padding: 0.75rem 0.9rem;
+}
+.pp-diagram {
+  padding: 0.7rem 0.8rem 0.8rem;
+  border: 1px solid var(--line);
+  border-radius: 0.9rem;
+  background: color-mix(in srgb, var(--brand-soft) 35%, var(--surface));
+  animation: dr-in 0.35s ease both;
+}
+.pp-diagram-head {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.pp-diagram-name {
+  flex: 1;
+  min-width: 0;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--line);
+  border-radius: 0.7rem;
+  background: var(--surface);
+  color: var(--fg);
+  font-size: 0.92rem;
+  font-weight: 650;
+}
+.pp-diagram-name:focus {
+  outline: 2px solid var(--brand);
+}
+.pp-judge {
+  display: grid;
+  gap: 0.5rem;
+  margin-top: 1.1rem;
+}
+@media (prefers-reduced-motion: reduce) {
+  .pp-diagram {
+    animation: none;
+  }
+}
+
 /* a short plan (no evaluation column): one column, not two */
 @media (min-width: 900px) {
   .ep-cols.ep-single {

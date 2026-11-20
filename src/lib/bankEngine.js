@@ -168,7 +168,7 @@ export function prepare(slide, fixes) {
   // label index, not drawing order, so D then D1 works whichever was inked first.
   const byBase = {}
   strokes
-    .filter((s) => s.base)
+    .filter((s) => s.base && !s.axis)
     .sort((a, b) => a.idx - b.idx || a.i - b.i)
     .forEach((s) => {
       const group = (byBase[s.base] ||= [])
@@ -192,6 +192,8 @@ export function prepare(slide, fixes) {
     if (it.k !== 't') return
     const m = textPlain(it).replace(/\s+/g, '').match(LABEL_RE)
     if (!m) return
+    // An axis title ("Q" at the end of the x axis) is not the first stage of Q1, Q2.
+    if (it.owner !== undefined && strokes.some((s) => s.i === it.owner && s.axis)) return
     it.lkey = m[1].toUpperCase()
     it.ldig = digitOf(m[2])
     ;(groups[it.lkey] ||= new Set()).add(it.ldig)
@@ -238,6 +240,15 @@ export function prepare(slide, fixes) {
       it.stage = hit.length ? Math.max(...hit.map((s) => s.stage)) : 0
     } else it.stage = 0
   })
+  // Slides that compare two outcomes (profit maximising against allocatively
+  // efficient output) have P1 and P2, Q1 and Q2 but nothing shifts: draw them in one go.
+  if (fixes?.noShift) {
+    items.forEach((it) => {
+      it.stage = 0
+      delete it.morphFrom
+      delete it.shiftedTo
+    })
+  }
   const hasStages = staged.length > 0 || strokes.some((s) => s.stage > 0)
 
   /*
@@ -255,6 +266,10 @@ export function prepare(slide, fixes) {
   const strokeByI = new Map(strokes.map((s) => [s.i, s]))
   items.forEach((it) => {
     if (it.k === 's') return
+    if (it.k === 'f' && !it.c) {
+      it.phase = 0 // an outline with no fill is the chart's frame: drawn with the axes
+      return
+    }
     if (it.k === 'd' || it.k === 'f') {
       it.phase = 2
       return
@@ -390,10 +405,18 @@ export function frame(prep, ms) {
     if (it.k === 's') {
       if (it.morphFrom !== undefined) {
         const e = prep.byIndex[it.morphFrom]
-        const a = resample(e.p)
-        const b = resample(it.p)
-        const q = ease(p)
-        st.pts = a.map((pt, i) => [pt[0] + (b[i][0] - pt[0]) * q, pt[1] + (b[i][1] - pt[1]) * q])
+        // Before and after the shift the shape is fixed: reuse it (same array, so a
+        // memoised item does not redraw), and only blend while it is moving.
+        it.startPts ||= resample(e.p)
+        it.endPts ||= resample(it.p)
+        if (p >= 1) st.pts = it.endPts
+        else if (p <= 0) st.pts = it.startPts
+        else {
+          const a = it.startPts
+          const b = it.endPts
+          const q = ease(p)
+          st.pts = a.map((pt, i) => [pt[0] + (b[i][0] - pt[0]) * q, pt[1] + (b[i][1] - pt[1]) * q])
+        }
         st.p = ms >= it.t0 ? 1 : 0
         st.fadeIn = 1
       } else {

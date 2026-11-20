@@ -213,7 +213,7 @@ function Practise({ bank, onAnswer }) {
                 {score.right} perfect of {score.done} · {pool.length - (checked ? 0 : 1) < 0 ? 0 : pool.length - (checked ? 0 : 1)} left in this topic
               </p>
             </div>
-            <p className="dr-eyebrow mt-4">{q.topic}</p>
+            <p className="dr-eyebrow mt-4">{checked ? q.topic : 'Question'}</p>
             <p className="dr-context">{q.context}</p>
 
             <div className="mt-5">

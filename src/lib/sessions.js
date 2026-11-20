@@ -7,7 +7,6 @@
   A session: { id, subject, technique, difficulty (1-5), minutes, topic, ts }
   Sessions are stored newest-first.
 */
-import { getPackByName } from '@/constants/library'
 
 const norm = (x) => String(x || '').toLowerCase().replace(/[^a-z0-9]/g, '')
 
@@ -102,7 +101,7 @@ export function subjectStats(sessions = [], name) {
 */
 const DAY = 86400000
 
-export function subjectMetrics(sessions = [], name) {
+export function subjectMetrics(sessions = [], name, totalChapters = 0) {
   const subs = sessionsForSubject(sessions, name)
   const minutesOf = (list) => list.reduce((sum, s) => sum + (s.minutes || 0), 0)
 
@@ -124,9 +123,8 @@ export function subjectMetrics(sessions = [], name) {
   })
 
   // Real curriculum coverage: how many of the subject's chapters have been
-  // studied at least once, out of how many exist.
-  const pack = getPackByName(name)
-  const totalChapters = pack?.topics?.length || 0
+  // studied at least once, out of how many exist (the caller knows the pack,
+  // so this file does not have to load the whole content library).
   const chaptersCovered = new Set(subs.map((s) => s.topic).filter(Boolean)).size
 
   return { hours, delta, series, chaptersCovered, totalChapters }

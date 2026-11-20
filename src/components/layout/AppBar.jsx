@@ -89,7 +89,7 @@ export default function AppBar() {
       {/* Clipped to the pill shape on its own - the header itself must stay
           overflow-visible so the mobile menu dropdown can pop out below it. */}
       <div
-        className={`glass-strong absolute inset-0 overflow-hidden opacity-100 transition-[border-radius] duration-300 ease-out ${
+        className={`glass-bar absolute inset-0 overflow-hidden opacity-100 transition-[border-radius] duration-300 ease-out ${
           scrolled ? 'rounded-3xl' : 'rounded-none'
         }`}
       />

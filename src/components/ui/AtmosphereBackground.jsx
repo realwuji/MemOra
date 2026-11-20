@@ -43,7 +43,7 @@ export default function AtmosphereBackground() {
       {motionOk ? (
         <video
           ref={videoRef}
-          className="hero-video h-full w-full object-cover"
+          className="hero-video object-cover"
           autoPlay
           loop
           muted
@@ -67,7 +67,7 @@ export default function AtmosphereBackground() {
           alt=""
           aria-hidden="true"
           decoding="async"
-          className="hero-video h-full w-full object-cover"
+          className="hero-video object-cover"
         />
       )}
       {/* theme tint - ties the natural footage to the current mood */}

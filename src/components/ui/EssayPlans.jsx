@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import BankDiagram from '@/components/ui/BankDiagram'
-import SketchPad from '@/components/ui/SketchPad'
+import PlanBoxes from '@/components/ui/PlanBoxes'
 import { MARK_SPLIT, PLAN_AREAS, minutesFor } from '@/constants/econ-plans'
 import './essay-plans.css'
 
@@ -8,7 +8,8 @@ import './essay-plans.css'
   Essay plans.
 
   The list is every exam question in the teaching spreadsheet. Opening one
-  shows the question, a pad to plan on first, and then the plan itself in the
+  shows the question, boxes to plan in first (a box per point, each with an
+  Add diagram under it, for analysis and for evaluation), and then the plan itself in the
   shape a strong answer takes: two columns of chains (analysis on the left,
   evaluation on the right), a bank diagram under the chains that need one,
   and a judgement.
@@ -17,22 +18,6 @@ import './essay-plans.css'
   position; "Do you know what shifts?" plays the shift, and hovering a curve
   says what shifts it in this chain.
 */
-
-const sketchKey = (id) => `memora.plan.sketch.${id}`
-const loadSketch = (id) => {
-  try {
-    return JSON.parse(localStorage.getItem(sketchKey(id)) || 'null')
-  } catch {
-    return null
-  }
-}
-const saveSketch = (id, v) => {
-  try {
-    localStorage.setItem(sketchKey(id), JSON.stringify(v))
-  } catch {
-    /* private mode */
-  }
-}
 
 function Chain({ n, chain, tone }) {
   return (
@@ -60,7 +45,6 @@ function Chain({ n, chain, tone }) {
 
 function PlanView({ item, onBack }) {
   const [revealed, setRevealed] = useState(false)
-  const [sketch, setSketch] = useState(() => loadSketch(item.id))
   const split = MARK_SPLIT[item.marks]
   const plan = item.plan
   useEffect(() => {
@@ -89,19 +73,14 @@ function PlanView({ item, onBack }) {
       </div>
 
       <section className="ep-pad">
-        <p className="ep-label">Plan it first (mouse, finger or Apple Pencil)</p>
+        <p className="ep-label">Plan it first</p>
         <p className="ep-hint">
-          {item.marks >= 12 ? 'Two sides: chains of analysis on one, evaluation on the other, a diagram where one belongs, then a judgement.' : 'Short chains of reasoning and a diagram where one belongs.'}
+          {split?.evaluation
+            ? 'Write each analysis point and each evaluation point in its own box. Under any point that needs a diagram, press Add diagram and draw it. Finish with a judgement.'
+            : 'Write each point in its own box. Under any point that needs a diagram, press Add diagram and draw it.'}
         </p>
-        <div className="mt-2">
-          <SketchPad
-            value={sketch}
-            onChange={(v) => {
-              setSketch(v)
-              saveSketch(item.id, v)
-            }}
-            label="Sketch your plan"
-          />
+        <div className="mt-3">
+          <PlanBoxes itemId={item.id} marks={item.marks} hasEval={!!split?.evaluation} />
         </div>
       </section>
 
@@ -109,7 +88,7 @@ function PlanView({ item, onBack }) {
         <section className="ep-none">
           <p className="ep-label">No plan yet</p>
           <p>
-            There is no plan for this one: it depends on an extract that is not in the spreadsheet, or on content your notes do not cover, so nothing can be built from them. It draws on: <strong>{item.area}</strong>. Plan it yourself on the pad above, then check it against the notes for that chapter.
+            There is no plan for this one: it depends on an extract that is not in the spreadsheet, or on content your notes do not cover, so nothing can be built from them. It draws on: <strong>{item.area}</strong>. Plan it yourself in the boxes above, then check it against the notes for that chapter.
           </p>
         </section>
       ) : !revealed ? (

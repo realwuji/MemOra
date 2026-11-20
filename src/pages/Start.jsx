@@ -127,7 +127,7 @@ export default function Start() {
             </p>
           </motion.div>
         ) : (
-          <motion.div variants={staggerContainer} className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <motion.div variants={staggerContainer} className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {packs.map((p) => {
               const color = subjectColor(p.name)
               const topics = relevantTopics(p, isYear12)

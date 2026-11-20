@@ -92,7 +92,9 @@ function Empty({ label, pack, onSwitchTechnique, onChangeChapter }) {
 
   return (
     <div className="mx-auto max-w-md py-10 text-center">
-      <p className="readable text-muted">No {label} for this chapter yet.</p>
+      <p className="readable text-muted">
+        No {label} for {onChangeChapter ? 'this chapter' : pack?.name || 'this subject'} yet.
+      </p>
 
       {alternatives.length > 0 && onSwitchTechnique ? (
         <>

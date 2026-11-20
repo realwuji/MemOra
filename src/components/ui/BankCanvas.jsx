@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
+import { memo, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { useReducedMotion } from 'framer-motion'
 import { prepare, frame, polyLen } from '@/lib/bankEngine'
 import { MOVES } from '@/constants/dr-moves'
@@ -16,6 +16,21 @@ import './diagram-revision.css'
 const PT = 1.25
 const colour = (c) => (c === 'ink' || !c ? 'var(--fg)' : c === 'muted' ? 'var(--muted)' : `var(--dr-${c})`)
 const poly = (p) => p.map(([x, y], i) => `${i ? 'L' : 'M'}${x.toFixed(1)} ${y.toFixed(1)}`).join('')
+
+// The three corners of an arrowhead whose tip is the end (or the start) of a line.
+function arrowHead(p, atStart, size) {
+  const a = atStart ? p[0] : p[p.length - 1]
+  const b = atStart ? p[1] : p[p.length - 2]
+  const dx = a[0] - b[0]
+  const dy = a[1] - b[1]
+  const len = Math.hypot(dx, dy) || 1
+  const ux = dx / len
+  const uy = dy / len
+  const bx = a[0] - ux * size
+  const by = a[1] - uy * size
+  const w = size * 0.4
+  return `${a[0]},${a[1]} ${bx - uy * w},${by + ux * w} ${bx + uy * w},${by - ux * w}`
+}
 
 // Word-wrap a paragraph into the width of its text box, measuring real glyphs.
 let measureCtx = null
@@ -79,7 +94,7 @@ function wrapPara(p, maxW, forceNoWrap, breaks) {
   return lines.filter((l) => l.length).map((r) => ({ al: p.al, r }))
 }
 
-function Text({ t, fade, nudge }) {
+const Text = memo(function Text({ t, fade, nudge }) {
   const innerW = Math.max(40, t.w - t.ins[0] - t.ins[2])
   const lines = t.para.flatMap((p, pi) => wrapPara(p, innerW, t.nw, t.br?.[pi]))
   const lh = (p) => (p.r.find((r) => r.sz && !r.sub && !r.sup)?.sz || p.r.find((r) => r.sz)?.sz || 18) * PT * 1.2
@@ -118,7 +133,7 @@ function Text({ t, fade, nudge }) {
       })}
     </g>
   )
-}
+})
 
 const inRect = (r, [x, y], m) => x > r.x - m && x < r.x + r.width + m && y > r.y - m && y < r.y + r.height + m
 function hitsLine(r, p, m) {
@@ -158,6 +173,54 @@ function resolveLabels(svg, prep) {
   })
   return out
 }
+
+/*
+  One drawn item. Memoised: while the diagram plays, only the items that are
+  changing this frame are redrawn, not all fifty, and a finished label is not
+  re-wrapped and re-measured sixty times a second.
+*/
+const Item = memo(function Item({ it, p, pts, ghost, hovered, nudge }) {
+  if (p <= 0 && !ghost) return null
+  if (it.k === 's') {
+    const w = Math.max(1.8, Math.min(3.8, it.w * 0.62))
+    const dashed = it.d ? it.d.join(' ') : undefined
+    if (ghost) return <path d={poly(pts)} className="bk-ghost" fill="none" stroke={colour(it.c)} strokeWidth={w} strokeDasharray="10 8" strokeLinecap="round" opacity="0.38" />
+    const draw = it.morphFrom !== undefined ? 1 : p
+    const path = (
+      <path
+        d={poly(pts)}
+        fill="none"
+        stroke={colour(it.c)}
+        strokeWidth={hovered ? w + 2.5 : w}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        pathLength={dashed ? undefined : 1}
+        strokeDasharray={dashed ? dashed : `${draw} 2`}
+        opacity={dashed ? p : 1}
+        className="bk-stroke"
+        style={{ '--c': colour(it.c) }}
+      />
+    )
+    if (!it.a && !it.ah) return path
+    // The slide's arrowheads, put on once the line has been drawn to its end.
+    const line = it.morphFrom !== undefined ? pts : it.p
+    const size = 9 + w * 1.6
+    return (
+      <g>
+        {path}
+        {p >= 0.97 && it.a && <polygon points={arrowHead(line, false, size)} fill={colour(it.c)} className="bk-head" />}
+        {p >= 0.97 && it.ah && <polygon points={arrowHead(line, true, size)} fill={colour(it.c)} className="bk-head" />}
+      </g>
+    )
+  }
+  if (it.k === 'f')
+    return (
+      <polygon points={it.p.map(([x, y]) => `${x},${y}`).join(' ')} fill={it.c ? colour(it.c) : 'none'} fillOpacity={(it.o ?? 0.3) * Math.min(0.9, 1) * p} stroke={it.sc ? colour(it.sc) : 'none'} strokeWidth={Math.max(1.5, it.w * 0.8)} strokeDasharray={it.d ? it.d.join(' ') : undefined} opacity={p} />
+    )
+  if (it.k === 'd') return <circle cx={it.x} cy={it.y} r={Math.max(5, it.r)} fill={colour(it.c)} stroke="var(--surface)" strokeWidth="2" opacity={p} />
+  if (it.k === 't') return <Text t={it} fade={p} nudge={nudge} />
+  return null
+})
 
 /* `bare`: just the finished drawing, no title, controls or hover (a thumbnail). */
 export default function BankCanvas({ slide, autoplay = true, onDone, caption = true, quiz = false, hover = null, bare = false }) {
@@ -251,39 +314,9 @@ export default function BankCanvas({ slide, autoplay = true, onDone, caption = t
         </defs>
         <rect x={vx} y={vy} width={vw} height={vh} fill={`url(#bk-grid-${slide.id})`} />
 
-        {states.map(({ it, p, pts, ghost }) => {
-          if (p <= 0 && !ghost) return null
-          if (it.k === 's') {
-            const w = Math.max(1.8, Math.min(3.8, it.w * 0.62))
-            const dashed = it.d ? it.d.join(' ') : undefined
-            const hovered = tip?.id === it.i
-            if (ghost) return <path key={it.i} d={poly(pts)} className="bk-ghost" fill="none" stroke={colour(it.c)} strokeWidth={w} strokeDasharray="10 8" strokeLinecap="round" opacity="0.38" />
-            const draw = it.morphFrom !== undefined ? 1 : p
-            return (
-              <path
-                key={it.i}
-                d={poly(pts)}
-                fill="none"
-                stroke={colour(it.c)}
-                strokeWidth={hovered ? w + 2.5 : w}
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                pathLength={dashed ? undefined : 1}
-                strokeDasharray={dashed ? dashed : `${draw} 2`}
-                opacity={dashed ? p : 1}
-                className="bk-stroke"
-                style={{ '--c': colour(it.c) }}
-              />
-            )
-          }
-          if (it.k === 'f')
-            return (
-              <polygon key={it.i} points={it.p.map(([x, y]) => `${x},${y}`).join(' ')} fill={it.c ? colour(it.c) : 'none'} fillOpacity={(it.o ?? 0.3) * Math.min(0.9, 1) * p} stroke={it.sc ? colour(it.sc) : 'none'} strokeWidth={Math.max(1.5, it.w * 0.8)} strokeDasharray={it.d ? it.d.join(' ') : undefined} opacity={p} />
-            )
-          if (it.k === 'd') return <circle key={it.i} cx={it.x} cy={it.y} r={Math.max(5, it.r)} fill={colour(it.c)} stroke="var(--surface)" strokeWidth="2" opacity={p} />
-          if (it.k === 't') return <Text key={it.i} t={it} fade={p} nudge={nudge[it.i]} />
-          return null
-        })}
+        {states.map(({ it, p, pts, ghost }) => (
+          <Item key={it.i} it={it} p={p} pts={pts} ghost={ghost} hovered={tip?.id === it.i} nudge={nudge[it.i]} />
+        ))}
 
         {/* Fat invisible strokes: hover or tap any curve that has something that shifts it. */}
         {!bare &&

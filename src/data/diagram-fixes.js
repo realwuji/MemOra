@@ -5,6 +5,9 @@
   labels: a curve the teacher did not name. `stroke` is the item index of the
   curve in the slide, `f` how far along it (0 to 1) the name sits, dx and dy
   its offset from that point.
+
+  noShift: the slide compares two outcomes (P1 and P2, Q1 and Q2) and nothing
+  shifts, so no guide line is treated as "after the shift".
 */
 export const FIXES = {
   3: { labels: [{ stroke: 4, f: 0.78, dx: 14, dy: -34, text: 'PPF', c: 'blue' }] },
@@ -16,4 +19,10 @@ export const FIXES = {
   },
   185: { labels: [{ stroke: 12, f: 0.97, dx: 12, dy: -8, text: 'AS1', c: 'red' }] },
   216: { labels: [{ stroke: 4, f: 0.5, dx: -40, dy: -48, text: 'Kuznets curve' }] },
+  // Comparisons of two outcomes, not a shift: every guide line is drawn, none is held back.
+  140: { noShift: true },
+  146: { noShift: true },
+  160: { noShift: true },
+  161: { noShift: true },
+  162: { noShift: true },
 }

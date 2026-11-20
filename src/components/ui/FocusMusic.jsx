@@ -126,6 +126,11 @@ export default function FocusMusic() {
   const [titles, setTitles] = useState({}) // uri -> { title, thumb } from oEmbed
   const [track, setTrack] = useState(null) // { title, artist } from the account
   const [embedFailed, setEmbedFailed] = useState(false)
+  // Spotify's player is a whole web app in an iframe plus a third-party script.
+  // It is not fetched until the player is wanted (the panel is open, or the
+  // pointer is over the widget), so a page that never plays music never pays for it.
+  const [armed, setArmed] = useState(() => Boolean(state.open))
+  const playWhenReady = useRef(false)
   const mountRef = useRef(null)
   const controllerRef = useRef(null)
   const panelBodyRef = useRef(null)
@@ -164,8 +169,13 @@ export default function FocusMusic() {
     return () => document.removeEventListener('pointerdown', onPointerDown)
   }, [state.open])
 
+  useEffect(() => {
+    if (state.open) setArmed(true)
+  }, [state.open])
+
   // Build the embed once; swap its uri when the choice changes.
   useEffect(() => {
+    if (!armed) return undefined
     let cancelled = false
     loadIframeApi()
       .then((api) => {
@@ -175,6 +185,10 @@ export default function FocusMusic() {
         api.createController(el, { uri: toSpotifyUri(state.uri), width: '100%', height: EMBED_HEIGHT }, (ctrl) => {
           controllerRef.current = ctrl
           ctrl.addListener('playback_update', (e) => setPlaying(!e.data.isPaused))
+          if (playWhenReady.current) {
+            playWhenReady.current = false
+            ctrl.togglePlay()
+          }
         })
       })
       .catch(() => setEmbedFailed(true))
@@ -182,7 +196,7 @@ export default function FocusMusic() {
       cancelled = true
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [armed])
 
   useEffect(() => {
     controllerRef.current?.loadUri(toSpotifyUri(state.uri))
@@ -209,13 +223,13 @@ export default function FocusMusic() {
 
   // Name and cover for whatever is loaded, for the pill and the header.
   useEffect(() => {
-    if (titles[state.uri]) return
+    if (!armed || titles[state.uri]) return
     let cancelled = false
     lookup(state.uri).then((m) => !cancelled && setTitles((t) => ({ ...t, [state.uri]: m })))
     return () => {
       cancelled = true
     }
-  }, [state.uri, titles])
+  }, [armed, state.uri, titles])
 
   // Account: finish a login round trip, list playlists, poll now-playing.
   useEffect(() => {
@@ -234,7 +248,7 @@ export default function FocusMusic() {
   }, [])
 
   useEffect(() => {
-    if (!connected || mine) return
+    if (!armed || !connected || mine) return
     let cancelled = false
     fetchMyPlaylists()
       .then((list) => !cancelled && setMine(list))
@@ -249,10 +263,10 @@ export default function FocusMusic() {
     return () => {
       cancelled = true
     }
-  }, [connected, mine])
+  }, [armed, connected, mine])
 
   useEffect(() => {
-    if (!connected) return
+    if (!armed || !connected) return
     let cancelled = false
     const tick = () => fetchNowPlaying().then((np) => !cancelled && setTrack(np)).catch(() => {})
     tick()
@@ -261,7 +275,7 @@ export default function FocusMusic() {
       cancelled = true
       clearInterval(t)
     }
-  }, [connected])
+  }, [armed, connected])
 
   const submit = async (e) => {
     e.preventDefault()
@@ -284,7 +298,13 @@ export default function FocusMusic() {
 
   const forget = (uri) => setState((s) => ({ ...s, saved: s.saved.filter((x) => x.uri !== uri) }))
   const play = (uri) => setState((s) => ({ ...s, uri }))
-  const toggle = () => controllerRef.current?.togglePlay()
+  const toggle = () => {
+    if (controllerRef.current) controllerRef.current.togglePlay()
+    else {
+      playWhenReady.current = true
+      setArmed(true)
+    }
+  }
 
   const currentTitle = titleOf(state.uri, state.saved) || titles[state.uri]?.title || 'Spotify'
   const currentThumb = track?.thumb || state.saved.find((x) => x.uri === state.uri)?.thumb || titles[state.uri]?.thumb || null
@@ -292,7 +312,7 @@ export default function FocusMusic() {
   const subLine = track?.title ? track.artist : playing ? 'Playing' : 'Paused'
 
   return (
-    <div ref={wrapperRef} className="fixed bottom-4 right-4 z-[55] flex flex-col items-end gap-2 print:hidden">
+    <div ref={wrapperRef} onPointerEnter={() => setArmed(true)} onFocus={() => setArmed(true)} className="fixed bottom-4 right-4 z-[55] flex flex-col items-end gap-2 print:hidden">
       {/* The panel stays mounted so the embed keeps playing when minimised. */}
       <div
         className={`music-panel w-[min(30rem,calc(100vw-2rem))] overflow-hidden rounded-3xl border border-line bg-surface transition-[opacity,transform] duration-200 ${
