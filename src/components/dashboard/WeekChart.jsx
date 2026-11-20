@@ -1,4 +1,5 @@
 import { useId, useMemo, useState } from 'react'
+import { motion } from 'framer-motion'
 
 /*
   Minutes studied per week, the last eight weeks, as one quiet bar chart.
@@ -11,6 +12,11 @@ import { useId, useMemo, useState } from 'react'
   interactive by default. The goal line is the student's own session
   length × 5 - a working week of their chosen sessions - so the target
   moves with the setting rather than being a number we picked for them.
+
+  Motion: bars grow from the baseline in a stagger when the chart scrolls
+  into view, a trend line draws across the bar tops, the current bar glows,
+  and any week that hit the goal gets a star. All of it is transform and
+  opacity (framer honours reduced motion app-wide) and token colours only.
 
   Weeks run Monday to Sunday. The current week is drawn in the strong
   accent and everything earlier in a softer step of the same hue, which
@@ -58,6 +64,17 @@ export default function WeekChart({ sessions, now, weeks = 8, goalMinutes = 125 
   const total = data.reduce((s, d) => s + d.minutes, 0)
   const best = Math.max(...data.map((d) => d.minutes))
   const current = data[data.length - 1]
+  // Smooth curve (Catmull-Rom to Bezier) through the bar tops.
+  const pts = data.map((d, i) => [padL + i * slot + slot / 2, y(d.minutes)])
+  const trend = pts.reduce((acc, p, i) => {
+    if (i === 0) return `M ${p[0]} ${p[1]}`
+    const p0 = pts[i - 2] || pts[i - 1]
+    const p1 = pts[i - 1]
+    const p3 = pts[i + 1] || p
+    const c1 = [p1[0] + (p[0] - p0[0]) / 6, p1[1] + (p[1] - p0[1]) / 6]
+    const c2 = [p[0] - (p3[0] - p1[0]) / 6, p[1] - (p3[1] - p1[1]) / 6]
+    return `${acc} C ${c1[0]} ${c1[1]}, ${c2[0]} ${c2[1]}, ${p[0]} ${p[1]}`
+  }, '')
   const gridSteps = [0.5, 1].map((f) => Math.round(goalMinutes * f))
 
   return (
@@ -67,6 +84,16 @@ export default function WeekChart({ sessions, now, weeks = 8, goalMinutes = 125 
           <title id={`${id}-t`}>
             Minutes studied per week for the last {weeks} weeks; this week {current.minutes} minutes, goal {goalMinutes}.
           </title>
+          <defs>
+            <linearGradient id={`${id}-cur`} x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="var(--brand-strong)" />
+              <stop offset="100%" stopColor="var(--brand)" />
+            </linearGradient>
+            <linearGradient id={`${id}-old`} x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="color-mix(in srgb, var(--brand) 55%, var(--surface))" />
+              <stop offset="100%" stopColor="color-mix(in srgb, var(--brand) 25%, var(--surface))" />
+            </linearGradient>
+          </defs>
           {/* grid */}
           {gridSteps.map((v) => (
             <g key={v}>
@@ -89,11 +116,32 @@ export default function WeekChart({ sessions, now, weeks = 8, goalMinutes = 125 
           </text>
           {/* baseline */}
           <line x1={padL} x2={W - 6} y1={y(0)} y2={y(0)} stroke="var(--line)" strokeWidth="1.2" />
+          {/* trend line across the bar tops */}
+          {data.filter((d) => d.minutes > 0).length > 1 && (
+            <motion.path
+              d={trend}
+              fill="none"
+              stroke="var(--brand-strong)"
+              strokeWidth="1.6"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeDasharray="0.1 3.2"
+              initial={{ pathLength: 0, opacity: 0 }}
+              whileInView={{ pathLength: 1, opacity: 0.8 }}
+              viewport={{ once: true }}
+              transition={{ duration: 1.2, delay: 0.5, ease: 'easeInOut' }}
+              aria-hidden="true"
+            />
+          )}
+          {/* hover guide */}
+          {hover !== null && (
+            <line x1={padL + hover * slot + slot / 2} x2={padL + hover * slot + slot / 2} y1={padT} y2={y(0)} stroke="var(--brand)" strokeOpacity="0.35" strokeWidth="1" strokeDasharray="2 3" />
+          )}
           {/* bars */}
           {data.map((d, i) => {
             const x = padL + i * slot + (slot - barW) / 2
             const h = Math.max(d.minutes > 0 ? 3 : 0, y(0) - y(d.minutes))
-            const fill = d.current ? 'var(--brand)' : 'color-mix(in srgb, var(--brand) 42%, var(--surface))'
+            const fill = d.current ? `url(#${id}-cur)` : `url(#${id}-old)`
             return (
               <g
                 key={d.start}
@@ -109,13 +157,34 @@ export default function WeekChart({ sessions, now, weeks = 8, goalMinutes = 125 
                 {/* hit target bigger than the bar */}
                 <rect x={padL + i * slot} y={padT} width={slot} height={plotH} fill="transparent" />
                 {h > 0 ? (
-                  <path
+                  <motion.path
+                    initial={{ scaleY: 0 }}
+                    whileInView={{ scaleY: 1 }}
+                    viewport={{ once: true, amount: 0.4 }}
+                    transition={{ duration: 0.7, delay: i * 0.07, ease: [0.22, 1, 0.36, 1] }}
+                    style={{ transformBox: 'fill-box', transformOrigin: 'bottom', filter: d.current ? 'drop-shadow(0 0 6px var(--brand))' : undefined }}
                     d={`M ${x} ${y(0)} V ${y(0) - h + 4} Q ${x} ${y(0) - h} ${x + 4} ${y(0) - h} H ${x + barW - 4} Q ${x + barW} ${y(0) - h} ${x + barW} ${y(0) - h + 4} V ${y(0)} Z`}
                     fill={fill}
                     opacity={hover === null || hover === i ? 1 : 0.55}
                   />
                 ) : (
                   <rect x={x} y={y(0) - 2} width={barW} height={2} rx={1} fill="var(--line)" />
+                )}
+                {d.minutes >= goalMinutes && (
+                  <motion.text
+                    initial={{ opacity: 0, scale: 0 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: 0.6 + i * 0.07, type: 'spring', stiffness: 300, damping: 14 }}
+                    style={{ transformBox: 'fill-box', transformOrigin: 'center' }}
+                    x={x + barW / 2}
+                    y={y(d.minutes) - (d.current ? 16 : 5)}
+                    textAnchor="middle"
+                    fontSize="10"
+                    fill="var(--paper)"
+                  >
+                    ★
+                  </motion.text>
                 )}
                 {d.current && d.minutes > 0 && (
                   <text

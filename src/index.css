@@ -2562,3 +2562,7 @@ html.theme-switching :not(.theme-toggle, .theme-toggle *)::after {
 [data-reduce-motion='true'] .hero-stat::before, [data-reduce-motion='true'] .level-ring { animation: none; }
 [data-theme='high-contrast'] .hero-fx, [data-theme='high-contrast'] .hero-stat::before { display: none; }
 [data-theme='high-contrast'] .level-ring { animation: none; }
+
+/* WeekChart: the current bar breathes. */
+.week-bar:hover path, .week-bar:focus-visible path { filter: brightness(1.12); }
+[data-theme='high-contrast'] .week-bar path { filter: none !important; }
