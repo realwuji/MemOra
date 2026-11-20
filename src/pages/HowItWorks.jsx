@@ -69,7 +69,7 @@ export default function HowItWorks() {
 
       {/* Hero */}
       <div className="relative z-10">
-        <motion.section
+        <motion.section data-bg="packets"
           variants={staggerContainer}
           initial="hidden"
           animate="show"
@@ -114,7 +114,7 @@ export default function HowItWorks() {
       </div>
 
       {/* What it does */}
-      <motion.section
+      <motion.section data-bg="rack"
         {...inViewProps}
         variants={staggerContainer}
         className="relative z-10 mx-auto max-w-6xl px-5 py-20 sm:py-28"
@@ -145,7 +145,7 @@ export default function HowItWorks() {
 
       {/* How it works */}
       <div id="how-it-works" className="relative z-10 bg-raised/50">
-        <motion.section
+        <motion.section data-bg="bus"
           {...inViewProps}
           variants={staggerContainer}
           className="mx-auto max-w-6xl px-5 py-20 sm:py-28"
@@ -181,7 +181,7 @@ export default function HowItWorks() {
       </div>
 
       {/* Reviews */}
-      <motion.section
+      <motion.section data-bg="packets"
         {...inViewProps}
         variants={staggerContainer}
         className="relative z-10 mx-auto max-w-6xl px-5 py-20 sm:py-28"
@@ -220,7 +220,7 @@ export default function HowItWorks() {
       </motion.section>
 
       {/* FAQ */}
-      <motion.section
+      <motion.section data-bg="log"
         id="faq"
         {...inViewProps}
         variants={staggerContainer}
@@ -238,7 +238,7 @@ export default function HowItWorks() {
       </motion.section>
 
       {/* Closing CTA */}
-      <motion.section
+      <motion.section data-bg="packets"
         {...inViewProps}
         variants={staggerContainer}
         className="relative z-10 mx-auto max-w-3xl px-5 pb-24 pt-4 text-center"

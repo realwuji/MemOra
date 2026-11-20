@@ -1,12 +1,9 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-  <rect width="32" height="32" rx="8" fill="#2563eb" />
-  <!-- Memora command sigil - exact geometry from
-       src/constants/sigil-geometry.js (viewBox 0 0 128, scaled 0.25 to
-       fit here), so the favicon is pixel-for-pixel the same shape as
-       components/ui/SigilMark.jsx draws at rest. -->
-  <g transform="scale(0.25)" fill="#ffffff">
-    <path opacity="0.85" d="M10 58 Q18 100 62 104 Q100 107 114 70 L100 68 Q90 92 62 90 Q32 88 24 56 Z" />
-    <path d="M64 10 L73 58 L68 58 L64 70 L60 58 L55 58 Z M72 54 L109 21 L101 57 L80 63 Z" />
-    <path d="M84 40 L95 8 L102 40 L93 35 Z" />
-  </g>
+  <!-- Memoora favicon: the terminal prompt and cursor in white on black. -->
+  <rect width="32" height="32" rx="7" fill="#0a0a0a" />
+  <svg x="6" y="9.28" width="20" height="13.44" viewBox="10.0 -760.0 1220.0 820.0">
+  
+  <path fill="#ffffff" d="M70 -49V-185L346 -306Q366 -315 388.0 -321.0Q410 -327 423 -329Q410 -331 388.0 -336.5Q366 -342 346 -351L70 -472V-609L530 -401V-258Z"/>
+  <rect fill="#ffffff" x="710.0" y="-700.0" width="460.0" height="700.0"/>
+</svg>
 </svg>

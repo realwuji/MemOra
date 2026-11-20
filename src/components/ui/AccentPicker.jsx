@@ -17,7 +17,7 @@ import { ACCENTS, ACCENT_META, useApp } from '@/context/AppProvider'
 export default function AccentPicker({ className = '' }) {
   const { accent, customAccent, setAccent, setCustomAccent } = useApp()
   const isCustom = accent === 'custom'
-  const wheelValue = customAccent || ACCENT_META[accent]?.swatch || ACCENT_META.blue.swatch
+  const wheelValue = customAccent || ACCENT_META[accent]?.swatch || ACCENT_META.mono.swatch
 
   return (
     <div className={className}>

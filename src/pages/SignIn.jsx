@@ -280,11 +280,21 @@ export default function SignIn() {
                     role="tab"
                     aria-selected={mode === value}
                     onClick={() => switchMode(value)}
-                    className={`rounded-full px-4 py-2 text-sm font-semibold transition-colors ${
-                      mode === value ? 'bg-brand text-on-brand' : 'text-muted hover:text-fg'
+                    className={`relative rounded-full px-4 py-2 text-sm font-semibold transition-colors ${
+                      mode === value ? 'text-on-brand' : 'text-muted hover:text-fg'
                     }`}
                   >
-                    {label}
+                    {/* The thumb is one element shared by both tabs (same
+                        layoutId), so framer glides it from one to the other
+                        instead of swapping a background. Transform-driven. */}
+                    {mode === value && (
+                      <motion.span
+                        layoutId="auth-tab-thumb"
+                        className="tab-thumb absolute inset-0 rounded-full bg-brand"
+                        transition={{ type: 'spring', stiffness: 420, damping: 34 }}
+                      />
+                    )}
+                    <span className="relative z-10">{label}</span>
                   </button>
                 ))}
               </div>

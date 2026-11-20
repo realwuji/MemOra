@@ -20,11 +20,11 @@ export const SITE_URL = 'https://memoraa.web.app'
 export const SITE_BASE = ''
 export const SITE_ORIGIN = `${SITE_URL}${SITE_BASE}`
 
-export const SITE_NAME = 'Memora'
+export const SITE_NAME = 'Memoora'
 export const SITE_TAGLINE = 'Real practice, real mark schemes, one subject at a time.'
 export const OG_IMAGE = `${SITE_ORIGIN}/og-memora.png`
 export const OG_IMAGE_ALT =
-  'Memora - A-level revision for Maths, Economics and Computer Science, with chapter-by-chapter progress tracking.'
+  'Memoora - A-level revision for Maths, Economics and Computer Science, with chapter-by-chapter progress tracking.'
 
 // Absolute URL for a route path ("/progress" -> "https://memoraa.web.app/progress").
 // The root keeps its trailing slash so the canonical points at the URL that
@@ -36,7 +36,7 @@ export const absoluteUrl = (path = '/') =>
   Per-route metadata.
 
   - `title`      the <title>, unique per route. Home is brand-led; every
-                 other page reads "<page> · Memora" (built in titleFor).
+                 other page reads "<page> · Memoora" (built in titleFor).
   - `description` a genuine 120-160 character summary of THAT page, not the
                  same site blurb repeated - duplicate descriptions get
                  rewritten or ignored by search engines.
@@ -49,7 +49,7 @@ export const absoluteUrl = (path = '/') =>
 */
 export const PAGES = {
   '/': {
-    title: 'Memora - A-level revision built for your exact spec',
+    title: 'Memoora - A-level revision built for your exact spec',
     description:
       'Free A-level revision for Edexcel Maths, Edexcel Economics and OCR Computer Science. Spec-accurate notes, flashcards, MCQs and exam questions with real mark schemes.',
     h1: 'Real revision, built for your exact spec',
@@ -58,14 +58,14 @@ export const PAGES = {
   '/how-it-works': {
     title: 'How it works',
     description:
-      'How Memora decides what you revise next: chapter-level readiness bands, spaced repetition weighted by decay, and mistakes that resurface until you get them right twice.',
-    h1: 'How Memora works',
+      'How Memoora decides what you revise next: chapter-level readiness bands, spaced repetition weighted by decay, and mistakes that resurface until you get them right twice.',
+    h1: 'How Memoora works',
     crumbs: [{ label: 'How it works', to: '/how-it-works' }],
   },
   '/dashboard': {
     title: 'Your dashboard',
     description:
-      'Pick up where you left off, see the chapter Memora recommends next and why, and track how much of each course you have covered.',
+      'Pick up where you left off, see the chapter Memoora recommends next and why, and track how much of each course you have covered.',
     h1: null, // the greeting is the h1 - see Dashboard.jsx
     crumbs: [{ label: 'Dashboard', to: '/dashboard' }],
     noindex: true,
@@ -142,35 +142,35 @@ export const PAGES = {
   '/signin': {
     title: 'Sign in',
     description:
-      'Sign in to Memora, or create an account. Everything is stored on your own device - no email required to start revising.',
+      'Sign in to Memoora, or create an account. Everything is stored on your own device - no email required to start revising.',
     h1: 'Welcome back',
     crumbs: [{ label: 'Sign in', to: '/signin' }],
   },
   '/privacy': {
     title: 'Privacy',
     description:
-      'What Memora stores, where it stores it, and what it never collects. All your revision data stays in your own browser on your own device.',
+      'What Memoora stores, where it stores it, and what it never collects. All your revision data stays in your own browser on your own device.',
     h1: 'Privacy',
     crumbs: [{ label: 'Privacy', to: '/privacy' }],
   },
   '/terms': {
     title: 'Terms',
     description:
-      'The terms for using Memora: what the service is, what it is not, how the community board is moderated, and the limits of what is provided.',
+      'The terms for using Memoora: what the service is, what it is not, how the community board is moderated, and the limits of what is provided.',
     h1: 'Terms',
     crumbs: [{ label: 'Terms', to: '/terms' }],
   },
   '/contact': {
     title: 'Contact',
     description:
-      'Report a mistake in a question, request a subject or exam board, or send feedback about Memora.',
+      'Report a mistake in a question, request a subject or exam board, or send feedback about Memoora.',
     h1: 'Contact',
     crumbs: [{ label: 'Contact', to: '/contact' }],
   },
   '/404': {
     title: 'Page not found',
     description:
-      'That page does not exist on Memora. Head back to your dashboard, or jump straight to progress, mistakes or flashcards.',
+      'That page does not exist on Memoora. Head back to your dashboard, or jump straight to progress, mistakes or flashcards.',
     h1: 'That page does not exist',
     crumbs: [{ label: 'Page not found', to: '/404' }],
     noindex: true,
@@ -198,14 +198,14 @@ export const titleFor = (meta) =>
 
   Deliberately NOT LocalBusiness. LocalBusiness is for an organisation with
   a physical premises customers visit, and Google requires a real postal
-  address and (for most subtypes) opening hours. Memora is a free web app
+  address and (for most subtypes) opening hours. Memoora is a free web app
   with no premises, so a LocalBusiness block would mean inventing an
   address - which is a structured-data spam violation and risks a manual
   action rather than helping rankings.
 
   The accurate equivalents are used instead: EducationalOrganization for
   the publisher, WebSite for the site itself, and SoftwareApplication for
-  the app. If Memora ever does have a real registered address, add it to
+  the app. If Memoora ever does have a real registered address, add it to
   ORGANISATION.address and change @type to ['EducationalOrganization',
   'LocalBusiness'] - the rest already validates.
 */
@@ -216,7 +216,7 @@ export const ORGANISATION = {
   url: SITE_ORIGIN,
   logo: `${SITE_ORIGIN}/favicon.svg`,
   description:
-    'Memora publishes free, specification-accurate A-level revision material for Edexcel Maths, Edexcel Economics and OCR Computer Science.',
+    'Memoora publishes free, specification-accurate A-level revision material for Edexcel Maths, Edexcel Economics and OCR Computer Science.',
   areaServed: { '@type': 'Country', name: 'United Kingdom' },
   knowsAbout: ['A-level Mathematics', 'A-level Economics', 'A-level Computer Science'],
 }

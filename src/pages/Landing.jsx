@@ -1,84 +1,30 @@
-import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { AnimatePresence, motion } from 'framer-motion'
+import { motion } from 'framer-motion'
 import Button from '@/components/ui/Button'
 import Icon from '@/components/ui/Icon'
 import AtmosphereBackground from '@/components/ui/AtmosphereBackground'
 import Footer from '@/components/layout/Footer'
-import SigilMark from '@/components/ui/SigilMark'
 import SigilWordmark from '@/components/ui/SigilWordmark'
 import MarketingHeader from '@/components/layout/MarketingHeader'
 import { fadeInUp, staggerContainer, inViewProps } from '@/lib/motion'
 import { useApp } from '@/context/AppProvider'
-import { LANDING, LANDING_SUBJECTS, SITE } from '@/constants/content'
-
-const ROTATE_WINDOW = 4
-const ROTATE_INTERVAL = 2200
+import { LANDING, SITE, SUBJECT_CATALOG } from '@/constants/content'
 
 /*
-  Independent vertical slots, each cycling its own subject. Odd slots run
-  downward (new enters from the top) while even slots run upward (new enters
-  from below), and each slot is offset in both its starting subject and its
-  tick phase - so they never flip in unison and the row stays alive without
-  feeling busy.
-
-  Slots rather than one shared row because a single row of N names has to
-  fit N names side by side, which is what made this congested on narrow
-  screens; here each slot only ever renders one name at a time.
+  The three subjects the app covers, as a quiet static row under the hero.
+  No rotation: with only three names there is nothing to cycle through, and a
+  fixed row reads as a statement of what the product is.
 */
-function SubjectSlot({ offset, direction, phase }) {
-  const [step, setStep] = useState(0)
-
-  useEffect(() => {
-    const start = setTimeout(() => {
-      setStep((s) => s + 1)
-    }, phase)
-    const id = setInterval(() => setStep((s) => s + 1), ROTATE_INTERVAL)
-    return () => {
-      clearTimeout(start)
-      clearInterval(id)
-    }
-  }, [phase])
-
-  const subject =
-    LANDING_SUBJECTS[(offset + step * ROTATE_WINDOW) % LANDING_SUBJECTS.length]
-  const enterY = direction === 'down' ? -22 : 22
-  const exitY = direction === 'down' ? 22 : -22
-
+function SubjectStrip() {
   return (
-    <div className="relative h-7 flex-1 overflow-hidden">
-      <AnimatePresence initial={false} mode="wait">
-        <motion.span
-          key={subject}
-          initial={{ opacity: 0, y: enterY }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: exitY }}
-          transition={{ duration: 0.45, ease: 'easeInOut' }}
-          className="absolute inset-0 flex items-center justify-center whitespace-nowrap text-center text-[13px] font-medium text-muted sm:text-sm"
-        >
-          {subject}
-        </motion.span>
-      </AnimatePresence>
-    </div>
-  )
-}
-
-function RotatingSubjects() {
-  return (
-    <div className="mx-auto mt-8 flex w-full flex-col items-center">
-      {/* Two slots on phones, four once there's room - so names never crowd. */}
-      <div className="mt-3 flex w-full max-w-md items-center gap-3 sm:max-w-2xl sm:gap-6">
-        {[0, 1, 2, 3].map((i) => (
-          <div key={i} className={i >= 2 ? 'hidden flex-1 sm:flex' : 'flex flex-1'}>
-            <SubjectSlot
-              offset={i * 4}
-              direction={i % 2 === 0 ? 'up' : 'down'}
-              phase={i * 520}
-            />
-          </div>
-        ))}
-      </div>
-    </div>
+    <ul className="mx-auto mt-8 flex w-full max-w-md flex-wrap items-center justify-center gap-x-4 gap-y-2 text-[13px] font-medium text-muted sm:max-w-2xl sm:gap-x-6 sm:text-sm">
+      {SUBJECT_CATALOG.map((name, i) => (
+        <li key={name} className="flex items-center gap-4 sm:gap-6">
+          {i > 0 && <span aria-hidden="true" className="h-3.5 w-px bg-line" />}
+          <span>{name}</span>
+        </li>
+      ))}
+    </ul>
   )
 }
 
@@ -118,7 +64,7 @@ function DashboardPreview() {
               Hi Alex,{' '}
               <span
                 className="bg-clip-text text-transparent"
-                style={{ backgroundImage: 'linear-gradient(100deg, var(--brand-strong), var(--paper))' }}
+                style={{ backgroundImage: 'linear-gradient(100deg, var(--fg), var(--muted))' }}
               >
                 let&rsquo;s make today count.
               </span>
@@ -192,7 +138,7 @@ export default function Landing() {
       <MarketingHeader showHowItWorks />
 
       {/* Hero - centered, one-line subtitle, matching the reference layout */}
-      <section
+      <section data-bg="packets"
         className="relative z-10 mx-auto flex min-h-[82vh] w-full max-w-3xl flex-col items-center justify-center px-5 py-14 text-center sm:py-16"
         style={{ textShadow: '0 2px 24px color-mix(in srgb, var(--page) 75%, transparent)' }}
       >
@@ -204,32 +150,8 @@ export default function Landing() {
         >
           {/* The visible h1 is the logo and wordmark. */}
           <motion.h1 variants={fadeInUp} className="flex flex-col items-center gap-6">
-            <motion.div
-              initial={{ scale: 0.8, opacity: 0, rotate: -15, y: 20 }}
-              animate={{ 
-                scale: 1, 
-                opacity: 1, 
-                rotate: 0, 
-                y: [0, -12, 0] 
-              }}
-              transition={{
-                y: {
-                  duration: 4,
-                  ease: "easeInOut",
-                  repeat: Infinity,
-                  repeatType: "loop"
-                },
-                scale: { type: 'spring', stiffness: 80, damping: 20, delay: 0.1 },
-                opacity: { duration: 0.5, delay: 0.1 },
-                rotate: { type: 'spring', stiffness: 80, damping: 20, delay: 0.1 }
-              }}
-              whileHover={{ scale: 1.05, filter: "brightness(1.2)" }}
-            >
-              <SigilMark className="h-28 w-28 text-brand sm:h-36 sm:w-36 drop-shadow-[0_0_20px_var(--brand)]" idle={true} />
-            </motion.div>
-            
             <div className="flex flex-col items-center">
-              <SigilWordmark size="hero" animate={true} className="items-center drop-shadow-[0_0_15px_var(--brand)]" />
+              <SigilWordmark size="hero" animate={true} className="items-center" />
               <span className="sr-only"> - A-level revision built for your exact spec</span>
             </div>
           </motion.h1>
@@ -270,7 +192,7 @@ export default function Landing() {
           </motion.p>
 
           <motion.div variants={fadeInUp} className="w-full">
-            <RotatingSubjects />
+            <SubjectStrip />
           </motion.div>
         </motion.div>
       </section>
@@ -278,7 +200,7 @@ export default function Landing() {
       {/* Product preview - shows the real dashboard's look (as a live-token
           mockup, not a screenshot) so visitors see what they're signing up
           for before the pitch below. */}
-      <motion.section
+      <motion.section data-bg="rack"
         variants={staggerContainer}
         {...inViewProps}
         className="relative z-10 mx-auto max-w-5xl px-5 pb-28"
@@ -292,7 +214,7 @@ export default function Landing() {
       {/* What it does - a short, centered scroll-story, replacing the old
           cards/reviews/marquee/FAQ wall for something closer to the
           reference's restraint. */}
-      <motion.section
+      <motion.section data-bg="bus"
         variants={staggerContainer}
         {...inViewProps}
         className="relative z-10 mx-auto max-w-4xl space-y-16 px-5 pb-32 pt-8"

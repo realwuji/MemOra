@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState } from 'react'
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import { SIGIL } from '@/constants/sigil-geometry'
+import './sigil.css'
 
 /*
-  The Memora command sigil — a Geass-inspired angular command mark.
+  The Memoora command sigil — a Geass-inspired angular command mark.
 
   Anatomy:
   - upper-left / upper-right  : the two bold wing-forms sweeping outward-upward
@@ -35,6 +36,13 @@ export default function SigilMark({
   const [hovering, setHovering] = useState(false)
   const [clicked, setClicked] = useState(false)
   const timers = useRef([])
+  // The 3D spin is started by pointer-enter and kept by a class, so leaving
+  // mid-turn lets it finish instead of snapping back.
+  const spinRef = useRef(null)
+  const startSpin = () => spinRef.current?.classList.add('is-spinning')
+  const endSpin = (e) => {
+    if (e.animationName === 'sigil-spin') spinRef.current?.classList.remove('is-spinning')
+  }
 
   useEffect(() => () => timers.current.forEach((t) => window.clearTimeout(t)), [])
 
@@ -121,6 +129,8 @@ export default function SigilMark({
       : { duration: 0.2 }
 
   return (
+    <span className="sigil-stage">
+    <span ref={spinRef} className="sigil-spin" onPointerEnter={startSpin} onAnimationEnd={endSpin}>
     <motion.svg
       viewBox="0 0 128 128"
       fill="none"
@@ -211,5 +221,7 @@ export default function SigilMark({
         )}
       </g>
     </motion.svg>
+    </span>
+    </span>
   )
 }

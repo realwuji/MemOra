@@ -189,7 +189,7 @@ export default function Profile() {
         <motion.div variants={fadeInUp} className="mb-6 flex items-start gap-3 rounded-2xl border border-line bg-brand-soft p-4">
           <Icon name="calendar" className="mt-0.5 h-5 w-5 shrink-0 text-brand-strong" />
           <div className="min-w-0 flex-1">
-            <p className="text-sm font-semibold text-fg">Memora is now A-level only</p>
+            <p className="text-sm font-semibold text-fg">Memoora is now A-level only</p>
             <p className="mt-0.5 text-sm text-muted">
               We&rsquo;ve set your year group to Year 12 - change it under Courses if that&rsquo;s wrong.
             </p>

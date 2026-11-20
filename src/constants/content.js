@@ -3,7 +3,7 @@
 */
 
 export const SITE = {
-  name: 'Memora',
+  name: 'Memoora',
   // Wordmark split point: the two halves get styled differently (see
   // Wordmark.jsx). Not every name splits on a space, so this is explicit.
   wordmarkSplit: ['Mem', 'Ora'],
@@ -36,23 +36,6 @@ export const LANDING = {
   primaryCtaSignedIn: 'Back to studying',
   secondaryCta: 'How it works',
 }
-
-// Decorative rotator on the landing hero - a broad spread of subjects, not
-// limited to what the app actually has content for yet (SUBJECT_CATALOG).
-export const LANDING_SUBJECTS = [
-  'Biology',
-  'Chemistry',
-  'Computer Science',
-  'Economics',
-  'Further Maths',
-  'Government and Politics',
-  'History',
-  'Maths',
-  'Physics',
-  'Psychology',
-  'Science',
-  'Sociology',
-]
 
 export const PROFILE = {
   title: 'Settings',
@@ -116,11 +99,6 @@ export const SUBJECT_COLORS = {
   Maths: '#d9557f',
   Economics: '#2e9e6b',
   'Computer Science': '#e08a2c',
-  Biology: '#3f9e5c',
-  Chemistry: '#7c6cf0',
-  Physics: '#2f8bd4',
-  Psychology: '#c2559e',
-  Sociology: '#c47a2c',
 }
 export const subjectColor = (name) => SUBJECT_COLORS[name] || '#6b7594'
 
@@ -131,11 +109,6 @@ export const SUBJECT_ICONS = {
   Maths: 'subjectMaths',
   Economics: 'subjectEconomics',
   'Computer Science': 'subjectComputerScience',
-  Biology: 'subjectBiology',
-  Chemistry: 'subjectChemistry',
-  Physics: 'subjectPhysics',
-  Psychology: 'subjectPsychology',
-  Sociology: 'subjectSociology',
 }
 export const subjectIcon = (name) => SUBJECT_ICONS[name] || 'cap'
 
@@ -168,19 +141,7 @@ export const SUBJECT_CATALOG = [
   'Maths',
   'Economics',
   'Computer Science',
-  'Biology',
-  'Chemistry',
-  'Physics',
-  'Psychology',
-  'Sociology',
 ]
-
-// Announced but not yet content-complete. Tapping one in the subject picker
-// records interest (AppProvider's requestSubject) rather than adding a
-// course - there is nothing behind it yet to study.
-export const SUBJECTS_COMING_SOON = LANDING_SUBJECTS.filter(
-  (name) => !SUBJECT_CATALOG.includes(name),
-)
 
 /* ---------------------------------------------------------- DASHBOARD */
 
@@ -193,11 +154,6 @@ export const EXAM_BOARD_META = {
   Maths: { board: 'Edexcel', code: '9MA0', paper: 'Paper 1: Pure Mathematics' },
   Economics: { board: 'Edexcel A', code: '9EC0', paper: 'Paper 1: Markets and Business Behaviour' },
   'Computer Science': { board: 'OCR', code: 'H446/01', paper: 'Paper 1: Computing Principles' },
-  Biology: { board: 'AQA', code: '7402', paper: 'Paper 1: Biological Processes' },
-  Chemistry: { board: 'AQA', code: '7405', paper: 'Paper 1: Physical and Inorganic Chemistry' },
-  Physics: { board: 'AQA', code: '7408', paper: 'Paper 1: Mechanics, Materials, Waves and Electricity' },
-  Psychology: { board: 'AQA', code: '7182', paper: 'Paper 1: Introductory Topics' },
-  Sociology: { board: 'AQA', code: '7192', paper: 'Paper 1: Education with Theory and Methods' },
 }
 
 export const STUDY_TECHNIQUES = [
@@ -319,11 +275,11 @@ export const LEGAL = {
   privacy: {
     title: 'Privacy',
     updated: 'September 2026',
-    intro: "The short version: almost nothing about you is collected. Your account (an email and a password) is handled by Firebase, the sign-in service Memora uses; everything else - your profile, progress and revision - never leaves this browser.",
+    intro: "The short version: almost nothing about you is collected. Your account (an email and a password) is handled by Firebase, the sign-in service Memoora uses; everything else - your profile, progress and revision - never leaves this browser.",
     sections: [
       {
-        heading: 'What Memora stores',
-        body: "Your profile, subjects, exam dates, study sessions, and revision progress (decks, notes, essay plans, everything you answer) are saved with this browser's localStorage, on the device you're using. None of that is uploaded anywhere. The one exception is your account: your name, email and password go to Firebase (a Google service) to create a real sign-in - Memora's own code never sees or stores your password, and doesn't have a server of its own for the rest of your data to go to either.",
+        heading: 'What Memoora stores',
+        body: "Your profile, subjects, exam dates, study sessions, and revision progress (decks, notes, essay plans, everything you answer) are saved with this browser's localStorage, on the device you're using. None of that is uploaded anywhere. The one exception is your account: your name, email and password go to Firebase (a Google service) to create a real sign-in - Memoora's own code never sees or stores your password, and doesn't have a server of its own for the rest of your data to go to either.",
       },
       {
         heading: 'What that means in practice',
@@ -331,7 +287,7 @@ export const LEGAL = {
       },
       {
         heading: 'Accounts and passwords',
-        body: "Creating an account sends your name, email and password to Firebase to create a real, sign-in-anywhere account. Firebase hashes and stores the password; Memora never sees it in plain text and never stores it at all. This is the one part of Memora that isn't purely local - an account that only worked on the one device you made it on wasn't worth having.",
+        body: "Creating an account sends your name, email and password to Firebase to create a real, sign-in-anywhere account. Firebase hashes and stores the password; Memoora never sees it in plain text and never stores it at all. This is the one part of Memoora that isn't purely local - an account that only worked on the one device you made it on wasn't worth having.",
       },
       {
         heading: 'Analytics and tracking',
@@ -339,7 +295,7 @@ export const LEGAL = {
       },
       {
         heading: 'Changes',
-        body: "If Memora ever changes how it handles data again, for example by syncing revision progress across devices, this page gets updated first and the change is explained plainly, not buried.",
+        body: "If Memoora ever changes how it handles data again, for example by syncing revision progress across devices, this page gets updated first and the change is explained plainly, not buried.",
       },
     ],
   },
@@ -350,11 +306,11 @@ export const LEGAL = {
     sections: [
       {
         heading: 'What this is',
-        body: 'Memora is a free revision tool built as a personal project. It is not a company, and using it does not create any kind of formal agreement beyond the obvious: be reasonable, and don’t rely on it for anything critical.',
+        body: 'Memoora is a free revision tool built as a personal project. It is not a company, and using it does not create any kind of formal agreement beyond the obvious: be reasonable, and don’t rely on it for anything critical.',
       },
       {
         heading: 'No guarantees',
-        body: "Memora is provided as-is. Content is built carefully against real specifications, but it can still contain mistakes, and it is not a substitute for your teacher, your textbook, or the official specification and past papers from your exam board.",
+        body: "Memoora is provided as-is. Content is built carefully against real specifications, but it can still contain mistakes, and it is not a substitute for your teacher, your textbook, or the official specification and past papers from your exam board.",
       },
       {
         heading: 'Your data, your device',
@@ -362,17 +318,17 @@ export const LEGAL = {
       },
       {
         heading: 'Acceptable use',
-        body: "Use Memora for studying. Don't try to break it, scrape it at scale, or use it in a way that disrupts it for other people.",
+        body: "Use Memoora for studying. Don't try to break it, scrape it at scale, or use it in a way that disrupts it for other people.",
       },
       {
         heading: 'Changes',
-        body: 'Memora is a project that keeps evolving. Features, content, and these terms can change as it does.',
+        body: 'Memoora is a project that keeps evolving. Features, content, and these terms can change as it does.',
       },
     ],
   },
   contact: {
     title: 'Contact',
-    intro: "Memora is a personal project, not a company with a support line, but bug reports and ideas are genuinely welcome.",
+    intro: "Memoora is a personal project, not a company with a support line, but bug reports and ideas are genuinely welcome.",
     githubUrl: 'https://github.com/DedStrke/MemOra',
     githubLabel: 'Open an issue on GitHub',
     githubBody: 'The fastest way to report a bug, request a subject, or suggest a feature. Every issue gets read.',

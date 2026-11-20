@@ -1,0 +1,137 @@
+/*
+  Memoora wordmark: a terminal prompt.  > memoora▮
+
+  See SigilWordmark.jsx for the behaviour. This file is the look: JetBrains
+  Mono ExtraBold, a muted ">" prompt, fixed-width letter cells (so scrambling
+  through other glyphs never shifts the layout), a split-slice glitch, and a
+  blinking block cursor. Only transform and opacity animate.
+*/
+
+.term-word {
+  display: inline-flex;
+  align-items: baseline;
+  font-family: 'JetBrains Mono Variable', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  white-space: nowrap;
+  transition: text-shadow 0.25s ease;
+}
+.t-inner {
+  display: inline-flex;
+  align-items: baseline;
+}
+/* Phosphor glow while hovered. */
+.term-word:hover {
+  text-shadow: 0 0 0.5em color-mix(in srgb, currentColor 45%, transparent);
+}
+
+/* The prompt: a quieter tone of the same colour. Appears first at boot. */
+.t-prompt {
+  margin-right: 0.4em;
+  font-weight: 500;
+  color: color-mix(in srgb, currentColor 55%, transparent);
+  animation: t-appear 1ms steps(1, end) both;
+  animation-delay: 120ms;
+}
+.t-prompt.static {
+  animation: none;
+}
+@keyframes t-appear {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* One cell per letter. Fixed width = one monospace advance (0.6em) plus the
+   tracking, so the word is the same width whatever glyph is showing. */
+.t-letter {
+  position: relative;
+  display: inline-block;
+  width: 0.56em;
+  text-align: center;
+  cursor: default;
+}
+.t-static-text {
+  display: inline-block;
+}
+
+/* Glitch: while a letter is scrambling, two clipped copies of the current
+   glyph jitter sideways in opposite directions, top half and bottom half. */
+.t-letter.glitch::before,
+.t-letter.glitch::after {
+  content: attr(data-char);
+  position: absolute;
+  inset: 0;
+  text-align: center;
+  pointer-events: none;
+  animation: t-jitter 90ms steps(1, end) infinite;
+}
+.t-letter.glitch::before {
+  clip-path: inset(0 0 52% 0);
+  transform: translateX(-0.07em);
+}
+.t-letter.glitch::after {
+  clip-path: inset(48% 0 0 0);
+  transform: translateX(0.08em);
+  animation-direction: reverse;
+}
+@keyframes t-jitter {
+  0%   { transform: translateX(-0.07em); }
+  34%  { transform: translateX(0.05em); }
+  67%  { transform: translateX(-0.03em); }
+  100% { transform: translateX(0.08em); }
+}
+
+/* The block cursor: sits on the baseline, taller than the lowercase letters
+   like a real terminal cursor. Blinks with a hard on/off; goes solid on hover
+   (as if you are about to type). */
+.t-cursor {
+  display: inline-block;
+  width: 0.52em;
+  height: 0.82em;
+  margin-left: 0.14em;
+  background: currentColor;
+  animation: t-cursor 1.1s steps(1, end) infinite;
+}
+.term-word:hover .t-cursor {
+  animation: none;
+  opacity: 1;
+}
+@keyframes t-cursor {
+  0%, 55% { opacity: 1; }
+  56%, 100% { opacity: 0; }
+}
+
+/* Sigil mark (kept for the brand sheet): a full 3D turn on hover. */
+.sigil-stage {
+  display: inline-flex;
+  perspective: 300px;
+}
+.sigil-spin {
+  display: inline-flex;
+  transform-style: preserve-3d;
+}
+.sigil-spin.is-spinning {
+  animation: sigil-spin 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+}
+@keyframes sigil-spin {
+  from {
+    transform: rotateY(0deg);
+  }
+  to {
+    transform: rotateY(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .t-prompt,
+  .t-cursor,
+  .t-letter.glitch::before,
+  .t-letter.glitch::after,
+  .sigil-spin.is-spinning {
+    animation: none;
+  }
+  .t-cursor {
+    opacity: 1;
+  }
+}

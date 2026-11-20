@@ -75,7 +75,6 @@ import { MATHS_PURE2_NOTES } from './maths-notes-pure2'
 import { MATHS_APPLIED_NOTES } from './maths-notes-applied'
 import { MATHS_MCQ_3 } from './maths-mcq-3'
 import { CS_EXAM_3, CS_MCQ_3 } from './cs-extra-3'
-import { SUBJECT_PACKS } from './subjects'
 
 const CORE_REVISION = [
   {
@@ -2418,7 +2417,6 @@ const dedupeContent = (pack) => ({
 
 export const REVISION = [...CORE_REVISION, ...EXTRA_REVISION]
   .map(withExtras)
-  .concat(SUBJECT_PACKS)
   .map(dedupeContent)
 
 export const REVISION_SUBJECTS = REVISION.map((p) => ({ id: p.id, name: p.name }))

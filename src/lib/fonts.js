@@ -16,6 +16,8 @@
 */
 import '@fontsource-variable/instrument-sans'
 import '@fontsource-variable/bricolage-grotesque'
+// JetBrains Mono: only the wordmark uses it (the terminal-prompt logo).
+import '@fontsource-variable/jetbrains-mono'
 import '@fontsource/opendyslexic/400.css'
 import '@fontsource/opendyslexic/700.css'
 import '@fontsource/atkinson-hyperlegible/400.css'

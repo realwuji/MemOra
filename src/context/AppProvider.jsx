@@ -97,7 +97,7 @@ export const normaliseTheme = (theme) => (theme === 'light' ? 'cream' : theme)
 // blocks in index.css for the actual per-theme hex values. Ignored under
 // high-contrast, which always stays on its fixed, WCAG-driven yellow.
 export const ACCENTS = [
-  'blue',
+  'mono',
   'sky',
   'teal',
   'green',
@@ -112,7 +112,7 @@ export const ACCENTS = [
   'graphite',
 ]
 export const ACCENT_META = {
-  blue: { label: 'Blue', swatch: '#2563eb' },
+  mono: { label: 'Mono', swatch: '#111111' },
   sky: { label: 'Sky', swatch: '#0284c7' },
   teal: { label: 'Teal', swatch: '#0d9488' },
   green: { label: 'Green', swatch: '#16a34a' },
@@ -191,7 +191,7 @@ const STORAGE_KEY = 'memora:v1'
 const LEGACY_EXAMS_KEY = 'memora:exams'
 const DEFAULTS = {
   theme: 'cream',
-  accent: 'blue',
+  accent: 'mono',
   // Set only when accent === 'custom' - a hex string from the colour wheel
   // in Settings > Appearance. See lib/color.js for how it becomes --brand
   // et al; ignored (and left as dead data, harmlessly) for a named accent.
@@ -440,7 +440,7 @@ export default function AppProvider({ children }) {
   useMemo(() => {
     const el = document.documentElement
     el.setAttribute('data-theme', state.theme)
-    el.setAttribute('data-accent', state.accent || 'blue')
+    el.setAttribute('data-accent', state.accent || 'mono')
     const a = state.a11y || A11Y_DEFAULT
     el.setAttribute('data-font', a.font || 'default')
     el.setAttribute('data-spacing', a.spacing || 'normal')
@@ -660,7 +660,7 @@ export default function AppProvider({ children }) {
       applyLook: ({ theme, accent }) =>
         patch({
           theme: THEMES.includes(normaliseTheme(theme)) ? normaliseTheme(theme) : 'dark',
-          accent: ACCENTS.includes(accent) ? accent : 'blue',
+          accent: ACCENTS.includes(accent) ? accent : 'mono',
           customAccent: null,
         }),
       addFriend: (entry) =>

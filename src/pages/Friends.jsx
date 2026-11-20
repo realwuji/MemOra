@@ -65,7 +65,7 @@ export default function Friends() {
       setError(null)
       showToast(`${f.name} added`)
     } catch {
-      setError('That is not a Memora friend code. Ask them to copy it again from their Friends page.')
+      setError('That is not a Memoora friend code. Ask them to copy it again from their Friends page.')
     }
   }
 

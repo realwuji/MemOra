@@ -1,0 +1,441 @@
+/*
+  Page backdrop: a dense dot grid that behaves like a server.
+
+  The grid itself (.bg-lattice) is always there. On top of it sits one of four
+  "modes", cross-faded as you scroll so the effect matches what is on screen
+  (sections opt in with data-bg="packets|rack|bus|log", see
+  AtmosphereBackground.jsx):
+
+    packets : data packets streaming along rows, plus blinking status dots
+    rack    : rack-unit edges with blinking LEDs, like a hardware status panel
+    bus     : packets running DOWN vertical lines, like traffic on a bus
+    log     : terminal log lines scrolling up the margins
+
+  The cursor does not get a glow circle. It "addresses" the grid: the row and
+  column under the pointer light up and a single cell is selected where they
+  cross, like a memory cell being read. It snaps to cells and chases the
+  pointer with a stepped delay.
+
+  Everything animates transform or opacity only, so it stays on the GPU. No
+  blur filters, no video, nothing that repaints the page each frame.
+
+  THE ALIGNMENT TRICK (used by packets, bus and the cursor): a lit element is a
+  clip window that moves, with a bright copy of the grid inside it that moves
+  the OPPOSITE way by the same amount. The two cancel, so the bright copy stays
+  pinned to the page and the dots that light up are the grid's own dots.
+*/
+
+:root {
+  --bg-cell: 14px;
+  --bg-dot: color-mix(in srgb, var(--fg) 20%, transparent);
+  --bg-lit: radial-gradient(
+    circle,
+    var(--fg) 0,
+    var(--fg) 1.2px,
+    color-mix(in srgb, var(--fg) 40%, transparent) 2.4px,
+    transparent 5px
+  );
+}
+
+/* ------------------------------------------------------------ resting grid */
+.bg-lattice {
+  background-image: radial-gradient(circle, var(--bg-dot) 0, var(--bg-dot) 0.9px, transparent 1.5px);
+  background-size: var(--bg-cell) var(--bg-cell);
+}
+
+/* ------------------------------------------------------------- mode layers */
+.bg-mode {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.7s ease, visibility 0s linear 0.7s;
+}
+.bg-mode.on {
+  opacity: 1;
+  visibility: visible;
+  transition-delay: 0s;
+}
+/* An inactive mode costs nothing: hidden and its animations paused. */
+.bg-mode:not(.on),
+.bg-mode:not(.on) * {
+  animation-play-state: paused !important;
+}
+
+/* ---------------------------------------------------------- mode: packets */
+/* A row-sized window that slides across the page. */
+.bg-packet {
+  left: 0;
+  top: calc(var(--row) * var(--bg-cell));
+  width: var(--len, 260px);
+  height: var(--bg-cell);
+  overflow: hidden;
+  will-change: transform;
+  animation: bg-packet-band var(--dur, 8s) linear infinite;
+  animation-delay: var(--delay, 0s);
+  /* Bright head, fading tail. */
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 90%);
+  mask-image: linear-gradient(90deg, transparent 0%, #000 90%);
+}
+.bg-packet.rtl {
+  animation-direction: reverse;
+  -webkit-mask-image: linear-gradient(270deg, transparent 0%, #000 90%);
+  mask-image: linear-gradient(270deg, transparent 0%, #000 90%);
+}
+.bg-packet > i {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100vw;
+  height: var(--bg-cell);
+  will-change: transform;
+  animation: bg-packet-pattern var(--dur, 8s) linear infinite;
+  animation-delay: var(--delay, 0s);
+  background-image: var(--bg-lit);
+  background-size: var(--bg-cell) var(--bg-cell);
+}
+.bg-packet.rtl > i {
+  animation-direction: reverse;
+}
+@keyframes bg-packet-band {
+  from { transform: translate3d(-340px, 0, 0); }
+  to   { transform: translate3d(100vw, 0, 0); }
+}
+@keyframes bg-packet-pattern {
+  from { transform: translate3d(340px, 0, 0); }
+  to   { transform: translate3d(-100vw, 0, 0); }
+}
+
+/* Status-LED blinkers. Deliberately NOT regular. Five layers, each with:
+     - its own tile size (odd multiples of the 14px cell, so no two layers
+       repeat on the same beat),
+     - its own small cluster of dots inside the tile, placed unevenly, and
+     - its own blink pattern: a double-blink, a single short pulse, a triple
+       burst, a light that is mostly on with a brief drop, and a long dark gap.
+   Durations and delays all differ, so nothing ever settles into a rhythm.
+   Every dot sits on a grid dot (coordinates are 7 mod 14). `steps(1, end)`
+   holds each value until the next keyframe, giving hard on/off like an LED. */
+.bg-blink {
+  opacity: 0;
+  will-change: opacity;
+  animation-duration: var(--blink, 3s);
+  animation-timing-function: steps(1, end);
+  animation-iteration-count: infinite;
+  animation-delay: var(--delay, 0s);
+}
+.bg-blink.a {
+  background-image:
+    radial-gradient(circle at 21px 35px, var(--fg) 0, var(--fg) 1.2px, color-mix(in srgb, var(--fg) 35%, transparent) 2.6px, transparent 5px),
+    radial-gradient(circle at 119px 77px, var(--fg) 0, var(--fg) 1.2px, color-mix(in srgb, var(--fg) 35%, transparent) 2.6px, transparent 5px),
+    radial-gradient(circle at 203px 147px, var(--fg) 0, var(--fg) 1.2px, color-mix(in srgb, var(--fg) 35%, transparent) 2.6px, transparent 5px);
+  background-size: 238px 182px, 238px 182px, 238px 182px;
+  animation-name: bg-blink-1;
+}
+.bg-blink.b {
+  background-image:
+    radial-gradient(circle at 63px 21px, var(--fg) 0, var(--fg) 1.2px, color-mix(in srgb, var(--fg) 35%, transparent) 2.6px, transparent 5px),
+    radial-gradient(circle at 147px 119px, var(--fg) 0, var(--fg) 1.2px, color-mix(in srgb, var(--fg) 35%, transparent) 2.6px, transparent 5px),
+    radial-gradient(circle at 35px 231px, var(--fg) 0, var(--fg) 1.2px, color-mix(in srgb, var(--fg) 35%, transparent) 2.6px, transparent 5px);
+  background-size: 182px 266px, 182px 266px, 182px 266px;
+  animation-name: bg-blink-2;
+}
+.bg-blink.c {
+  background-image:
+    radial-gradient(circle at 105px 63px, var(--fg) 0, var(--fg) 1.2px, color-mix(in srgb, var(--fg) 35%, transparent) 2.6px, transparent 5px),
+    radial-gradient(circle at 231px 21px, var(--fg) 0, var(--fg) 1.2px, color-mix(in srgb, var(--fg) 35%, transparent) 2.6px, transparent 5px),
+    radial-gradient(circle at 7px 105px, var(--fg) 0, var(--fg) 1.2px, color-mix(in srgb, var(--fg) 35%, transparent) 2.6px, transparent 5px);
+  background-size: 294px 126px, 294px 126px, 294px 126px;
+  animation-name: bg-blink-3;
+}
+.bg-blink.d {
+  background-image:
+    radial-gradient(circle at 49px 91px, var(--fg) 0, var(--fg) 1.2px, color-mix(in srgb, var(--fg) 35%, transparent) 2.6px, transparent 5px),
+    radial-gradient(circle at 91px 175px, var(--fg) 0, var(--fg) 1.2px, color-mix(in srgb, var(--fg) 35%, transparent) 2.6px, transparent 5px);
+  background-size: 112px 210px, 112px 210px;
+  animation-name: bg-blink-4;
+}
+.bg-blink.e {
+  background-image:
+    radial-gradient(circle at 175px 105px, var(--fg) 0, var(--fg) 1.2px, color-mix(in srgb, var(--fg) 35%, transparent) 2.6px, transparent 5px),
+    radial-gradient(circle at 315px 203px, var(--fg) 0, var(--fg) 1.2px, color-mix(in srgb, var(--fg) 35%, transparent) 2.6px, transparent 5px),
+    radial-gradient(circle at 63px 189px, var(--fg) 0, var(--fg) 1.2px, color-mix(in srgb, var(--fg) 35%, transparent) 2.6px, transparent 5px),
+    radial-gradient(circle at 259px 35px, var(--fg) 0, var(--fg) 1.2px, color-mix(in srgb, var(--fg) 35%, transparent) 2.6px, transparent 5px);
+  background-size: 350px 238px, 350px 238px, 350px 238px, 350px 238px;
+  animation-name: bg-blink-5;
+}
+@keyframes bg-blink-1 {
+  0%, 5%    { opacity: 0.9; }
+  6%, 11%   { opacity: 0; }
+  12%, 17%  { opacity: 0.9; }
+  18%, 100% { opacity: 0; }
+}
+@keyframes bg-blink-2 {
+  0%, 41%   { opacity: 0; }
+  42%, 47%  { opacity: 0.9; }
+  48%, 100% { opacity: 0; }
+}
+@keyframes bg-blink-3 {
+  0%, 22%   { opacity: 0.9; }
+  23%, 60%  { opacity: 0; }
+  61%, 69%  { opacity: 0.9; }
+  70%, 73%  { opacity: 0; }
+  74%, 80%  { opacity: 0.9; }
+  81%, 100% { opacity: 0; }
+}
+@keyframes bg-blink-4 {
+  0%, 71%   { opacity: 0.9; }
+  72%, 78%  { opacity: 0; }
+  79%, 100% { opacity: 0.9; }
+}
+@keyframes bg-blink-5 {
+  0%, 3%    { opacity: 0.9; }
+  4%, 9%    { opacity: 0; }
+  10%, 13%  { opacity: 0.9; }
+  14%, 52%  { opacity: 0; }
+  53%, 58%  { opacity: 0.9; }
+  59%, 100% { opacity: 0; }
+}
+
+/* ------------------------------------------------------------- mode: rack */
+/* Two rack strips down the page edges. They are NOT mirror images: the left
+   strip uses 56px units with its LEDs set well in from the rail; the right
+   strip uses tighter 42px units, a narrower body and LEDs in different places,
+   and its LEDs run different blink patterns. Per-side values live in custom
+   properties, so the drawing rules below are shared but the result is not
+   symmetrical. Faded toward the page centre so content stays clear. */
+.bg-rack {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+}
+.bg-rack.l {
+  left: 0;
+  width: clamp(72px, 14vw, 180px);
+  --u: 56px;
+  --ear: 12px;
+  --rail-a: 28px;
+  --rail-b: 29px;
+  --lx1: 50px;
+  --lx2: 66px;
+  --lx3: 82px;
+  -webkit-mask-image: linear-gradient(90deg, #000 55%, transparent 100%);
+  mask-image: linear-gradient(90deg, #000 55%, transparent 100%);
+}
+.bg-rack.r {
+  right: 0;
+  width: clamp(60px, 10vw, 138px);
+  --u: 42px;
+  --ear: calc(100% - 10px);
+  --rail-a: calc(100% - 24px);
+  --rail-b: calc(100% - 23px);
+  --lx1: calc(100% - 34px);
+  --lx2: calc(100% - 50px);
+  --lx3: calc(100% - 78px);
+  -webkit-mask-image: linear-gradient(270deg, #000 50%, transparent 100%);
+  mask-image: linear-gradient(270deg, #000 50%, transparent 100%);
+}
+.bg-rack > .units,
+.bg-rack > .led {
+  position: absolute;
+  inset: 0;
+}
+.bg-rack > .units {
+  background-image:
+    linear-gradient(to bottom, color-mix(in srgb, var(--fg) 30%, transparent) 1px, transparent 1px),
+    radial-gradient(circle at var(--ear) 12px, color-mix(in srgb, var(--fg) 28%, transparent) 2.2px, transparent 2.8px),
+    radial-gradient(circle at var(--ear) calc(var(--u) - 12px), color-mix(in srgb, var(--fg) 28%, transparent) 2.2px, transparent 2.8px),
+    linear-gradient(to right, transparent var(--rail-a), color-mix(in srgb, var(--fg) 22%, transparent) var(--rail-a) var(--rail-b), transparent var(--rail-b));
+  background-size: 100% var(--u), 100% var(--u), 100% var(--u), 100% 100%;
+  background-repeat: repeat-y, repeat-y, repeat-y, no-repeat;
+}
+.bg-rack > .led {
+  opacity: 0;
+  will-change: opacity;
+  animation-duration: var(--blink, 3s);
+  animation-timing-function: steps(1, end);
+  animation-iteration-count: infinite;
+  animation-delay: var(--delay, 0s);
+  background-repeat: repeat-y;
+}
+/* Three LED columns per strip. Their tile heights are 1, 2 and 3 units, so the
+   lights are not the same in every unit; each runs a different blink pattern. */
+.bg-rack > .led.a {
+  background-image: radial-gradient(circle at var(--lx1) calc(var(--u) / 2), var(--fg) 2.6px, color-mix(in srgb, var(--fg) 35%, transparent) 4px, transparent 6px);
+  background-size: 100% var(--u);
+  animation-name: bg-blink-3;
+}
+.bg-rack > .led.b {
+  background-image: radial-gradient(circle at var(--lx2) calc(var(--u) / 2), var(--fg) 2.6px, color-mix(in srgb, var(--fg) 35%, transparent) 4px, transparent 6px);
+  background-size: 100% calc(var(--u) * 2);
+  animation-name: bg-blink-1;
+}
+.bg-rack > .led.c {
+  background-image: radial-gradient(circle at var(--lx3) calc(var(--u) / 2), var(--fg) 2.6px, color-mix(in srgb, var(--fg) 35%, transparent) 4px, transparent 6px);
+  background-size: 100% calc(var(--u) * 3);
+  background-position: 0 var(--u);
+  animation-name: bg-blink-5;
+}
+/* A fourth, sparse LED on the right strip only. */
+.bg-rack.r > .led.d {
+  background-image: radial-gradient(circle at calc(100% - 94px) calc(var(--u) / 2), var(--fg) 2.6px, color-mix(in srgb, var(--fg) 35%, transparent) 4px, transparent 6px);
+  background-size: 100% calc(var(--u) * 5);
+  background-position: 0 calc(var(--u) * 2);
+  animation-name: bg-blink-2;
+}
+
+/* -------------------------------------------------------------- mode: bus */
+/* Packets running down vertical lines. The same window-and-counter-window
+   trick as .bg-packet, rotated: the window is one cell wide and slides down,
+   the bright grid inside slides up. */
+.bg-vpacket {
+  top: 0;
+  left: calc(var(--col) * var(--bg-cell));
+  width: var(--bg-cell);
+  height: var(--len, 260px);
+  overflow: hidden;
+  will-change: transform;
+  animation: bg-vpacket-band var(--dur, 8s) linear infinite;
+  animation-delay: var(--delay, 0s);
+  -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 90%);
+  mask-image: linear-gradient(180deg, transparent 0%, #000 90%);
+}
+.bg-vpacket.up {
+  animation-direction: reverse;
+  -webkit-mask-image: linear-gradient(0deg, transparent 0%, #000 90%);
+  mask-image: linear-gradient(0deg, transparent 0%, #000 90%);
+}
+.bg-vpacket > i {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: var(--bg-cell);
+  height: 100vh;
+  will-change: transform;
+  animation: bg-vpacket-pattern var(--dur, 8s) linear infinite;
+  animation-delay: var(--delay, 0s);
+  background-image: var(--bg-lit);
+  background-size: var(--bg-cell) var(--bg-cell);
+}
+.bg-vpacket.up > i {
+  animation-direction: reverse;
+}
+@keyframes bg-vpacket-band {
+  from { transform: translate3d(0, -340px, 0); }
+  to   { transform: translate3d(0, 100vh, 0); }
+}
+@keyframes bg-vpacket-pattern {
+  from { transform: translate3d(0, 340px, 0); }
+  to   { transform: translate3d(0, -100vh, 0); }
+}
+
+/* -------------------------------------------------------------- mode: log */
+/* Terminal log lines scrolling up each margin. The tall inner element holds a
+   repeating tile of "lines" (bars of different lengths); moving it up by
+   exactly one tile height, forever, loops seamlessly. */
+.bg-log {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: clamp(120px, 22vw, 320px);
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(90deg, #000 0%, transparent 100%);
+  mask-image: linear-gradient(90deg, #000 0%, transparent 100%);
+}
+.bg-log.l { left: 0; }
+.bg-log.r {
+  right: 0;
+  -webkit-mask-image: linear-gradient(270deg, #000 0%, transparent 100%);
+  mask-image: linear-gradient(270deg, #000 0%, transparent 100%);
+}
+.bg-log > i {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: calc(100% + 168px);
+  will-change: transform;
+  animation: bg-log-scroll var(--dur, 14s) linear infinite;
+}
+@keyframes bg-log-scroll {
+  from { transform: translate3d(0, 0, 0); }
+  to   { transform: translate3d(0, -168px, 0); }
+}
+
+/* ----------------------------------------------------------- calm zone */
+/* A static, page-coloured haze over the middle of the screen. It sits above
+   the grid and every mode but below the cursor, so text columns stay legible
+   while the edges keep the full effect. It never animates. */
+.bg-calm {
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse 44% 62% at 50% 46%,
+    color-mix(in srgb, var(--page) 82%, transparent) 0%,
+    color-mix(in srgb, var(--page) 55%, transparent) 55%,
+    transparent 100%
+  );
+}
+
+/* ---------------------------------------------------- cursor: addressing */
+/* Three lit windows that follow the pointer, each with a counter-moving bright
+   grid inside (see the trick at the top). JS snaps them to the cell under the
+   pointer, so the highlight moves cell to cell like an address changing. They
+   share one short ease so the follow is smooth with only a slight trail, and
+   the window and its grid stay in step. */
+.bg-ptr {
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+.bg-ptr.on {
+  opacity: 1;
+}
+.bg-ptr > div {
+  position: absolute;
+  left: 0;
+  top: 0;
+  overflow: hidden;
+  will-change: transform;
+  transition: transform 190ms cubic-bezier(0.2, 0.75, 0.25, 1);
+}
+.bg-ptr > div > i {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+  will-change: transform;
+  transition: transform 190ms cubic-bezier(0.2, 0.75, 0.25, 1); /* must match its window */
+  background-image: var(--bg-lit);
+  background-size: var(--bg-cell) var(--bg-cell);
+}
+/* The addressed row and column: long and thin, fading away from the cell. */
+.bg-ptr .row {
+  width: 720px;
+  height: var(--bg-cell);
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 50%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 50%, transparent);
+}
+.bg-ptr .col {
+  width: var(--bg-cell);
+  height: 720px;
+  -webkit-mask-image: linear-gradient(180deg, transparent, #000 50%, transparent);
+  mask-image: linear-gradient(180deg, transparent, #000 50%, transparent);
+}
+/* The selected cell: a 3x3 block of lit dots inside a hairline frame. */
+.bg-ptr .cell {
+  width: calc(var(--bg-cell) * 3);
+  height: calc(var(--bg-cell) * 3);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--fg) 55%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bg-packet,
+  .bg-vpacket,
+  .bg-blink,
+  .bg-ptr {
+    display: none;
+  }
+  .bg-rack > .led,
+  .bg-log > i {
+    animation: none;
+  }
+}

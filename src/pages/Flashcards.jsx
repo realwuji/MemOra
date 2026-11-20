@@ -151,7 +151,7 @@ function CreateView({ onSave, onCancel }) {
           type="text"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          placeholder="e.g. Cell biology key terms"
+          placeholder="e.g. Supply and demand key terms"
           className={inputClass}
         />
       </div>

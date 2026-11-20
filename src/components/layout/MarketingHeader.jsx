@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import Button from '@/components/ui/Button'
-import SigilMark from '@/components/ui/SigilMark'
 import SigilWordmark from '@/components/ui/SigilWordmark'
 import ThemeSwitcher from '@/components/layout/ThemeSwitcher'
 import { useApp } from '@/context/AppProvider'
@@ -60,18 +59,11 @@ export default function MarketingHeader({ showHowItWorks = false, ctaLabel, ctaT
         }`}
       >
         {/* Logo */}
-        <motion.div whileHover={{ scale: 1.03, filter: 'brightness(1.15)' }}>
+        <motion.div whileHover={{ scale: 1.03 }}>
           <Link
             to={account ? '/dashboard' : '/'}
-            className="flex items-center gap-2.5 text-xl font-semibold text-fg drop-shadow-[0_0_8px_var(--brand)]"
+            className="flex items-center gap-2.5 text-xl font-semibold text-fg"
           >
-            <div
-              className={`origin-left transition-transform duration-300 ease-out ${
-                scrolled ? 'scale-[0.85]' : 'scale-100'
-              }`}
-            >
-              <SigilMark className="h-8 w-8 text-brand" />
-            </div>
             <div
               className={`origin-left transition-transform duration-300 ease-out ${
                 scrolled ? 'scale-[0.85]' : 'scale-100'

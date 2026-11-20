@@ -3,7 +3,6 @@ import { Link, NavLink, useNavigate } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
 import { NAV_LINKS } from '@/constants/content'
 import Icon from '@/components/ui/Icon'
-import SigilMark from '@/components/ui/SigilMark'
 import SigilWordmark from '@/components/ui/SigilWordmark'
 import ThemeSwitcher from '@/components/layout/ThemeSwitcher'
 import { useApp } from '@/context/AppProvider'
@@ -102,14 +101,11 @@ export default function AppBar() {
           {/* AppBar only ever renders on in-app pages, so the logo goes back
               to the dashboard, not the marketing landing page - there's
               nothing for an already-in-app user to do there. */}
-          <motion.div whileHover={{ scale: 1.03, filter: 'brightness(1.15)' }}>
+          <motion.div whileHover={{ scale: 1.03 }}>
             <Link
               to="/dashboard"
-              className="flex items-center gap-2 text-xl font-semibold text-fg drop-shadow-[0_0_8px_var(--brand)]"
+              className="flex items-center gap-2 text-xl font-semibold text-fg"
             >
-              <div className={`origin-left transition-transform duration-300 ease-out ${scrolled ? 'scale-[0.88]' : 'scale-100'}`}>
-                <SigilMark className="h-9 w-9 text-brand" />
-              </div>
               <div className={`origin-left transition-transform duration-300 ease-out ${scrolled ? 'scale-[0.88]' : 'scale-100'}`}>
                 <SigilWordmark animate={true} />
               </div>
