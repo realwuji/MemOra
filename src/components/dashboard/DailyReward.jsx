@@ -1,4 +1,5 @@
-import { motion } from 'framer-motion'
+import { useState } from 'react'
+import { AnimatePresence, motion } from 'framer-motion'
 import Button from '@/components/ui/Button'
 import Icon from '@/components/ui/Icon'
 import { useApp } from '@/context/AppProvider'
@@ -11,19 +12,45 @@ import { fadeInUp } from '@/lib/motion'
   calls claimDaily, then tells the page so the buddy can react
   (onClaimed).
 */
+const SPARKS = Array.from({ length: 26 }, (_, i) => ({
+  a: `${(i * 360) / 26}deg`,
+  r: `${70 + ((i * 29) % 70)}px`,
+  s: `${5 + ((i * 3) % 6)}px`,
+  d: `${(i % 5) * 0.03}s`,
+  c: ['var(--brand)', 'var(--flash)', 'var(--paper)', 'var(--quiz)'][i % 4],
+}))
+
+/* One-shot celebration fired from the claim button; remounts per claim. */
+function ClaimBurst({ xp, week }) {
+  return (
+    <div className="dr-burst" aria-hidden="true">
+      <span className="dr-shock" />
+      <span className="dr-shock" style={{ animationDelay: '0.18s' }} />
+      {week && <span className="dr-shock dr-shock-week" style={{ animationDelay: '0.36s' }} />}
+      {SPARKS.map((p, i) => (
+        <span key={i} className="dr-spark" style={{ '--a': p.a, '--r': week ? `calc(${p.r} * 1.6)` : p.r, '--s': p.s, '--d': p.d, '--c': p.c }} />
+      ))}
+      <span className="dr-float">+{xp} XP</span>
+    </div>
+  )
+}
+
 export default function DailyReward({ now, onClaimed }) {
   const { daily, claimDaily, showToast } = useApp()
   const status = dailyStatus(daily, now)
+  const [burst, setBurst] = useState(null)
 
   const claim = () => {
     const r = claimDaily()
     if (!r) return
     showToast(r.completedWeek ? `+${r.xp} XP - seven days in a row!` : `+${r.xp} XP claimed`)
+    setBurst({ id: Date.now(), xp: r.xp, week: !!r.completedWeek })
     onClaimed?.(r)
   }
 
   return (
-    <motion.section variants={fadeInUp} className="card p-5" aria-label="Daily reward">
+    <motion.section variants={fadeInUp} className="card dr-card relative overflow-hidden p-5" aria-label="Daily reward">
+      <AnimatePresence>{burst && <ClaimBurst key={burst.id} xp={burst.xp} week={burst.week} />}</AnimatePresence>
       <div className="flex items-center justify-between gap-3">
         <div>
           <h2 className="text-lg font-extrabold text-fg">Daily reward</h2>
@@ -35,7 +62,7 @@ export default function DailyReward({ now, onClaimed }) {
                 : 'The run restarted - day 1 is ready'}
           </p>
         </div>
-        <Icon name="star" className="h-6 w-6 shrink-0 text-paper" />
+        <Icon name="star" className={`h-6 w-6 shrink-0 text-paper ${status.claimedToday ? '' : 'dr-star'}`} />
       </div>
 
       <ol className="mt-4 grid grid-cols-7 gap-1.5" aria-label="Seven-day run">
@@ -65,7 +92,7 @@ export default function DailyReward({ now, onClaimed }) {
             Claimed today
           </p>
         ) : (
-          <Button size="sm" onClick={claim} className="w-full">
+          <Button size="sm" onClick={claim} className="dr-claim w-full">
             <Icon name="sparkles" className="h-4 w-4" />
             Claim +{status.xp} XP
           </Button>
