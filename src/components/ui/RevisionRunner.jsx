@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { motion, useReducedMotion } from 'framer-motion'
 import Button from '@/components/ui/Button'
 import Icon from '@/components/ui/Icon'
@@ -6,9 +6,13 @@ import FlipCard from '@/components/ui/FlipCard'
 import Chip from '@/components/ui/Chip'
 import SpeakButton from '@/components/ui/SpeakButton'
 import AnswerInput from '@/components/ui/AnswerInput'
-import EssayPlanner from '@/components/ui/EssayPlanner'
+import EssayPlans from '@/components/ui/EssayPlans'
+import NotesBody from '@/components/ui/NotesBody'
+import DiagramRevision from '@/components/ui/DiagramRevision'
+import DiagramBank from '@/components/ui/DiagramBank'
+import ApplicationRunner from '@/components/ui/ApplicationRunner'
 import Diagram from '@/components/diagrams'
-import { diagramsForChapter } from '@/constants/diagram-map'
+
 import { fadeInUp, popIn } from '@/lib/motion'
 
 /*
@@ -30,16 +34,35 @@ const scrollToTop = (reduceMotion) => {
     <RevisionRunner pack={pack} technique="mcq" onAnswer={(attempt) => ...} />
 
   Techniques: flashcards / active-recall -> flip cards, mcq -> quiz,
-  exam-questions -> mark-scheme reveal, blurting -> write then self-check.
+  exam-questions -> mark-scheme reveal.
 
   onAnswer (optional) fires once per answered question for mcq/exam-questions,
   with { question, correct, dontKnow }. correct is false when dontKnow is
   true. Used to power the Performance/mistakes page.
 */
 
+/*
+  The diagram(s) for a card or question. One normally; when the item compares
+  market structures it carries them all, each labelled, so monopoly is never
+  shown alone beside a perfect-competition point.
+*/
+function ItemDiagrams({ item }) {
+  const list = item.diagrams?.length > 1 ? item.diagrams : [{ id: item.diagram }]
+  return (
+    <div className="space-y-4">
+      {list.map((d) => (
+        <figure key={d.id} className="m-0">
+          {d.label && <figcaption className="mb-1.5 text-xs font-extrabold uppercase tracking-widest text-muted">{d.label}</figcaption>}
+          <Diagram id={d.id} />
+        </figure>
+      ))}
+    </div>
+  )
+}
+
 function Nav({ i, total, onPrev, onNext }) {
   return (
-    <div className="mx-auto mt-5 flex max-w-2xl items-center justify-center gap-4">
+    <div className="mx-auto mt-5 flex max-w-3xl items-center justify-center gap-4">
       <Button variant="secondary" size="sm" onClick={onPrev} disabled={total < 2}>
         <Icon name="arrowLeft" className="h-4 w-4" />
         Prev
@@ -117,7 +140,7 @@ function NotesRunner({ pack, chapter, empty }) {
 
   if (!html) {
     return (
-      <div className="mx-auto max-w-2xl">
+      <div className="mx-auto max-w-3xl">
         <p className="mb-4 text-sm text-muted">Pick a topic to read its notes.</p>
         <div className="flex flex-wrap gap-2">
           {topics.map((t) => (
@@ -131,7 +154,7 @@ function NotesRunner({ pack, chapter, empty }) {
   }
 
   return (
-    <div className="mx-auto max-w-2xl">
+    <div className="mx-auto max-w-3xl">
       <div className="flex items-center justify-between gap-3">
         <h3 className="text-lg font-bold text-fg">{active}</h3>
         {!chapter && (
@@ -142,48 +165,6 @@ function NotesRunner({ pack, chapter, empty }) {
         )}
       </div>
       <NotesBody html={html} />
-    </div>
-  )
-}
-
-/*
-  Renders a note, splicing real diagram components into it.
-
-  Economics is examined through diagrams, so its notes carry markers of the
-  form <div data-diagram="monopoly"></div> at the point each diagram is
-  discussed. They can't be plain HTML in the note string: the diagrams are
-  React components that read the theme's CSS variables and carry their own
-  <title>/<desc> for screen readers, and inlining ~30 SVGs into the note
-  text would make it unreadable to edit.
-
-  So the HTML is split on the markers and the pieces interleaved: HTML
-  chunk, diagram, HTML chunk. A note with no markers takes the same path
-  and simply renders as one chunk.
-*/
-const DIAGRAM_MARKER = /<div\s+data-diagram="([a-z0-9-]+)"\s*><\/div>/gi
-
-function NotesBody({ html }) {
-  const parts = []
-  let last = 0
-  let m
-  DIAGRAM_MARKER.lastIndex = 0
-  while ((m = DIAGRAM_MARKER.exec(html)) !== null) {
-    if (m.index > last) parts.push({ type: 'html', value: html.slice(last, m.index) })
-    parts.push({ type: 'diagram', value: m[1] })
-    last = m.index + m[0].length
-  }
-  if (last < html.length) parts.push({ type: 'html', value: html.slice(last) })
-
-  return (
-    <div className="notes-content readable mt-4">
-      {parts.map((p, i) =>
-        p.type === 'diagram' ? (
-          <Diagram key={i} id={p.value} />
-        ) : (
-          // eslint-disable-next-line react/no-danger -- trusted static content, see comment above
-          <div key={i} dangerouslySetInnerHTML={{ __html: p.value }} />
-        ),
-      )}
     </div>
   )
 }
@@ -221,8 +202,8 @@ function FlashcardRunner({ cards, recall, empty }) {
           once you've flipped - so a "sketch this" card still makes you draw
           it from memory first. */}
       {flipped && cards[i].diagram && (
-        <motion.div variants={fadeInUp} initial="hidden" animate="show" className="mx-auto mt-4 max-w-2xl">
-          <Diagram id={cards[i].diagram} />
+        <motion.div variants={fadeInUp} initial="hidden" animate="show" className="mx-auto mt-4 max-w-3xl">
+          <ItemDiagrams item={cards[i]} />
         </motion.div>
       )}
       <Nav i={i} total={total} onPrev={() => go(i - 1)} onNext={() => go(i + 1)} />
@@ -251,7 +232,7 @@ function McqRunner({ items, onAnswer, empty }) {
     onAnswer?.({ question: q.question, correct: idx === q.answer, dontKnow: idx === DONT_KNOW })
   }
   return (
-    <div className="mx-auto max-w-2xl">
+    <div className="mx-auto max-w-3xl">
       <div className="flex items-start justify-between gap-3">
         <div>
           <p className="text-xs font-semibold uppercase tracking-widest text-muted">
@@ -339,7 +320,7 @@ function McqRunner({ items, onAnswer, empty }) {
               <p className="text-xs font-bold uppercase tracking-wide text-muted">
                 The diagram behind this
               </p>
-              <Diagram id={q.diagram} />
+              <ItemDiagrams item={q} />
             </div>
           )}
           <div className="mt-3">
@@ -357,6 +338,16 @@ function McqRunner({ items, onAnswer, empty }) {
 function ExamRunner({ items, onAnswer, empty, subject }) {
   const [i, setI] = useState(0)
   const [revealed, setRevealed] = useState(false)
+  // Timed test: the time allowed is the marks x 1.2 minutes, as in the exam.
+  const [timed, setTimed] = useState(false)
+  const [left, setLeft] = useState(0)
+  const budget = Math.round((items[i]?.marks || 0) * 1.2 * 60)
+  useEffect(() => {
+    if (!timed || revealed || !budget) return undefined
+    setLeft(budget)
+    const id = setInterval(() => setLeft((l) => Math.max(0, l - 1)), 1000)
+    return () => clearInterval(id)
+  }, [timed, i, revealed, budget])
   const [rated, setRated] = useState(null) // 'right' | 'wrong' | 'dontknow' | null
   const [answer, setAnswer] = useState('')
   const reduceMotion = useReducedMotion()
@@ -375,7 +366,7 @@ function ExamRunner({ items, onAnswer, empty, subject }) {
     onAnswer?.({ question: q.question, correct: r === 'right', dontKnow: r === 'dontknow' })
   }
   return (
-    <div className="mx-auto max-w-2xl">
+    <div className="mx-auto max-w-3xl">
       <div className="flex items-center justify-between gap-3">
         <p className="text-xs font-semibold uppercase tracking-widest text-muted">
           Question {i + 1} of {total}
@@ -384,6 +375,19 @@ function ExamRunner({ items, onAnswer, empty, subject }) {
           {/* Which paper a question comes from decides whether a calculator
               is allowed and how long you get, so it belongs with the question
               rather than buried in the answer. */}
+          <button
+            type="button"
+            onClick={() => setTimed((t) => !t)}
+            aria-pressed={timed}
+            className={`rounded-full border px-2.5 py-0.5 text-xs font-bold transition-colors ${timed ? 'border-brand bg-brand text-on-brand' : 'border-line text-muted hover:border-brand hover:text-fg'}`}
+          >
+            {timed ? 'Timed test on' : 'Timed test'}
+          </button>
+          {timed && !revealed && (
+            <span className={`rounded-full px-2.5 py-0.5 text-xs font-extrabold tabular-nums ${left === 0 ? 'bg-r1-solid text-[#0b0f14]' : left <= budget * 0.2 ? 'bg-r2-shaky text-[#0b0f14]' : 'bg-brand-soft text-brand-strong'}`}>
+              {left === 0 ? "Time's up" : `${Math.floor(left / 60)}:${String(left % 60).padStart(2, '0')}`}
+            </span>
+          )}
           {q.paper && (
             <span className="rounded-full border border-line px-2.5 py-0.5 text-xs font-semibold text-muted">
               {q.paper}
@@ -649,7 +653,7 @@ function ExamRunner({ items, onAnswer, empty, subject }) {
                   ? 'The diagram the examiner expects'
                   : 'The diagram behind this chapter'}
               </p>
-              <Diagram id={q.diagram} />
+              <ItemDiagrams item={q} />
             </div>
           )}
 
@@ -694,74 +698,6 @@ function ExamRunner({ items, onAnswer, empty, subject }) {
   )
 }
 
-function BlurtRunner({ pack, chapter }) {
-  const [revealed, setRevealed] = useState(false)
-  const [blurt, setBlurt] = useState('')
-  // Blurting a chapter means recalling its diagrams too, so they belong in
-  // the checklist. Only for a specific chapter - a whole-subject blurt
-  // would dump twenty-odd diagrams on the page.
-  const diagrams = chapter ? diagramsForChapter(pack.name, chapter) : []
-  return (
-    <div className="mx-auto max-w-2xl">
-      <p className="text-xs font-semibold uppercase tracking-widest text-muted">Blurting</p>
-      <h3 className="readable mt-2 text-lg font-bold text-fg">
-        Write everything you know about {pack.name}.
-      </h3>
-      <p className="readable mt-1 text-sm text-muted">
-        Empty your memory onto the page, no peeking. Then reveal the key points and tick
-        off what you remembered.
-      </p>
-      <div className="mt-4">
-        <AnswerInput
-          value={blurt}
-          onChange={setBlurt}
-          subject={pack.name}
-          rows={7}
-          placeholder="Start blurting..."
-        />
-      </div>
-      {revealed ? (
-        <motion.div
-          variants={fadeInUp}
-          initial="hidden"
-          animate="show"
-          className="mt-4 rounded-xl border border-line bg-surface p-5"
-        >
-          <p className="text-sm font-bold text-fg">Key points to check</p>
-          {!pack.flashcards.length && (
-            <p className="readable mt-2 text-sm text-muted">No key points for this chapter yet.</p>
-          )}
-          <ul className="mt-2 space-y-2">
-            {pack.flashcards.slice(0, 8).map((c, idx) => (
-              <li key={idx} className="flex gap-2 text-sm">
-                <Icon name="check" className="mt-0.5 h-4 w-4 shrink-0 text-success" />
-                <span className="readable text-muted">{c.front}</span>
-              </li>
-            ))}
-          </ul>
-          {diagrams.length > 0 && (
-            <div className="mt-5 border-t border-line pt-4">
-              <p className="text-sm font-bold text-fg">
-                Diagram{diagrams.length > 1 ? 's' : ''} you should have drawn
-              </p>
-              {diagrams.map((id) => (
-                <Diagram key={id} id={id} />
-              ))}
-            </div>
-          )}
-        </motion.div>
-      ) : (
-        <div className="mt-4">
-          <Button onClick={() => setRevealed(true)}>
-            <Icon name="brain" className="h-4 w-4" />
-            Show the key points
-          </Button>
-        </div>
-      )}
-    </div>
-  )
-}
-
 export default function RevisionRunner({
   pack,
   technique = 'flashcards',
@@ -784,14 +720,18 @@ export default function RevisionRunner({
       // The planner keeps its own paper/topic filters and its own drafts,
       // so it takes the whole bank rather than a chapter-scoped slice.
       return pack.essayBank?.length ? (
-        <EssayPlanner items={pack.essayBank} />
+        <EssayPlans items={pack.essayBank} />
       ) : (
         <Empty label="essay plans" {...empty} />
       )
-    case 'blurting':
-      return <BlurtRunner pack={pack} chapter={chapter} />
-    case 'active-recall':
-      return <FlashcardRunner cards={pack.flashcards} recall empty={empty} />
+    case 'diagram-revision':
+      return pack.diagramRevision ? <DiagramRevision onAnswer={onAnswer} /> : <Empty label="diagrams" {...empty} />
+    case 'diagram-bank':
+      return pack.diagramRevision ? <DiagramBank notes={pack.notes} /> : <Empty label="diagrams" {...empty} />
+    case 'application':
+      // Has its own topic picker (only topics that have cases), so it takes
+      // the whole pack rather than a chapter-scoped slice.
+      return <ApplicationRunner pack={pack} />
     case 'flashcards':
     default:
       return <FlashcardRunner cards={pack.flashcards} empty={empty} />

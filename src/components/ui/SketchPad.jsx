@@ -59,6 +59,7 @@ export default function SketchPad({ value, onChange, label = 'Sketch the diagram
   const canvasRef = useRef(null)
   const wrapRef = useRef(null)
   const drawing = useRef(null) // { stroke, last: [x, y] } while a pointer is down
+  const penAt = useRef(0) // when a stylus last touched the pad (palm rejection)
   const [colour, setColour] = useState(1)
   const [tool, setTool] = useState('pen') // pen | eraser
   const dataRef = useRef(data)
@@ -183,6 +184,10 @@ export default function SketchPad({ value, onChange, label = 'Sketch the diagram
 
   const onDown = (e) => {
     if (e.button !== undefined && e.button !== 0 && e.pointerType === 'mouse') return
+    // Palm rejection: while an Apple Pencil or stylus is in use, a resting palm
+    // (a touch pointer) must not draw. Fingers work again after a pause.
+    if (e.pointerType === 'pen') penAt.current = performance.now()
+    else if (e.pointerType === 'touch' && performance.now() - penAt.current < 20000) return
     e.preventDefault()
     canvasRef.current.setPointerCapture?.(e.pointerId)
     const [x, y] = toBox(e)

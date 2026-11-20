@@ -19,7 +19,7 @@ export const MASCOTS = [
     id: 'pochita',
     name: 'Pochita',
     blurb: 'Loyal, hungry, sharp. Cuts straight through a chain of analysis.',
-    look: { theme: 'dark', accent: 'red', label: 'Dark · Red' },
+    look: { theme: 'dark', accent: 'red', label: 'Black · Red' },
     image: '/mascots/pochita.webp',
     lines: {
       idle: [
@@ -40,7 +40,7 @@ export const MASCOTS = [
     id: 'chopper',
     name: 'Chopper',
     blurb: 'Doctor on duty. Prescribes twenty-five minutes and a glass of water.',
-    look: { theme: 'light', accent: 'pink', label: 'Light · Pink' },
+    look: { theme: 'cream', accent: 'pink', label: 'Cream · Pink' },
     image: '/mascots/chopper.webp',
     lines: {
       idle: [

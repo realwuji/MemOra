@@ -6,6 +6,8 @@ import { MATHS_EXTRA_DIAGRAMS } from './mathsExtra'
 import { CS_DIAGRAMS } from './computerScience'
 import { CS_EXTRA_DIAGRAMS } from './computerScienceExtra'
 import { AnnotationContext } from './primitives'
+import BankDiagram from '@/components/ui/BankDiagram'
+import { NOTE_DIAGRAMS } from '@/constants/dr-bank'
 
 /*
   One registry across every subject.
@@ -32,6 +34,8 @@ export const DIAGRAMS = {
 // annotations: optional list of short strings, rendered by Figure as a
 // numbered "reading the diagram" strip inside the frame - see primitives.
 export default function Diagram({ id, annotations }) {
+  // Economics diagrams that exist in the teacher's bank are drawn from it.
+  if (NOTE_DIAGRAMS[id]) return <BankDiagram ids={NOTE_DIAGRAMS[id]} />
   const D = DIAGRAMS[id]
   if (!D) return null
   if (!annotations?.length) return <D />

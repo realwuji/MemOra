@@ -1,8 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
 import Icon from '@/components/ui/Icon'
-import Buddy from '@/components/ui/Buddy'
-import { MascotFace } from '@/components/ui/MascotPicker'
-import { useApp } from '@/context/AppProvider'
 import {
   spotifyConfigured,
   beginSpotifyLogin,
@@ -117,7 +114,6 @@ function Equaliser() {
 }
 
 export default function FocusMusic() {
-  const { user } = useApp()
   const [state, setState] = useState(load)
   const [draft, setDraft] = useState('')
   const [error, setError] = useState(null)
@@ -334,7 +330,6 @@ export default function FocusMusic() {
             <span aria-hidden="true" className="music-hero-scrim absolute inset-0" />
             <div className="relative flex items-center justify-between gap-2">
               <p className="flex min-w-0 items-center gap-1.5 text-[0.66rem] font-extrabold uppercase tracking-[0.14em] text-white/85">
-                <MascotFace mascot={user.mascot} className="h-4 w-4 shrink-0" />
                 <span className="truncate">Your music</span>
                 {playing && <Equaliser />}
               </p>
@@ -535,13 +530,6 @@ export default function FocusMusic() {
               </div>
             </div>
 
-            {/* The buddy shows up here too - a tap gets a word while the music plays. */}
-            <div className="flex items-center gap-2.5 pt-1">
-              <div className="h-9 w-9 shrink-0">
-                <Buddy mascot={user.mascot} className="h-full w-full" bubbleSide="right" />
-              </div>
-              <p className="text-[0.68rem] leading-snug text-muted">Tap your buddy for a word while this plays.</p>
-            </div>
           </div>
         </div>
       </div>

@@ -17,6 +17,9 @@ dist-ssr
 .env.local
 .env.*.local
 
+# Generated at build time by scripts/generate-essay-plans.mjs
+public/essay-plans.txt
+
 # Firebase deploy cache / logs
 .firebase
 firebase-debug.log

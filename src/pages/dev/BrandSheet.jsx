@@ -14,7 +14,7 @@ import { ACCENTS, ACCENT_META, THEME_META } from '@/context/AppProvider'
   /dev/brand
 */
 
-const THEMES = ['dark', 'light', 'cream', 'high-contrast']
+const THEMES = ['dark', 'cream', 'high-contrast']
 
 function SheetSection({ kicker, title, children }) {
   return (
@@ -102,8 +102,8 @@ export default function BrandSheet() {
       </SheetSection>
 
       {/* 5-8. True-token theme versions */}
-      <SheetSection kicker="Themes" title="One SVG, four themes">
-        <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+      <SheetSection kicker="Themes" title="One SVG, three themes">
+        <div className="grid grid-cols-2 gap-3 lg:grid-cols-3">
           {THEMES.map((t) => (
             <ThemeChip key={t} theme={t} />
           ))}

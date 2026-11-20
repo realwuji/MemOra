@@ -2,7 +2,6 @@ import { useEffect, useMemo, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import Button from '@/components/ui/Button'
 import Icon from '@/components/ui/Icon'
-import Buddy from '@/components/ui/Buddy'
 import useMe from '@/hooks/useMe'
 import { useApp } from '@/context/AppProvider'
 import { levelTitle, LEVEL_REWARDS } from '@/lib/xp'
@@ -57,7 +56,7 @@ function Confetti() {
 
 export default function LevelUp() {
   const me = useMe()
-  const { lastLevelSeen, markLevelSeen, user } = useApp()
+  const { lastLevelSeen, markLevelSeen } = useApp()
   const [open, setOpen] = useState(false)
   const [shown, setShown] = useState(null) // { from, to }
 
@@ -79,7 +78,6 @@ export default function LevelUp() {
   }
 
   const unlocks = shown ? LEVEL_REWARDS.filter((r) => r.level > shown.from && r.level <= shown.to) : []
-  const event = useMemo(() => (open && shown ? { type: 'level', n: shown.to } : null), [open, shown])
 
   return (
     <AnimatePresence>
@@ -103,9 +101,6 @@ export default function LevelUp() {
             className="card relative w-full max-w-sm overflow-hidden p-6 text-center"
           >
             <p className="text-xs font-bold uppercase tracking-widest text-brand-strong">Level up</p>
-            <div className="mx-auto mt-3 h-32 w-32">
-              <Buddy mascot={user.mascot} className="h-full w-full" event={event} bubble={false} />
-            </div>
             <h2 id="levelup-title" className="mt-3 text-4xl font-extrabold text-fg">
               Level {shown.to}
             </h2>

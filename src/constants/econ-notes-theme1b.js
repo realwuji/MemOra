@@ -98,7 +98,7 @@ const externalities = chapter(
       ['MSB', 'Marginal social benefit - MPB plus any external benefit.'],
     ],
   ),
-  p('The social optimum is always where *MSB = MSC*, at Q*. The free market settles where *MPB = MPC*, at Qm. Market failure is the gap between them.'),
+  p('The social optimum is always where *MSB = MSC*, at Q&ast;. The free market settles where *MPB = MPC*, at Qm. Market failure is the gap between them.'),
   h('Negative production externality'),
   det(
     'The mechanism',

@@ -514,19 +514,21 @@ function CircularFlow() {
       desc="Households and firms connected by two flows, with injections of investment, government spending and exports entering the flow and withdrawals of savings, taxation and imports leaving it."
       caption="Income circulates between households and firms. Injections (I, G, X) add to the flow and withdrawals (S, T, M) leak out of it. National income is in equilibrium when injections equal withdrawals."
     >
-      <rect x={px(0.04)} y={py(0.72)} width="108" height="46" rx="10" fill="var(--brand-soft)" stroke={DEMAND} strokeWidth="1.6" />
-      <text x={px(0.04) + 54} y={py(0.72) + 28} textAnchor="middle" className="econ-label" fill="var(--fg)">Households</text>
-      <rect x={px(0.63)} y={py(0.72)} width="108" height="46" rx="10" fill="var(--brand-soft)" stroke={DEMAND} strokeWidth="1.6" />
-      <text x={px(0.63) + 54} y={py(0.72) + 28} textAnchor="middle" className="econ-label" fill="var(--fg)">Firms</text>
-      <ShiftArrow x1={px(0.28)} y1={py(0.82)} x2={px(0.62)} y2={py(0.82)} colour={DEMAND} />
-      <Note x={px(0.45)} y={py(0.9)}>spending on goods</Note>
-      <ShiftArrow x1={px(0.62)} y1={py(0.62)} x2={px(0.28)} y2={py(0.62)} colour={DEMAND} />
-      <Note x={px(0.45)} y={py(0.55)}>wages, rent, profit</Note>
-      <ShiftArrow x1={px(0.45)} y1={py(0.34)} x2={px(0.45)} y2={py(0.56)} colour={SOCIAL} />
-      <Note x={px(0.45)} y={py(0.28)} colour={SOCIAL}>Injections: I + G + X</Note>
-      <ShiftArrow x1={px(0.2)} y1={py(0.68)} x2={px(0.2)} y2={py(0.4)} colour={LOSS} />
-      <Note x={px(0.16)} y={py(0.34)} colour={LOSS}>Withdrawals:</Note>
-      <Note x={px(0.16)} y={py(0.24)} colour={LOSS}>S + T + M</Note>
+      {/* Two boxes with a wide gap between them, so the flow labels sit in the
+          gap and never over a box. */}
+      <rect x={px(0.02)} y={py(0.72)} width="96" height="46" rx="10" fill="var(--brand-soft)" stroke={DEMAND} strokeWidth="1.6" />
+      <text x={px(0.02) + 48} y={py(0.72) + 28} textAnchor="middle" className="econ-label" fill="var(--fg)">Households</text>
+      <rect x={px(0.68)} y={py(0.72)} width="96" height="46" rx="10" fill="var(--brand-soft)" stroke={DEMAND} strokeWidth="1.6" />
+      <text x={px(0.68) + 48} y={py(0.72) + 28} textAnchor="middle" className="econ-label" fill="var(--fg)">Firms</text>
+      <ShiftArrow x1={px(0.02) + 100} y1={104} x2={px(0.68) - 4} y2={104} colour={DEMAND} />
+      <Note x={213} y={97}>spending on goods</Note>
+      <ShiftArrow x1={px(0.68) - 4} y1={126} x2={px(0.02) + 100} y2={126} colour={DEMAND} />
+      <Note x={213} y={140}>wages, rent, profit</Note>
+      <ShiftArrow x1={213} y1={178} x2={213} y2={148} colour={SOCIAL} />
+      <Note x={213} y={194} colour={SOCIAL}>Injections: I + G + X</Note>
+      <ShiftArrow x1={px(0.02) + 48} y1={140} x2={px(0.02) + 48} y2={172} colour={LOSS} />
+      <Note x={px(0.02) + 48} y={186} colour={LOSS}>Withdrawals:</Note>
+      <Note x={px(0.02) + 48} y={200} colour={LOSS}>S + T + M</Note>
     </Figure>
   )
 }

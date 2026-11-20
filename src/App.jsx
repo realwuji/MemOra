@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate, useLocation } from 'react-router-dom'
+import { Routes, Route, Navigate, useLocation, useParams } from 'react-router-dom'
 import { MotionConfig } from 'framer-motion'
 import AppLayout from '@/components/layout/AppLayout'
 import Landing from '@/pages/Landing'
@@ -7,7 +7,6 @@ import Dashboard from '@/pages/Dashboard'
 import Profile from '@/pages/Profile'
 import StudySession from '@/pages/StudySession'
 import Start from '@/pages/Start'
-import MockExam from '@/pages/MockExam'
 import Flashcards from '@/pages/Flashcards'
 import Progress from '@/pages/Progress'
 import Performance from '@/pages/Performance'
@@ -20,6 +19,7 @@ import Contact from '@/pages/Contact'
 import NotFound from '@/pages/NotFound'
 import DiagramGallery from '@/pages/dev/DiagramGallery'
 import BrandSheet from '@/pages/dev/BrandSheet'
+import BankGallery from '@/pages/dev/BankGallery'
 import CursorGlow from '@/components/ui/CursorGlow'
 import ScrollToTop from '@/components/layout/ScrollToTop'
 import Seo from '@/components/layout/Seo'
@@ -42,6 +42,12 @@ import Toast from '@/components/ui/Toast'
   otherwise the code was dropped on the landing page and "Connect
   Spotify" silently never connected.
 */
+// Old /mock/:subject links land on that subject's exam questions.
+function MockRedirect() {
+  const { subjectSlug } = useParams()
+  return <Navigate to={`/study/${subjectSlug}/exam-questions`} replace />
+}
+
 function Root() {
   const { search } = useLocation()
   const state = new URLSearchParams(search).get('state')
@@ -78,8 +84,9 @@ export default function App() {
           <Route path="/study" element={<StudySession />} />
           <Route path="/study/:subjectSlug" element={<StudySession />} />
           <Route path="/study/:subjectSlug/:technique" element={<StudySession />} />
-          <Route path="/mock" element={<MockExam />} />
-          <Route path="/mock/:subjectSlug" element={<MockExam />} />
+          {/* The timed paper now lives inside Exam questions (a Timed test option). */}
+          <Route path="/mock" element={<Navigate to="/dashboard" replace />} />
+          <Route path="/mock/:subjectSlug" element={<MockRedirect />} />
           <Route path="/flashcards" element={<Flashcards />} />
           <Route path="/progress" element={<Progress />} />
           {/* Renamed from Performance (§6): two nav items both meaning "how
@@ -97,6 +104,7 @@ export default function App() {
               duplicate of the home page. */}
           {import.meta.env.DEV && <Route path="/dev/diagrams/:id?" element={<DiagramGallery />} />}
           {import.meta.env.DEV && <Route path="/dev/brand" element={<BrandSheet />} />}
+          {import.meta.env.DEV && <Route path="/dev/bank" element={<BankGallery />} />}
           <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>

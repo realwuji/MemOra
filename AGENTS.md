@@ -30,8 +30,8 @@ React Router v7 - Supabase client (optional, unused in the demo).
 ## Golden rules
 
 1. **Semantic design tokens only.** Never hard-code colours. Use the semantic
-   token utilities so everything recolours across all runtime themes (light /
-   dark / high-contrast): `bg-page`, `bg-surface`, `text-fg`, `text-muted`,
+   token utilities so everything recolours across all runtime themes (black /
+   cream / high-contrast): `bg-page`, `bg-surface`, `text-fg`, `text-muted`,
    `border-line`, `bg-brand`, `text-brand-strong`, `bg-brand-soft`, and the
    study accents `flash` / `quiz` / `paper` (e.g. `bg-flash-soft`). Add or adjust
    tokens in the `:root` + `[data-theme=...]` blocks and `@theme inline` in

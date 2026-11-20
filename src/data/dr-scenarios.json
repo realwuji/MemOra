@@ -1,0 +1,545 @@
+[
+ {
+  "id": "market-demand-up",
+  "title": "Demand rises",
+  "contexts": [
+   "Flats within 0.2 miles of a London tube station rent for considerably more than flats more than 0.5 miles away. Explain why using supply and demand.",
+   "Japanese TV dramas and cartoons became hugely popular, and many more people now want to visit Japan. Analyse the effect on the market for holidays to Japan.",
+   "A rise in consumer incomes increases the demand for a normal good such as restaurant meals. Analyse the effect on the market.",
+   "A heatwave sends temperatures to record highs. Analyse the effect on the market for ice cream.",
+   "The price of petrol rises sharply, so more people switch to electric cars. Analyse the effect on the market for electric cars.",
+   "A celebrity influencer starts wearing a particular brand of trainers. Analyse the effect on the market for the trainers.",
+   "Incomes rise in a growing economy. Analyse the effect on the market for foreign holidays.",
+   "A new university opens in a town. Analyse the effect on the market for rented student flats."
+  ],
+  "what": "A shift of the demand curve to the right, caused by a non-price factor. Price and quantity both rise.",
+  "eval": [
+   "Ceteris paribus rarely holds: other things change at the same time and can offset the shift.",
+   "The size of the shift matters: a 2% rise in demand and a 200% rise have very different effects."
+  ]
+ },
+ {
+  "id": "market-demand-down",
+  "title": "Demand falls",
+  "contexts": [
+   "During lockdown there was a monumental fall in the price of petrol across the UK. Explain why, using supply and demand.",
+   "A fall in incomes in a downturn reduces demand for a luxury good. Analyse the effect on its price and quantity.",
+   "Better alternatives mean consumers have stopped demanding DVD players. Analyse the effect on the market.",
+   "The price of a close substitute for a soft drink falls. Analyse the effect on the market for the soft drink.",
+   "Incomes fall in a recession. Analyse the effect on the market for restaurant meals.",
+   "A health scare about sugar changes tastes. Analyse the effect on the market for sugary drinks.",
+   "Streaming services replace rented films. Analyse the effect on the market for film rental shops.",
+   "Cold weather arrives early. Analyse the effect on the market for ice cream."
+  ],
+  "what": "A shift of the demand curve to the left. Price and quantity both fall.",
+  "eval": [
+   "If supply is highly elastic, the price barely falls and the quantity bears the change.",
+   "Consumers may have stocked up earlier, so the fall in demand shows up with a lag."
+  ]
+ },
+ {
+  "id": "market-supply-up",
+  "title": "Supply rises (costs fall)",
+  "contexts": [
+   "New grass strains let Brazilian ranches feed more cattle per hectare. Analyse the effect on the market for beef.",
+   "Technology reduces the plastic needed per water bottle. Analyse the effect on the market for bottled water.",
+   "Over time a calculator has fallen from £100 in 1975 to about £5 today. Explain this using supply and demand.",
+   "A new factory in a low-wage country cuts the cost of making clothes. Analyse the effect on the market for clothing.",
+   "Improved farming technology raises wheat yields. Analyse the effect on the market for wheat.",
+   "Two Asian airlines enter the London to New York market. Analyse the effect on the market for flights.",
+   "A council relaxes planning rules for new flats to rent. Analyse the effect on the market for rented flats.",
+   "The government releases surplus public land to developers. Analyse the effect on the market for new housing."
+  ],
+  "what": "A shift of the supply curve to the right. The price falls and the quantity rises.",
+  "eval": [
+   "In an imperfectly competitive market firms may not pass the saving on, so the price may not fall much.",
+   "It depends on the size of the cost fall and on elasticity of demand."
+  ]
+ },
+ {
+  "id": "market-supply-down",
+  "title": "Supply falls (costs rise)",
+  "contexts": [
+   "Extreme weather cuts the Dutch carrot harvest by 46%. Analyse the effect on the market for carrots.",
+   "The pound falls 10% against the euro and UK car manufacturers import rubber and glass from Western Europe. Analyse the effect on the market for UK cars.",
+   "The world price of yeast rises. Analyse the effect on the market for white bread.",
+   "Floods destroy cotton crops across Asia. Analyse the effect on the market for clothing.",
+   "Tighter environmental rules restrict where oil can be drilled. Analyse the effect on the market for oil.",
+   "Falling productivity among cocoa farmers raises their costs. Analyse the effect on the market for chocolate.",
+   "A 10% tax is introduced on high-fat frozen foods such as pizza. Analyse the effect on the market for frozen pizza.",
+   "Wages rise for staff in a hotel chain. Analyse the effect on the market for hotel rooms."
+  ],
+  "what": "A shift of the supply curve to the left. The price rises and the quantity falls.",
+  "eval": [
+   "Whether ceteris paribus holds: weak demand at the same time could push the price down instead.",
+   "The size of the change: a 0.5% fall in sterling hardly moves the equilibrium, a 10% fall moves it a lot."
+  ]
+ },
+ {
+  "id": "market-fixed-supply",
+  "title": "Demand rises, supply fixed",
+  "contexts": [
+   "Before the 2016 Olympic 100m final, reports suggested fans would pay up to £2,000 for a ticket with a face value of £90. Explain this using a supply and demand diagram.",
+   "A stadium sells out for a cup final and tickets are resold at many times face value. Explain the resale price.",
+   "A famous band announces one final concert in a 20,000-seat arena. Analyse the effect on ticket prices.",
+   "A limited edition trainer is released in a fixed number of pairs and demand surges. Explain the resale price.",
+   "Hype builds around a heavyweight title fight in a sold-out venue. Explain why prices on the resale market rise."
+  ],
+  "what": "With supply fixed, a rise in demand changes only the price. This is perfectly inelastic supply in action.",
+  "eval": [
+   "In the long run supply is less fixed: bigger venues or more matches can be arranged.",
+   "Face-value rules or touting laws can stop the price reaching the equilibrium level."
+  ]
+ },
+ {
+  "id": "market-fixed-supply-down",
+  "title": "Demand falls, supply fixed",
+  "contexts": [
+   "At the Rio Olympics, archery tickets with a face value of £80 were reported on sale for as little as £20 on the day. Explain using supply and demand.",
+   "A concert venue is half empty at the advertised price and sells the remaining seats cheaply on the night. Explain this.",
+   "A football match is played on a rainy weekday with a weak fixture. Explain why tickets are sold cheaply on the day.",
+   "A theatre cannot fill its seats for a poorly reviewed show. Explain the last-minute price cuts."
+  ],
+  "what": "With supply fixed and demand weak, the price must fall to clear the market, because unsold seats earn nothing once the event starts.",
+  "eval": [
+   "Organisers can cut supply in advance with smaller venues, or sell more cheaply earlier.",
+   "Cheap resale may also reflect sellers desperate to sell, not a true equilibrium."
+  ]
+ },
+ {
+  "id": "ppf-growth",
+  "title": "Economic growth: outward shift",
+  "contexts": [
+   "A rise in the quantity and quality of factors of production increases an economy's productive capacity. Show this on a PPF.",
+   "Improved education and technology raise productivity across the economy. Show the effect on its PPF.",
+   "A country invests heavily in capital goods and in training for its workforce. Show the long-run effect on its PPF.",
+   "A rise in net migration expands the labour force. Show the effect on potential output.",
+   "The discovery of large reserves of a natural resource increases a country's factors of production. Show the effect on its PPF."
+  ],
+  "what": "An outward shift of the PPF means a rise in potential output, which is long-run economic growth.",
+  "eval": [
+   "A shift shows only potential output: the economy may not move to the new frontier.",
+   "Growth may use up resources or hurt the environment, so it may not be sustainable."
+  ]
+ },
+ {
+  "id": "ppf-shock",
+  "title": "War or disaster: inward shift",
+  "contexts": [
+   "A war destroys factories, homes and infrastructure. Show the likely impact on an economy's PPF.",
+   "A severe flood destroys farmland and machinery. Show the effect on potential output.",
+   "A volcanic eruption destroys farmland and roads. Show the effect on the economy's PPF.",
+   "A long civil war emigrates a large part of the skilled workforce. Show the effect on potential output."
+  ],
+  "what": "An inward shift of the PPF: a fall in productive capacity, so less of both goods can be produced.",
+  "eval": [
+   "The loss may not be permanent: reconstruction and investment can rebuild capacity.",
+   "Some sectors may be hit far more than others, so the frontier may not shrink equally."
+  ]
+ },
+ {
+  "id": "ppf-pivot",
+  "title": "Technology in one good: pivot",
+  "contexts": [
+   "A new production technology raises the output of consumer goods but not capital goods. Show the effect on the PPF.",
+   "Automation lifts productivity in consumer-goods factories only. Show the effect on potential output.",
+   "A breakthrough in farming technology raises food output but does not affect machinery. Show the effect on the PPF.",
+   "Improved training in the services sector raises services output only. Show the effect on the PPF."
+  ],
+  "what": "A pivot of the PPF: potential output rises for one good only.",
+  "eval": [
+   "Society only benefits if it actually wants more of the good that got cheaper to produce.",
+   "Resources may be slow to move between sectors, so the gain takes time."
+  ]
+ },
+ {
+  "id": "ppf-opportunity",
+  "title": "Opportunity cost along the PPF",
+  "contexts": [
+   "A government has a limited budget and many competing uses. Use a PPF to show the opportunity cost of spending more on capital goods.",
+   "Explain, using a PPF, why choosing more of one good always means giving up some of another.",
+   "A government decides to spend more on defence and less on health with a fixed budget. Use a PPF to show the opportunity cost.",
+   "A farmer can use the same land for wheat or for barley. Use a PPF to show the opportunity cost of growing more wheat.",
+   "A household decides how to use limited income between two goods. Show the idea of scarcity and choice with a PPF."
+  ],
+  "what": "Scarcity forces choice. A movement along the PPF shows the opportunity cost: the next best alternative given up.",
+  "eval": [
+   "The PPF is drawn concave because resources are not equally good at making both goods.",
+   "Opportunity cost is hard to measure when goods are not directly comparable."
+  ]
+ },
+ {
+  "id": "tax-indirect",
+  "title": "An indirect tax",
+  "contexts": [
+   "A government imposes a tax on a good. Using a diagram, show the effect on price and quantity and shade the revenue raised.",
+   "A tax on airlines is introduced to reduce a negative externality of production. Use a diagram to show the effect on price and output.",
+   "Cigarettes are taxed to reduce consumption. Show who bears the burden of the tax and the revenue raised.",
+   "A sugar tax is placed on soft drinks. Use a diagram to show the effect on price and quantity and shade the tax revenue.",
+   "The government raises the duty on fuel. Show the burden on consumers and producers and the revenue raised.",
+   "A tax is placed on plastic bags. Analyse the effect on the market for plastic bags."
+  ],
+  "what": "A tax shifts supply to the left by the amount of the tax per unit. Price rises from P₁ to Pc and quantity falls. The burden is shared between consumers and producers.",
+  "eval": [
+   "If demand is inelastic, the tax raises revenue but changes behaviour very little.",
+   "It is hard to set the tax equal to the external cost, and it may be regressive."
+  ]
+ },
+ {
+  "id": "tax-inelastic",
+  "title": "A tax with inelastic demand",
+  "contexts": [
+   "Tax on cigarettes: smokers are addicted, so demand is inelastic. Show using a diagram why the tax raises revenue but changes consumption little.",
+   "A tax is placed on alcohol, for which demand is price inelastic. Show why the quantity falls only slightly.",
+   "A tax on petrol raises large revenue but changes driving little. Use a diagram to explain this."
+  ],
+  "what": "With inelastic demand the consumption barely falls. The tax raises a lot of revenue but does little to cut the harm.",
+  "eval": [
+   "Information campaigns may work better when consumers are not price sensitive.",
+   "The tax may be regressive, since poorer households spend more of their income on these goods."
+  ]
+ },
+ {
+  "id": "subsidy",
+  "title": "A subsidy",
+  "contexts": [
+   "The government subsidises local bus and train services. Show the effect on price and quantity and the cost to the government.",
+   "A subsidy is given to encourage the consumption of a good with a positive externality, such as education. Illustrate the effect.",
+   "The government subsidises solar panels. Show the effect on price and quantity and the cost to the government.",
+   "A subsidy is given for childcare to help parents return to work. Use a diagram to show the effect.",
+   "The government subsidises affordable housing. Analyse the effect on the market."
+  ],
+  "what": "A subsidy shifts supply to the right by the subsidy per unit. Price falls, quantity rises, and both consumers and producers gain.",
+  "eval": [
+   "It is expensive and may need to be paid for through higher taxes: an opportunity cost.",
+   "Producers may keep the subsidy as profit, and if demand is inelastic quantity barely rises."
+  ]
+ },
+ {
+  "id": "ext-neg-production",
+  "title": "Negative externality of production",
+  "contexts": [
+   "Flights from London to New York cause global warming that airlines do not pay for. Explain, using a diagram, why the market fails.",
+   "A factory pollutes a river and imposes clean-up and health costs on others. Use a diagram to show the welfare loss.",
+   "A coal power station emits carbon dioxide that damages the climate. Use a diagram to show the market failure.",
+   "A chemical plant dumps waste into the air, land and water around it. Use a diagram to show the welfare loss.",
+   "A budget airline makes cheap flights but ignores the cost of emissions. Explain the market failure with a diagram."
+  ],
+  "what": "MSC = MPC + external cost. The market produces at Qm where MPB = MPC, more than the socially optimum Q* where MSB = MSC.",
+  "eval": [
+   "Valuing the external cost in money is very hard, so Q* is uncertain.",
+   "If the cost is small, the welfare loss may be less than the cost of intervening."
+  ]
+ },
+ {
+  "id": "ext-pos-consumption",
+  "title": "Positive externality of consumption",
+  "contexts": [
+   "Education raises earnings for the individual and also raises productivity and tax revenue for everyone. Explain why it is under-consumed using a diagram.",
+   "Immunisation of children protects the child and people who are not immunised. Use a diagram to show the market failure.",
+   "List the private and external benefits of swimming and show on a diagram why it may be under-consumed.",
+   "Vaccination reduces the spread of disease to people who are not vaccinated. Show why it is under-consumed.",
+   "Training workers raises their productivity and the wages other firms can pay. Use a diagram to show the market failure.",
+   "Getting a flu jab benefits the individual and everyone they come into contact with. Explain with a diagram."
+  ],
+  "what": "MSB = MPB + external benefit. The free market stops at Qm; society would want Q*.",
+  "eval": [
+   "External benefits are as hard to value as external costs.",
+   "Some claimed external benefits are really private benefits the individual captures."
+  ]
+ },
+ {
+  "id": "ext-neg-consumption",
+  "title": "Negative externality of consumption",
+  "contexts": [
+   "Smoking in public places harms others through passive smoking, smell and litter. Use a diagram to show the market failure.",
+   "Cigarettes give private benefits but impose costs on third parties. Explain why they are over-consumed.",
+   "Drinking alcohol can lead to antisocial behaviour and costs for the NHS. Use a diagram to show the market failure.",
+   "Eating fast food regularly raises health costs borne by others. Use a diagram to show the over-consumption."
+  ],
+  "what": "MSB lies below MPB. Individuals ignore the cost to third parties, so there is over-consumption.",
+  "eval": [
+   "If demand is inelastic, a tax barely cuts consumption.",
+   "Information may already be widely known; the issue may be addiction rather than ignorance."
+  ]
+ },
+ {
+  "id": "ext-pos-production",
+  "title": "Positive externality of production",
+  "contexts": [
+   "A firm invests heavily in R&D to make production greener, and others can use the breakthrough. Use a diagram to show the market failure.",
+   "A new housing estate creates jobs, new businesses and higher house prices around it. Show the externality using a diagram.",
+   "A company develops a new battery technology that other firms can copy. Use a diagram to show the market failure.",
+   "A bee farmer's hives pollinate the orchards next door. Use a diagram to show the market failure."
+  ],
+  "what": "MSC lies below MPC. The firm ignores the reduced costs to third parties, so there is under-production.",
+  "eval": [
+   "The spillover is hard to value, so the correct subsidy is uncertain.",
+   "Patents and first-mover advantages can return some of the benefit to the firm."
+  ]
+ },
+ {
+  "id": "price-max",
+  "title": "A maximum price (price ceiling)",
+  "contexts": [
+   "The government introduces rent controls to make housing more affordable. Use a diagram to show the effect.",
+   "A price cap is placed on energy. Show using a diagram why a shortage and a black market may result.",
+   "A city introduces a maximum rent on flats to help low-income tenants. Show the effect on the rental market.",
+   "A government caps the price of a basic food during a shortage. Show the effect on the market.",
+   "A maximum price is set on concert tickets. Use a diagram to show why a black market may develop."
+  ],
+  "what": "A maximum price is set below the equilibrium. Excess demand (a shortage) results, so the good must be rationed in some other way.",
+  "eval": [
+   "Rent controls can make housing more affordable but ultimately worsen the shortage.",
+   "A black market is highly likely, so some consumers may pay more than before."
+  ]
+ },
+ {
+  "id": "price-min",
+  "title": "A minimum price (price floor)",
+  "contexts": [
+   "Minimum unit pricing is introduced for alcohol. Use a diagram to show the effect and the surplus created.",
+   "Governments set a minimum price to support farmers' incomes. Illustrate the effect on the market.",
+   "A government sets a minimum price for milk to support dairy farmers. Show the effect and the surplus.",
+   "A minimum price per unit of alcohol is introduced to reduce harmful drinking. Use a diagram to show the effect."
+  ],
+  "what": "A minimum price is set above the equilibrium. Excess supply (a surplus) results and consumers pay more.",
+  "eval": [
+   "If demand is inelastic (addictive goods) the policy may be ineffective at cutting consumption.",
+   "Where to set it: too high and surpluses and black markets grow."
+  ]
+ },
+ {
+  "id": "adas-ad-up",
+  "title": "Aggregate demand rises",
+  "contexts": [
+   "Interest rates fall and consumer confidence rises. Using an AD/AS diagram, analyse the effect on real GDP and the price level.",
+   "The government increases spending when the economy has spare capacity. Use a diagram to show the likely effect.",
+   "The Bank of England cuts interest rates in a recession. Use an AD/AS diagram to show the likely effect.",
+   "A rise in house prices boosts consumer confidence and spending. Use a diagram to show the effect on real GDP.",
+   "Government investment in infrastructure increases AD when there is spare capacity. Use a diagram to show the effect."
+  ],
+  "what": "An increase in any component of AD (C, I, G or X - M) shifts the curve right. The effect on output against prices depends on spare capacity.",
+  "eval": [
+   "The closer the economy is to full capacity, the more the effect is on prices rather than output.",
+   "The size of the shift depends on the multiplier, which depends on leakages."
+  ]
+ },
+ {
+  "id": "adas-ad-up-full",
+  "title": "Demand-pull inflation near capacity",
+  "contexts": [
+   "A boom in consumption pushes AD up when the economy is close to full capacity. Analyse the effect on the price level.",
+   "The economy is near full capacity and the government cuts taxes. Use a diagram to show the effect on inflation.",
+   "A surge in export demand hits an economy with very little spare capacity. Show the effect on the price level."
+  ],
+  "what": "Near the productive capacity of the economy, extra demand is met mainly by higher prices.",
+  "eval": [
+   "A weaker exchange rate or import prices may add to inflation at the same time.",
+   "It may be temporary if supply responds in the long run."
+  ]
+ },
+ {
+  "id": "adas-ad-down",
+  "title": "Aggregate demand falls",
+  "contexts": [
+   "A fall in consumer confidence and investment leads to a recession. Use an AD/AS diagram to show the effect on real GDP.",
+   "The government cuts public spending sharply during a downturn. Use an AD/AS diagram to show the effect.",
+   "A financial crisis hits business confidence and investment falls. Show the effect on real GDP."
+  ],
+  "what": "A fall in AD cuts real GDP. Output falls below capacity, so a negative output gap opens.",
+  "eval": [
+   "Wages and prices may be sticky, so the adjustment is slow.",
+   "Automatic stabilisers and policy may soften the fall."
+  ]
+ },
+ {
+  "id": "adas-sras-left",
+  "title": "Cost-push: AS shifts left",
+  "contexts": [
+   "A sharp rise in global energy prices raises production costs across the economy. Use an AD/AS diagram to analyse the effect.",
+   "A sudden rise in wages and import prices hits firms. Show the effect on the price level and output.",
+   "A rise in the national minimum wage raises costs across many firms. Use a diagram to show the effect.",
+   "The pound falls sharply, raising the cost of imported raw materials. Use an AD/AS diagram to show the effect."
+  ],
+  "what": "A decrease in aggregate supply: prices rise and output falls together.",
+  "eval": [
+   "The size of the rise in costs and how much firms pass on.",
+   "It may be temporary if costs reverse."
+  ]
+ },
+ {
+  "id": "adas-supply-side",
+  "title": "Supply-side improvement: AS shifts right",
+  "contexts": [
+   "A government invests in education and infrastructure to raise productivity. Use an AD/AS diagram to show the effect.",
+   "Technology and training raise labour productivity across the economy. Show the effect on growth and prices.",
+   "The government cuts corporation tax and deregulates to encourage investment. Use a diagram to show the effect.",
+   "A programme of apprenticeships raises the skills of the workforce. Use a diagram to show the effect on the economy."
+  ],
+  "what": "An increase in aggregate supply: higher output with lower inflationary pressure.",
+  "eval": [
+   "Supply-side policies are slow, costly and uncertain in their effect.",
+   "The gains may be unevenly shared."
+  ]
+ },
+ {
+  "id": "adas-multiplier",
+  "title": "The multiplier",
+  "contexts": [
+   "The government increases spending by £2bn and national income rises by more. Use a diagram to explain the multiplier effect.",
+   "A rise in investment sets off rounds of extra spending. Explain, with a diagram, why the total effect on GDP is larger.",
+   "A rise in business investment of £1bn leads to a larger rise in national income. Use a diagram to explain this.",
+   "The government builds a high-speed railway, and local spending rises in several rounds. Explain with a diagram."
+  ],
+  "what": "The multiplier is the ratio of the final change in national income to the initial injection. 1 divided by (1 minus MPC), or 1 over the marginal propensity to withdraw.",
+  "eval": [
+   "Near full capacity much of the effect is on prices, not output.",
+   "Crowding out and time lags can reduce the size of the effect."
+  ]
+ },
+ {
+  "id": "neo-inflationary-gap",
+  "title": "AD rises above full employment",
+  "contexts": [
+   "A rise in consumer spending pushes AD above the full-employment level. Using an AD/SRAS/LRAS diagram, explain the short-run and long-run effects.",
+   "A boom raises AD above full employment in the short run. Use an AD/SRAS/LRAS diagram to explain what happens as wages adjust.",
+   "Consumer confidence surges and unemployment falls below its natural rate. Use a diagram to show the long-run outcome."
+  ],
+  "what": "In the neo-classical view the LRAS is vertical at the full-employment level, so demand-side policy only changes the price level in the long run.",
+  "eval": [
+   "Keynesians argue the economy can be stuck below full employment for a long time, so the long-run adjustment may be slow.",
+   "The speed of adjustment depends on how flexible wages and prices are."
+  ]
+ },
+ {
+  "id": "neo-lras-shift",
+  "title": "Supply-side growth: LRAS shifts right",
+  "contexts": [
+   "Investment in education and technology increases the productive capacity of the economy. Use an AD/AS diagram to show the long-run effect.",
+   "A government increases spending on education and R&D. Use a diagram to show the long-run effect on potential output.",
+   "A new technology raises productivity across the economy. Use a diagram to show the effect on LRAS."
+  ],
+  "what": "A shift of LRAS to the right is an increase in potential output: sustainable growth without extra inflation.",
+  "eval": [
+   "The shift only shows potential: AD must be high enough for the economy to use it.",
+   "Supply-side effects take years and are uncertain."
+  ]
+ },
+ {
+  "id": "mono-profit-max",
+  "title": "Profit maximisation",
+  "contexts": [
+   "A firm is the only supplier of a product and maximises profit. Use a diagram to show its price, output and supernormal profit.",
+   "A natural monopolist faces high fixed costs and falling average costs. Show the profit-maximising position.",
+   "A pharmaceutical company holds a patent on a new drug. Use a diagram to show its profit-maximising price and output.",
+   "A water company is the only supplier in its region. Use a diagram to show its supernormal profit."
+  ],
+  "what": "The firm produces where MR = MC, then reads the price off AR (demand). Profit is the gap between AR and AC, times output.",
+  "eval": [
+   "Contestability: the threat of entry may force the firm to price lower.",
+   "Dynamic efficiency: supernormal profit may fund innovation."
+  ]
+ },
+ {
+  "id": "mono-cost-rise",
+  "title": "Costs rise",
+  "contexts": [
+   "A monopolist's variable costs of production rise. Show the effect on its price, output and profit.",
+   "A monopolist faces higher energy bills. Use a diagram to show the effect on its price and output.",
+   "A single supplier of a service sees wages rise. Show the effect on its profit-maximising position."
+  ],
+  "what": "A rise in variable costs shifts MC and AC up, cutting the profit-maximising output and raising the price.",
+  "eval": [
+   "How much of the cost rise is passed on depends on elasticity of demand.",
+   "A monopolist with market power may absorb some costs in profit."
+  ]
+ },
+ {
+  "id": "mono-demand-up",
+  "title": "Demand rises",
+  "contexts": [
+   "Demand for a monopolist's product rises. Show the effect on price, output and supernormal profit.",
+   "A successful advertising campaign increases demand for a monopolist's product. Show the effect on price and profit.",
+   "A rise in incomes increases demand for a luxury good supplied by one firm. Show the effect on output and price."
+  ],
+  "what": "A rise in demand shifts AR and MR right, raising output, price and profit.",
+  "eval": [
+   "Barriers to entry decide whether the higher profit lasts.",
+   "Higher profit may attract regulators or new entrants."
+  ]
+ },
+ {
+  "id": "pc-supernormal",
+  "title": "Supernormal profit then entry",
+  "contexts": [
+   "In a perfectly competitive market a firm makes supernormal profit in the short run. Use a diagram to explain what happens in the long run.",
+   "Farmers growing a standard crop in a competitive market earn supernormal profit because the price is high. Explain the long run.",
+   "A fashionable new market has low barriers to entry and high profits. Use a diagram to show what happens over time."
+  ],
+  "what": "No barriers to entry: supernormal profit is competed away. The firm ends allocatively and productively efficient at the minimum of AC.",
+  "eval": [
+   "Few real markets are perfectly competitive.",
+   "Dynamic efficiency suffers because there is no profit to fund R&D."
+  ]
+ },
+ {
+  "id": "pc-loss",
+  "title": "Losses then exit",
+  "contexts": [
+   "In a perfectly competitive market firms are making a loss. Use a diagram to show what happens in the long run.",
+   "A glut of a standard product pushes the price below average cost for all firms. Show what happens over time.",
+   "Falling demand leaves firms in a competitive industry making losses. Use a diagram to explain the long run."
+  ],
+  "what": "Firms leave until the price returns to the minimum of AC. Losses cannot last in the long run.",
+  "eval": [
+   "Firms may stay in the short run if the price covers average variable cost.",
+   "Exit can take time when capital is specialised."
+  ]
+ },
+ {
+  "id": "fx-appreciation",
+  "title": "Appreciation of the pound",
+  "contexts": [
+   "Higher UK interest rates attract foreign investors. Use a diagram to show the effect on the value of the pound.",
+   "Foreign demand for UK exports rises. Show the effect on the exchange rate.",
+   "Foreign investors buy UK shares and property in large amounts. Use a diagram to show the effect on the pound.",
+   "The Bank of England raises interest rates above those abroad. Use a diagram to show the effect on sterling."
+  ],
+  "what": "A rise in demand for the currency raises its value against others: an appreciation.",
+  "eval": [
+   "The effect on the trade balance depends on elasticities (Marshall-Lerner) and the J-curve timing.",
+   "Central bank intervention may offset the move."
+  ]
+ },
+ {
+  "id": "fx-depreciation",
+  "title": "Depreciation of the pound",
+  "contexts": [
+   "UK interest rates fall relative to the rest of the world. Show the effect on the value of the pound.",
+   "The pound is expected to fall 10% against the euro. Use a diagram to show the effect on the exchange rate.",
+   "Confidence in the UK economy falls and investors sell pounds. Use a diagram to show the effect on sterling.",
+   "The Bank of England cuts interest rates sharply. Use a diagram to show the likely effect on the pound."
+  ],
+  "what": "A fall in the value of the currency. Exports cheaper abroad, imports dearer at home, with a likely rise in import costs for firms.",
+  "eval": [
+   "Higher import costs may feed inflation.",
+   "A depreciation may not improve the trade balance in the short run because of the J-curve."
+  ]
+ },
+ {
+  "id": "tariff",
+  "title": "A tariff",
+  "contexts": [
+   "The UK imposes a tariff on imports of steel. Use a diagram to show the effect on domestic output, imports and government revenue.",
+   "A government uses a tariff to protect an infant industry. Illustrate the effect on the market.",
+   "The government imposes a tariff on imported cars to protect domestic producers. Use a diagram to show the effect.",
+   "A country places a tariff on imported food. Show the effect on domestic output, imports and revenue."
+  ],
+  "what": "A tariff is a tax on imports. Imports fall, domestic output rises, domestic consumers pay more, and the government collects revenue.",
+  "eval": [
+   "Retaliation by trading partners can leave everyone worse off.",
+   "Protection can reduce incentives for domestic firms to become efficient."
+  ]
+ }
+]

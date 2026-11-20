@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
 import Button from '@/components/ui/Button'
 import Icon from '@/components/ui/Icon'
-import Mascot from '@/components/ui/Mascot'
 import Breadcrumbs from '@/components/ui/Breadcrumbs'
 import MarketingHeader from '@/components/layout/MarketingHeader'
 import Footer from '@/components/layout/Footer'
@@ -248,7 +247,6 @@ export default function HowItWorks() {
           variants={fadeInUp}
           className="rounded-3xl border border-line bg-brand-soft px-6 py-12"
         >
-          <Mascot expression="cheer" className="mx-auto h-20 w-20" />
           <h2 className="mt-4 text-3xl font-extrabold text-fg">{MARKETING.closing.title}</h2>
           <p className="readable mx-auto mt-3 max-w-xl text-muted">{MARKETING.closing.body}</p>
           <div className="mt-7">

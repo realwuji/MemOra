@@ -13,7 +13,7 @@ import DailyQuote from '@/components/dashboard/DailyQuote'
 import DailyReward from '@/components/dashboard/DailyReward'
 import CloseGaps from '@/components/dashboard/CloseGaps'
 import LeaderboardList from '@/components/friends/LeaderboardList'
-import AssessmentsCard, { AssessmentQuickAdd } from '@/components/dashboard/AssessmentsCard'
+import AssessmentsCard from '@/components/dashboard/AssessmentsCard'
 import WeekChart from '@/components/dashboard/WeekChart'
 import useMe from '@/hooks/useMe'
 import { fadeInUp, staggerContainer } from '@/lib/motion'
@@ -213,89 +213,17 @@ function SectionLabel({ children, action }) {
   )
 }
 
-function SetupChecklist({ setupDone, prioritySubject, subjects }) {
-  const [addingDates, setAddingDates] = useState(false)
-  const steps = [
-    { label: 'Pick your courses', done: setupDone.courses, to: '/profile', cta: 'Pick' },
-    {
-      label: 'Add your assessment dates - DA, IA, mocks, finals',
-      done: setupDone.examDate,
-      onClick: () => setAddingDates((v) => !v),
-      cta: addingDates ? 'Close' : 'Add dates',
-    },
-    {
-      label: 'Take a quick 10-question check',
-      done: setupDone.check,
-      to: prioritySubject ? `/study/${slugify(prioritySubject)}/mcq` : '/study',
-      cta: 'Start',
-    },
-  ]
-  const doneCount = steps.filter((s) => s.done).length
-  return (
-    <motion.div variants={fadeInUp} className="card p-6">
-      <div className="flex items-baseline justify-between gap-3">
-        <h2 className="text-xl font-extrabold text-fg">Set up in three steps</h2>
-        <p className="shrink-0 text-xs font-semibold text-muted">
-          {doneCount} of {steps.length}
-        </p>
-      </div>
-      <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-raised">
-        <div
-          className="h-full rounded-full bg-brand transition-[width] duration-500"
-          style={{ width: `${(doneCount / steps.length) * 100}%` }}
-        />
-      </div>
-      <ul className="mt-5 space-y-3">
-        {steps.map((s) => (
-          <li key={s.label} className="flex items-center justify-between gap-3">
-            <span className="flex min-w-0 items-center gap-3">
-              <span
-                className={`grid h-6 w-6 shrink-0 place-items-center rounded-full ${
-                  s.done ? 'bg-r3-solid text-[#0b0f14]' : 'border border-line text-muted'
-                }`}
-              >
-                <Icon name={s.done ? 'check' : 'chevronRight'} className="h-3.5 w-3.5" />
-              </span>
-              <span className={`truncate text-sm ${s.done ? 'text-muted line-through' : 'font-semibold text-fg'}`}>
-                {s.label}
-              </span>
-            </span>
-            {!s.done &&
-              (s.onClick ? (
-                <Button size="sm" className="shrink-0" onClick={s.onClick}>
-                  {s.cta}
-                </Button>
-              ) : (
-                <Button as={Link} to={s.to} size="sm" className="shrink-0">
-                  {s.cta}
-                </Button>
-              ))}
-          </li>
-        ))}
-      </ul>
-      {addingDates && !setupDone.examDate && (
-        <div className="mt-4">
-          <AssessmentQuickAdd subjects={subjects} onDone={() => setAddingDates(false)} />
-        </div>
-      )}
-    </motion.div>
-  )
-}
-
 export default function Dashboard() {
   const { user, sessions, attempts, examDates, posts, friends, profileSetupDone } = useApp()
   const navigate = useNavigate()
   const isYear12 = user.yearGroup === 'Year 12' && PRIORITISED_COURSES.includes(user.courseType)
   const [now] = useState(() => Date.now())
   const me = useMe(now)
-  // The buddy on the banner reacts to a claimed reward.
-  const [buddyEvent, setBuddyEvent] = useState(null)
 
   const subjectNames =
     user.courseType === 'University' && user.courseName
       ? [user.courseName]
       : (user.subjects || []).map((s) => s.name)
-  const defaultSubject = user.subjects?.find((s) => s.priority)?.name || subjectNames[0] || 'Revision'
 
   const { streak, xp, weekMinutes: minutesThisWeek, firstName } = me
   const sortedExams = [...examDates].sort((a, b) => daysUntil(a.date) - daysUntil(b.date))
@@ -338,13 +266,6 @@ export default function Dashboard() {
 
   const recentPosts = posts.filter((p) => p.status !== 'hidden').slice(0, 2)
 
-  const setupDone = {
-    courses: subjectNames.length > 0,
-    examDate: examDates.length > 0,
-    check: attempts.some((a) => a.mode === 'mcq'),
-  }
-  const isNewAccount = sessions.length < 3 && !Object.values(setupDone).every(Boolean)
-
   return (
     <div className="relative">
       {/* No ambient colour wash behind this page on purpose. The drifting
@@ -370,19 +291,7 @@ export default function Dashboard() {
           showSetup={!profileSetupDone}
         />
         <div className="mt-4">
-          <DailyQuote
-            now={now}
-            mascot={user.mascot}
-            event={buddyEvent}
-            context={{
-              streak,
-              studiedToday: me.studiedToday,
-              nextAssessment: nextExam
-                ? `${nextExam.type === 'final' ? 'The exam' : nextExam.type.toUpperCase()}${nextExam.subject ? ` ${nextExam.subject}` : ''}`
-                : null,
-              daysToNext: nextExam ? daysUntil(nextExam.date) : null,
-            }}
-          />
+          <DailyQuote now={now} />
         </div>
 
         {/* Work column + status rail. The rail stacks underneath on narrow
@@ -390,9 +299,7 @@ export default function Dashboard() {
         <div className="mt-8 grid gap-6 lg:grid-cols-[minmax(0,1.85fr)_minmax(0,1fr)]">
           {/* ================================================ MAIN COLUMN */}
           <motion.div variants={staggerContainer} className="min-w-0 space-y-8">
-            {isNewAccount ? (
-              <SetupChecklist setupDone={setupDone} prioritySubject={defaultSubject} subjects={subjectNames} />
-            ) : (
+            {(
               <>
                 {/* --------------------------------------------- CONTINUE */}
                 {resumeSession && (
@@ -469,7 +376,6 @@ export default function Dashboard() {
                 total={gapsTotal}
                 suggestions={suggestions}
                 hasEvidence={hasEvidence}
-                mascot={user.mascot}
                 onStart={(g) => navigate(`/start/${slugify(g.subject)}?${new URLSearchParams({ chapter: g.topic })}`)}
                 onExplore={() => navigate('/start')}
               />
@@ -482,7 +388,7 @@ export default function Dashboard() {
               column's ~1278px, and a stretched track made the last card's
               bottom border sit 300px above the column's actual end. */}
           <motion.div variants={staggerContainer} className="min-w-0 space-y-4 lg:self-start">
-            <DailyReward now={now} onClaimed={(r) => setBuddyEvent({ type: 'reward', n: r.xp, at: Date.now() })} />
+            <DailyReward now={now} />
 
             <RailCard
               title="Friends"

@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react'
 import Icon from '@/components/ui/Icon'
 import { MASCOTS, mascotImage } from '@/constants/mascots'
-import { ACCENT_META, THEME_META } from '@/context/AppProvider'
+import { ACCENT_META, THEME_META, normaliseTheme } from '@/context/AppProvider'
 import { imageToDataUrl } from '@/lib/image'
 
 /*
@@ -35,14 +35,15 @@ export function MascotFace({ mascot, className = 'h-16 w-16', label }) {
 /* A small theme + accent swatch, e.g. "Dark · Red". */
 export function LookSwatch({ look, className = '' }) {
   if (!look) return null
-  const themeBg = { light: '#ffffff', dark: '#0e1526', cream: '#fffaef', 'high-contrast': '#000' }[look.theme] || '#fff'
+  const theme = normaliseTheme(look.theme)
+  const themeBg = { dark: '#181510', cream: '#fffaef', 'high-contrast': '#000' }[theme] || '#fffaef'
   return (
     <span className={`inline-flex items-center gap-1.5 whitespace-nowrap text-[0.68rem] font-semibold text-muted ${className}`}>
       <span className="inline-flex overflow-hidden rounded-full border border-line" aria-hidden="true">
         <span className="h-3 w-3" style={{ background: themeBg }} />
         <span className="h-3 w-3" style={{ background: ACCENT_META[look.accent]?.swatch }} />
       </span>
-      {THEME_META[look.theme]?.label || look.theme} · {ACCENT_META[look.accent]?.label || look.accent}
+      {THEME_META[theme]?.label || theme} · {ACCENT_META[look.accent]?.label || look.accent}
     </span>
   )
 }

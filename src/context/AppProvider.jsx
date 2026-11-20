@@ -76,13 +76,22 @@ function useResolvedImage(value, setUrl) {
   localStorage on this device, no account and no backend. `user` is always
   present (never null) so pages never need to guard against a signed-out state.
 */
-export const THEMES = ['light', 'dark', 'cream', 'high-contrast']
+// The site has two looks, black and cream, and the header toggle flips
+// between them. High contrast is kept for low-vision users but lives only in
+// Settings > Appearance, never in the toggle. The 'dark' key is the black
+// theme (the key predates the rename, and index.css, SilkField and the saved
+// state all still use it).
+export const THEMES = ['dark', 'cream', 'high-contrast']
 export const THEME_META = {
-  light: { label: 'Light', icon: 'sun' },
-  dark: { label: 'Dark', icon: 'moon' },
-  cream: { label: 'Cream', icon: 'book' },
+  dark: { label: 'Black', icon: 'moon' },
+  cream: { label: 'Cream', icon: 'sun' },
   'high-contrast': { label: 'High contrast', icon: 'contrast' },
 }
+
+// The plain white theme was retired. Anything saved or recommended under
+// that name (older local state, a buddy's look) lands on cream, its nearest
+// light equivalent.
+export const normaliseTheme = (theme) => (theme === 'light' ? 'cream' : theme)
 
 // Accent colour, independent of light/dark - see the `[data-accent=...]`
 // blocks in index.css for the actual per-theme hex values. Ignored under
@@ -181,7 +190,7 @@ const STORAGE_KEY = 'memora:v1'
 // instead of each keeping their own copy.
 const LEGACY_EXAMS_KEY = 'memora:exams'
 const DEFAULTS = {
-  theme: 'light',
+  theme: 'cream',
   accent: 'blue',
   // Set only when accent === 'custom' - a hex string from the colour wheel
   // in Settings > Appearance. See lib/color.js for how it becomes --brand
@@ -233,7 +242,7 @@ const DEFAULTS = {
 */
 function systemTheme() {
   try {
-    return window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark'
+    return window.matchMedia('(prefers-color-scheme: light)').matches ? 'cream' : 'dark'
   } catch {
     return 'dark'
   }
@@ -331,6 +340,7 @@ function load() {
         ...p,
       })),
     }
+    merged.theme = normaliseTheme(merged.theme)
     if (!THEMES.includes(merged.theme)) merged.theme = systemTheme()
     if (!ACCENTS.includes(merged.accent) && merged.accent !== 'custom') merged.accent = DEFAULTS.accent
     if (merged.accent === 'custom' && !isValidHex(merged.customAccent || '')) merged.accent = DEFAULTS.accent
@@ -515,7 +525,6 @@ export default function AppProvider({ children }) {
 
       // ---- theme + reading prefs ----
       setTheme: (theme) => patch({ theme }),
-      cycleTheme: () => patch((s) => ({ theme: THEMES[(THEMES.indexOf(s.theme) + 1) % THEMES.length] })),
       accent: state.accent,
       customAccent: state.customAccent,
       setAccent: (accent) => patch({ accent }),
@@ -650,7 +659,7 @@ export default function AppProvider({ children }) {
       // A buddy's recommended theme + accent, applied together.
       applyLook: ({ theme, accent }) =>
         patch({
-          theme: THEMES.includes(theme) ? theme : 'dark',
+          theme: THEMES.includes(normaliseTheme(theme)) ? normaliseTheme(theme) : 'dark',
           accent: ACCENTS.includes(accent) ? accent : 'blue',
           customAccent: null,
         }),
@@ -670,7 +679,7 @@ export default function AppProvider({ children }) {
       },
       markLevelSeen: (level) => patch({ lastLevelSeen: level }),
 
-      // Record one answered mcq/exam/blurt/mock question - the events table
+      // Record one answered mcq/exam/mock question - the events table
       // (see lib/attempts.js for the full schema and why it lives here
       // rather than in a real database). The Performance page still reads
       // .correct/.dontKnow/.topic/.subject/.technique/.question directly;

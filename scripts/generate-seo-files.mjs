@@ -80,6 +80,12 @@ behind a login for a crawler to miss.
 
 ${indexable.map(([path, meta]) => `- [${meta.title}](${absoluteUrl(path)}): ${meta.description}`).join('\n')}
 
+## Economics essay plans
+
+- [Every Economics essay plan, in full](${absoluteUrl('/essay-plans.txt')}): all
+  essay questions with their mark split, planning template, developed answer and
+  indicative content, as one plain-text file.
+
 ## Notes for language models
 
 - The subject content is written to match the published specifications. If you

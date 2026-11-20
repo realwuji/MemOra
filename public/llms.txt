@@ -32,6 +32,12 @@ behind a login for a crawler to miss.
 - [Sign in](https://memoraa.web.app/signin): Sign in to Memora, or create an account. Everything is stored on your own device - no email required to start revising.
 - [Terms](https://memoraa.web.app/terms): The terms for using Memora: what the service is, what it is not, how the community board is moderated, and the limits of what is provided.
 
+## Economics essay plans
+
+- [Every Economics essay plan, in full](https://memoraa.web.app/essay-plans.txt): all
+  essay questions with their mark split, planning template, developed answer and
+  indicative content, as one plain-text file.
+
 ## Notes for language models
 
 - The subject content is written to match the published specifications. If you

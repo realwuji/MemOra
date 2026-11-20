@@ -160,12 +160,31 @@ function pickDiagram(subject, topic, text) {
   the right diagram automatically. Items that already name one (the "sketch
   this" flashcards) keep theirs.
 */
+/*
+  A card or question that sets one market structure against another (monopoly
+  against perfect competition, say) gets BOTH diagrams, each labelled, rather
+  than only the chapter's own. `diagrams` lists them in the order the text
+  mentions them; `diagram` stays the first, for places with room for one.
+*/
+const STRUCTURES = [
+  ['monopoly', 'Monopoly', /monopol(?!istic)/i],
+  ['perfect-competition', 'Perfect competition', /perfect(ly)? competit/i],
+  ['monopolistic-competition', 'Monopolistic competition', /monopolistic/i],
+  ['kinked-demand', 'Oligopoly', /oligopol/i],
+]
+function comparedStructures(text) {
+  const hit = STRUCTURES.map(([id, label, re]) => ({ id, label, at: text.search(re) })).filter((x) => x.at >= 0)
+  return hit.length >= 2 ? hit.sort((a, b) => a.at - b.at).slice(0, 3).map(({ id, label }) => ({ id, label })) : null
+}
+
 export function tagWithDiagrams(items, subject) {
   if (!Array.isArray(items)) return items
   return items.map((it) => {
     const text = [it.question, it.front, it.back, it.explanation, ...(it.markScheme || [])]
       .filter(Boolean)
       .join(' ')
+    const compared = String(subject).toLowerCase() === 'economics' && !it.diagram ? comparedStructures(text) : null
+    if (compared) return { ...it, diagram: compared[0].id, diagrams: compared, diagramExpected: WANTS_DIAGRAM.test(text) }
     const id = it.diagram || pickDiagram(subject, it.topic, text)
     if (!id) return it
     return { ...it, diagram: id, diagramExpected: WANTS_DIAGRAM.test(text) }

@@ -2,7 +2,6 @@ import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import Button from '@/components/ui/Button'
 import Icon from '@/components/ui/Icon'
-import Buddy from '@/components/ui/Buddy'
 import SpineCard from '@/components/ui/SpineCard'
 import { subjectColor } from '@/constants/content'
 import { fadeInUp } from '@/lib/motion'
@@ -92,7 +91,7 @@ function Row({ index, subject, topic, tag, reason, onStart }) {
   )
 }
 
-export default function CloseGaps({ gaps, total, suggestions = [], hasEvidence, mascot, onStart, onExplore }) {
+export default function CloseGaps({ gaps, total, suggestions = [], hasEvidence, onStart, onExplore }) {
   return (
     <motion.section variants={fadeInUp} className="gaps-card card relative overflow-hidden p-5 sm:p-6" aria-labelledby="gaps-title">
       <span aria-hidden="true" className="gaps-glow absolute -right-16 -top-16 h-48 w-48 rounded-full" />
@@ -138,9 +137,6 @@ export default function CloseGaps({ gaps, total, suggestions = [], hasEvidence, 
         </ol>
       ) : (
         <div className="relative mt-4 flex flex-col items-center gap-4 rounded-2xl border border-dashed border-line px-5 py-6 text-center sm:flex-row sm:text-left">
-          <div className="h-20 w-20 shrink-0">
-            <Buddy mascot={mascot} className="h-full w-full" bubble={false} />
-          </div>
           <div className="min-w-0 flex-1">
             <p className="text-base font-bold text-fg">{hasEvidence ? 'Nothing open right now' : 'Nothing to close yet'}</p>
             <p className="mt-1 text-sm text-muted">

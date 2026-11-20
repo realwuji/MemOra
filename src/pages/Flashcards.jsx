@@ -4,7 +4,6 @@ import Section from '@/components/ui/Section'
 import Breadcrumbs from '@/components/ui/Breadcrumbs'
 import Button from '@/components/ui/Button'
 import Icon from '@/components/ui/Icon'
-import Mascot from '@/components/ui/Mascot'
 import ProgressBar from '@/components/ui/ProgressBar'
 import FlipCard from '@/components/ui/FlipCard'
 import Chip from '@/components/ui/Chip'
@@ -51,7 +50,6 @@ function StudyView({ deck, onExit }) {
         variants={fadeInUp}
         className="card p-8 text-center"
       >
-        <Mascot expression="happy" className="mx-auto h-20 w-20" />
         <p className="mt-3 text-lg font-semibold text-fg">This deck has no cards yet.</p>
         <p className="mt-1 text-sm text-muted">Add some cards to start studying.</p>
         <div className="mt-5">
@@ -425,7 +423,6 @@ export default function Flashcards() {
             className="mt-6 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center"
           >
             <div className="flex items-center gap-4">
-              <Mascot expression="wave" className="hidden h-16 w-16 shrink-0 sm:block" />
               <div>
                 <h1 className="text-3xl font-extrabold text-fg sm:text-4xl">Flashcards</h1>
                 <p className="readable mt-1 text-muted">
@@ -481,7 +478,6 @@ export default function Flashcards() {
               variants={fadeInUp}
               className="flex flex-col items-center rounded-2xl border border-dashed border-line bg-surface p-10 text-center"
             >
-              <Mascot expression="happy" className="h-20 w-20" />
               <p className="mt-3 text-lg font-semibold text-fg">No decks yet</p>
               <p className="mt-1 max-w-sm text-sm text-muted">
                 Build your first deck of flashcards and it will show up here.

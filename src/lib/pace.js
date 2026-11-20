@@ -94,7 +94,6 @@ export const MODE_MINUTES = {
   flashcards: 10,
   mcq: 15,
   'active-recall': 15,
-  blurting: 10,
   'exam-questions': 25,
   'mock-exam': 45,
 }
@@ -281,7 +280,7 @@ export function computeNextBestAction({
   return spread.sort((a, b) => b.priority - a.priority)
 }
 
-// not_started -> Notes, seen -> MCQ, practised -> Blurting or Active recall,
+// not_started -> Notes, seen -> MCQ, practised -> Exam questions,
 // tested-and-Shaky -> Exam questions, Solid -> Mock exam. Exported so any
 // chapter-bar segment (not just the top recommendation) can link to the
 // mode that actually makes sense for where that chapter currently stands.
@@ -290,5 +289,5 @@ export function modeForBand(state) {
   if (state.band === 'not_started' || state.band === 'seen') return 'mcq'
   if (state.coverageState === 'tested' && state.band === 'shaky') return 'exam-questions'
   if (state.band === 'solid' || state.band === 'exam-ready') return 'mock-exam'
-  return 'blurting'
+  return 'exam-questions'
 }

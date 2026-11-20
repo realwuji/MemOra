@@ -118,7 +118,7 @@ export const PAGES = {
   },
   '/start': {
     title: 'Start revising',
-    description: 'Pick a subject, then how you want to revise it - notes, flashcards, exam questions, MCQs, blurting, active recall, essay plans or a timed mock.',
+    description: 'Pick a subject, then how you want to revise it - notes, flashcards, exam questions, MCQs, essay plans, application cases, diagram revision or the diagram bank.',
     h1: 'Start revising',
     crumbs: [{ label: 'Start', to: '/start' }],
     noindex: true,
@@ -126,7 +126,7 @@ export const PAGES = {
   '/study': {
     title: 'Study session',
     description:
-      'Work through a chapter with notes, flashcards, active recall, blurting, MCQs or full exam questions marked against a real mark scheme.',
+      'Work through a chapter with notes, flashcards, MCQs or full exam questions marked against a real mark scheme.',
     h1: 'Study session',
     crumbs: [{ label: 'Study', to: '/study' }],
     noindex: true,

@@ -5,11 +5,10 @@ import Section from '@/components/ui/Section'
 import Button from '@/components/ui/Button'
 import Icon from '@/components/ui/Icon'
 import RevisionRunner from '@/components/ui/RevisionRunner'
-import Buddy from '@/components/ui/Buddy'
-import { fadeInUp, staggerContainer } from '@/lib/motion'
-import { STUDY_TECHNIQUES, PRIORITISED_COURSES, subjectColor } from '@/constants/content'
+import ChapterPicker from '@/components/ui/ChapterPicker'
+import { fadeInUp } from '@/lib/motion'
+import { STUDY_TECHNIQUES, PRIORITISED_COURSES } from '@/constants/content'
 import { getPackByName } from '@/constants/library'
-import { lastSessionForSubject, isTough } from '@/lib/sessions'
 import { useApp } from '@/context/AppProvider'
 import { slugify, resolveSlug } from '@/lib/slug'
 import { computeAllChapterStates } from '@/lib/attempts'
@@ -62,169 +61,6 @@ function Stars({ value, onRate, max = 5 }) {
   )
 }
 
-const bandLabel = {
-  not_started: 'Not started',
-  seen: 'Seen once',
-  shaky: 'Shaky',
-  solid: 'Solid',
-  'exam-ready': 'Exam-ready',
-}
-const bandTone = {
-  not_started: 'bg-r0-not-started/25 text-fg',
-  seen: 'bg-r1-seen/25 text-fg',
-  shaky: 'bg-r2-shaky/20 text-r2-shaky',
-  solid: 'bg-r3-solid/20 text-r3-solid',
-  'exam-ready': 'bg-r4-exam-ready/20 text-r4-exam-ready',
-}
-
-/*
-  The chapter list: the last screen before revising, reached from the
-  Start page's method tiles. One card per chapter, grouped the way the
-  specification groups them, each carrying its band; the chapters the
-  recommender would send you to first are tagged, and a search box cuts
-  the list down. Clicking a chapter starts the session - there is no
-  "are you sure" screen in between.
-*/
-function ChapterPicker({ pack, technique, techniqueLabel, states, recs, topics, onPick }) {
-  const [query, setQuery] = useState('')
-  const color = subjectColor(pack.name)
-  const q = query.trim().toLowerCase()
-  // Split on whitespace so "competition perfect" and a stray double space
-  // both work; as one literal string neither did.
-  const queryWords = q.split(/\s+/).filter(Boolean)
-  const allowed = new Set(topics)
-  const recRank = new Map(recs.map((r, i) => [r.topic, i]))
-  // Match against the headings a chapter sits under as well as its own
-  // name. Searching "Market Structures", "How Markets Work" or "3.4" -
-  // all of them headings visible on this very screen - used to return
-  // nothing at all, because no individual chapter is called any of those.
-  const matches = (t, ...labels) => {
-    if (!allowed.has(t)) return false
-    if (!queryWords.length) return true
-    const haystack = [t, ...labels].filter(Boolean).join(' ').toLowerCase()
-    return queryWords.every((w) => haystack.includes(w))
-  }
-  const bandOf = (t) => states.get(`${pack.name}␟${t}`)?.band || 'not_started'
-
-  const groups = pack.groups?.length
-    ? pack.groups
-        .map((g) => ({
-          ...g,
-          subgroups: g.subgroups
-            .map((sg) => ({ ...sg, topics: sg.topics.filter((t) => matches(t, sg.label, g.label)) }))
-            .filter((sg) => sg.topics.length),
-        }))
-        .filter((g) => g.subgroups.length)
-    : [{ label: null, subgroups: [{ label: null, topics: pack.topics.filter((t) => matches(t)) }] }]
-  const shown = groups.reduce((n, g) => n + g.subgroups.reduce((m, sg) => m + sg.topics.length, 0), 0)
-
-  const Card = ({ topic }) => {
-    const band = bandOf(topic)
-    const rank = recRank.get(topic)
-    return (
-      <button
-        type="button"
-        onClick={() => onPick(topic)}
-        className="chapter-card card card-lift group relative flex min-h-[5.5rem] w-full flex-col items-start overflow-hidden p-4 pl-5 text-left"
-        style={{ '--subject': color }}
-      >
-        <span aria-hidden="true" className="absolute inset-y-0 left-0 w-1" style={{ background: color }} />
-        <span className="flex w-full items-start justify-between gap-2">
-          <span className="text-sm font-bold leading-snug text-fg">{topic}</span>
-          <span className={`shrink-0 rounded-full px-2 py-0.5 text-[0.62rem] font-bold ${bandTone[band]}`}>{bandLabel[band]}</span>
-        </span>
-        <span className="mt-auto flex w-full items-center justify-between pt-3">
-          {rank !== undefined ? (
-            <span className="rounded-full px-2 py-0.5 text-[0.6rem] font-extrabold uppercase tracking-wide text-white" style={{ background: color }}>
-              {rank === 0 ? 'Top pick' : 'Needs you'}
-            </span>
-          ) : (
-            <span />
-          )}
-          <span className="inline-flex items-center gap-1 text-xs font-bold opacity-0 transition-opacity group-hover:opacity-100" style={{ color }}>
-            Start
-            <Icon name="arrowRight" className="h-3.5 w-3.5" />
-          </span>
-        </span>
-      </button>
-    )
-  }
-
-  return (
-    <motion.div key="chapter" variants={fadeInUp} initial="hidden" animate="show" exit={{ opacity: 0 }}>
-      <div className="flex flex-wrap items-end justify-between gap-4">
-        <div className="min-w-0">
-          <p className="text-xs font-extrabold uppercase tracking-[0.18em]" style={{ color }}>
-            {pack.name} · {techniqueLabel}
-          </p>
-          <h1 className="mt-2 text-3xl font-extrabold tracking-tight text-fg sm:text-4xl">Pick a chapter</h1>
-          <p className="mt-2 text-sm text-muted">
-            {topics.length} chapters. Tap one and it starts.
-          </p>
-        </div>
-        <label className="relative w-full sm:w-72">
-          <span className="sr-only">Search chapters</span>
-          <Icon name="target" className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
-          <input
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search chapters"
-            autoComplete="off"
-            className="w-full rounded-full border border-line bg-surface py-2.5 pl-10 pr-4 text-sm text-fg placeholder:text-muted focus:border-brand focus:outline-none"
-          />
-        </label>
-      </div>
-
-      <motion.div variants={staggerContainer} className="mt-6">
-        {!q && (
-          <motion.button
-            variants={fadeInUp}
-            type="button"
-            onClick={() => onPick(ALL)}
-            className="chapter-all card card-lift mb-8 flex w-full items-center justify-between gap-4 overflow-hidden p-5 text-left"
-            style={{ '--subject': color }}
-          >
-            <span className="flex min-w-0 items-center gap-4">
-              <span className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl text-white" style={{ background: color }}>
-                <Icon name="shuffle" className="h-5 w-5" />
-              </span>
-              <span className="min-w-0">
-                <span className="block text-base font-extrabold text-fg">The whole of {pack.name}</span>
-                <span className="block text-sm text-muted">Every chapter mixed together, {technique === 'notes' ? 'in order' : 'shuffled'}</span>
-              </span>
-            </span>
-            <Icon name="arrowRight" className="h-5 w-5 shrink-0" style={{ color }} />
-          </motion.button>
-        )}
-
-        {shown === 0 ? (
-          <p className="rounded-2xl border border-dashed border-line p-5 text-sm text-muted">No chapter matches that.</p>
-        ) : (
-          <div className="space-y-10">
-            {groups.map((group, gi) => (
-              <motion.div key={group.label || gi} variants={fadeInUp}>
-                {group.label && <h2 className="text-base font-extrabold text-fg">{group.label}</h2>}
-                {group.subgroups.map((sub, si) => (
-                  <div key={sub.label || si} className={group.label ? 'mt-4' : ''}>
-                    {sub.label && (
-                      <p className="mb-2.5 text-[0.68rem] font-extrabold uppercase tracking-[0.14em] text-muted">{sub.label}</p>
-                    )}
-                    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                      {sub.topics.map((topic) => (
-                        <Card key={topic} topic={topic} />
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </motion.div>
-            ))}
-          </div>
-        )}
-      </motion.div>
-    </motion.div>
-  )
-}
-
 export default function StudySession() {
   const { subjectSlug, technique: techniqueParam } = useParams()
   const [searchParams] = useSearchParams()
@@ -255,7 +91,7 @@ export default function StudySession() {
   // are keyed by paper and spec topic, and the planner carries its own
   // filters for those, so a chapter picker here would just be a second,
   // worse version of the same thing.
-  const hasChapters = Boolean(pack?.groups?.length) && technique !== 'essay-plans'
+  const hasChapters = Boolean(pack?.groups?.length) && technique !== 'essay-plans' && technique !== 'diagram-revision' && technique !== 'diagram-bank' && technique !== 'application'
 
   // A chapter bar segment (Progress/Dashboard) links straight here with
   // ?chapter=<topic> so tapping it lands on that exact chapter, not the
@@ -276,20 +112,8 @@ export default function StudySession() {
   // XP the finished session earned on its own (answers add theirs as they
   // happen), shown on the done screen with the buddy cheering.
   const [earnedXp, setEarnedXp] = useState(0)
-  const [cheer, setCheer] = useState(null)
 
   const chapterLabel = chapter === ALL ? subjectLabel : chapter
-
-  // Real adaptation: read how this chapter/subject went last time.
-  const lastForSubject = lastSessionForSubject(sessions, subject)
-  const adaptiveNote = useMemo(() => {
-    if (!lastForSubject) return null
-    if (isTough(lastForSubject))
-      return `Last time ${subjectLabel} felt tough, so take it steady this round.`
-    if (typeof lastForSubject.difficulty === 'number' && lastForSubject.difficulty <= 2)
-      return `You breezed through ${subjectLabel} last time. Want to push a little further?`
-    return null
-  }, [lastForSubject, subjectLabel])
 
   // Chapter states and the recommender's shortlist, for the picker's
   // band pills and "Top pick" / "Needs you" tags.
@@ -336,6 +160,12 @@ export default function StudySession() {
     setPhase('running')
   }
 
+  // No "ready?" screen for any method or subject: arriving at a session (a link,
+  // or Another session) starts it straight away.
+  useEffect(() => {
+    if (phase === 'ready' && pack) startStudying()
+  }, [phase, pack]) // eslint-disable-line react-hooks/exhaustive-deps
+
   // Real elapsed time, not a guess - this is what the dashboard's "hours
   // spent" is built from. Clamp to a sane range in case a tab was left open.
   const elapsedMinutes = () =>
@@ -356,7 +186,6 @@ export default function StudySession() {
     })
     setSessionId(id)
     setEarnedXp(minutes + 10)
-    setCheer({ type: 'cheer', at: Date.now() })
     setRecentTopic(`${chapterLabel} · ${techniqueLabel}`)
     setPhase('done')
   }
@@ -389,9 +218,9 @@ export default function StudySession() {
   )
 
   return (
-    <Section width={phase === 'chapter' ? 'default' : 'narrow'} animateOnMount className="pt-10 pb-28">
+    <Section width={phase === 'chapter' || technique === 'essay-plans' || technique === 'diagram-bank' ? 'default' : 'narrow'} animateOnMount className="pt-10 pb-28">
       <motion.div variants={fadeInUp} className="mb-6 flex flex-wrap gap-2">
-        <Button as={Link} to="/dashboard" variant="ghost" size="sm">
+        <Button as={Link} to="/dashboard" variant="ghost" size="sm" className="-ml-4">
           <Icon name="arrowLeft" className="h-4 w-4" />
           Dashboard
         </Button>
@@ -414,41 +243,8 @@ export default function StudySession() {
             recs={pickerRecs}
             topics={pickerTopics}
             onPick={pickChapter}
+            allKey={ALL}
           />
-        )}
-
-        {/* READY */}
-        {phase === 'ready' && (
-          <motion.div key="ready" variants={fadeInUp} initial="hidden" animate="show" exit={{ opacity: 0 }} className="text-center">
-            <div className="mx-auto mb-4 h-20 w-20">
-              <Buddy mascot={user.mascot} className="h-full w-full" />
-            </div>
-            <p className="text-sm font-semibold uppercase tracking-widest text-brand-strong">
-              {techniqueLabel}
-              {chapter !== ALL ? ' · Randomised' : ''}
-            </p>
-            <h1 className="readable mx-auto mt-2 max-w-md text-3xl font-bold text-fg">
-              Ready to study {chapterLabel}?
-            </h1>
-            {adaptiveNote && (
-              <p className="readable mx-auto mt-4 flex max-w-md items-center gap-2 rounded-xl bg-brand-soft px-4 py-2.5 text-sm font-medium text-brand-strong">
-                <Icon name="sparkles" className="h-4 w-4 shrink-0" />
-                {adaptiveNote}
-              </p>
-            )}
-            <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-              <Button onClick={() => startStudying()} size="lg">
-                <Icon name="play" className="h-5 w-5" />
-                Start studying {chapter === ALL ? subjectLabel : ''}
-              </Button>
-              {hasChapters && (
-                <Button variant="ghost" onClick={() => setPhase('chapter')}>
-                  <Icon name="arrowLeft" className="h-4 w-4" />
-                  Change chapter
-                </Button>
-              )}
-            </div>
-          </motion.div>
         )}
 
         {/* RUNNING: real, shuffled revision content */}
@@ -465,9 +261,17 @@ export default function StudySession() {
                 </p>
                 <h1 className="truncate text-xl font-bold text-fg">{chapterLabel}</h1>
               </div>
-              <Button size="sm" onClick={finishSession}>
-                Finish session
-              </Button>
+              <div className="flex items-center gap-2">
+                {hasChapters && (
+                  <Button size="sm" variant="secondary" onClick={() => setPhase('chapter')}>
+                    <Icon name="arrowLeft" className="h-4 w-4" />
+                    All chapters
+                  </Button>
+                )}
+                <Button size="sm" onClick={finishSession}>
+                  Finish session
+                </Button>
+              </div>
             </div>
 
             <RevisionRunner
@@ -491,9 +295,6 @@ export default function StudySession() {
         {/* DONE: difficulty rating */}
         {phase === 'done' && (
           <motion.div key="done" variants={fadeInUp} initial="hidden" animate="show" exit={{ opacity: 0 }} className="text-center">
-            <div className="mx-auto h-28 w-28">
-              <Buddy mascot={user.mascot} className="h-full w-full" event={cheer} />
-            </div>
             <p className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-brand-soft px-3 py-1 text-sm font-bold text-brand-strong">
               <Icon name="sparkles" className="h-4 w-4" />+{earnedXp} XP
             </p>

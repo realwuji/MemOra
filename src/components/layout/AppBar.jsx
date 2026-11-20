@@ -5,7 +5,8 @@ import { NAV_LINKS } from '@/constants/content'
 import Icon from '@/components/ui/Icon'
 import SigilMark from '@/components/ui/SigilMark'
 import SigilWordmark from '@/components/ui/SigilWordmark'
-import { useApp, THEME_META } from '@/context/AppProvider'
+import ThemeSwitcher from '@/components/layout/ThemeSwitcher'
+import { useApp } from '@/context/AppProvider'
 
 // Icons for the nav destinations, so the menu reads clearly.
 const NAV_ICONS = {
@@ -28,7 +29,7 @@ const navLinkClass = ({ isActive }) =>
   }`
 
 export default function AppBar() {
-  const { user, account, signOut, showToast, theme, cycleTheme } = useApp()
+  const { user, account, signOut, showToast } = useApp()
   const navigate = useNavigate()
   const [open, setOpen] = useState(false)
   const initial = (user?.name?.[0] || '?').toUpperCase()
@@ -126,6 +127,7 @@ export default function AppBar() {
         </div>
 
         <div className="flex items-center gap-3">
+          <ThemeSwitcher />
           {/* Hamburger menu (shown on every screen size). */}
           <div className="relative">
             <button
@@ -205,21 +207,6 @@ export default function AppBar() {
                         <Icon name="user" className="h-4 w-4 text-muted" />
                         Settings
                       </NavLink>
-
-                      {/* Theme is set-once configuration (§6), not something
-                          that earns permanent header real estate - one
-                          compact cycling control here instead of four
-                          always-visible buttons. Full labelled picker still
-                          lives in Settings for a considered choice. */}
-                      <button
-                        type="button"
-                        role="menuitem"
-                        onClick={cycleTheme}
-                        className={itemClass({ isActive: false })}
-                      >
-                        <Icon name={THEME_META[theme]?.icon || 'sun'} className="h-4 w-4 text-muted" />
-                        Theme: {THEME_META[theme]?.label || theme}
-                      </button>
 
                       {account ? (
                         <button

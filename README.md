@@ -25,7 +25,7 @@ The study session (`/study`) is the heart of the app:
    _"Steady wins the A*. A focused session now compounds fast."_).
 3. **Focus block with real content.** A running timer plus AI-generated revision
    material chosen by technique: flashcards, MCQs with instant feedback, exam
-   questions with mark schemes, blurting, or active recall.
+   questions with mark schemes, essay plans, application cases, diagram revision and a diagram bank.
 4. **Mid-session check-in.** Rate the stretch 1 to 5. A low score offers a timed
    **break** (wellbeing first); a good score keeps you going.
 5. **Wrap up.** Rate the difficulty, and the session is saved to your recent
@@ -50,7 +50,9 @@ The landing page names who the app is built for (dyslexia, low vision, blind,
 deaf or hard of hearing, ADHD, motor and mobility) and the whole UI is built to
 be inclusive:
 
-- **Three themes:** light, dark, and high-contrast (top-right switcher).
+- **Two themes, black and cream:** a sun/moon toggle at the top right swaps them
+  with a circular reveal out of the button. High-contrast is kept for low-vision
+  users in Settings > Appearance. Accent colour is independent of theme.
 - **Semantic design tokens only**, so colour and contrast stay consistent.
 - **Accessible by default:** keyboard navigation, focus states, `aria` labels,
   and `prefers-reduced-motion` respected app-wide via `MotionConfig`.

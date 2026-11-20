@@ -66,7 +66,7 @@ export default function FlipCard({ front, back, flipped, onFlip, className = '' 
         }
       }}
       aria-label={`Flashcard, showing the ${flipped ? 'answer' : 'prompt'}. Activate to flip.`}
-      className={`mx-auto w-full max-w-2xl cursor-pointer select-none ${className}`}
+      className={`mx-auto w-full max-w-3xl cursor-pointer select-none ${className}`}
       style={{ perspective: '1400px' }}
     >
       <motion.div

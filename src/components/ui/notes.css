@@ -1,0 +1,760 @@
+/* =====================================================================
+   NOTES REDESIGN
+   Layered over the plain notes rules in index.css (same selectors, loaded
+   later, so these win). The markup is still the hand-written HTML;
+   NotesBody.jsx adds the wrapper divs, data-labels and the .rv reveal
+   classes these rules use.
+   ===================================================================== */
+
+/* ---- Reading progress + section rail ---- */
+.notes-progress {
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 70;
+  height: 3px;
+  background: transparent;
+  pointer-events: none;
+}
+.notes-progress > span {
+  display: block;
+  height: 100%;
+  transform-origin: left;
+  transform: scaleX(0);
+  background: linear-gradient(90deg, var(--brand), var(--r3-solid), var(--r2-shaky));
+  box-shadow: 0 0 12px color-mix(in srgb, var(--brand) 70%, transparent);
+}
+.notes-rail {
+  position: fixed;
+  right: 1.1rem;
+  top: 50%;
+  z-index: 40;
+  display: none;
+  max-height: 70vh;
+  transform: translateY(-50%);
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.55rem;
+}
+@media (min-width: 1280px) {
+  .notes-rail {
+    display: flex;
+  }
+}
+.notes-rail-dot {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  height: 0.8rem;
+  min-width: 0.8rem;
+  border: 0;
+  background: none;
+  padding: 0;
+  cursor: pointer;
+}
+.notes-rail-dot::after {
+  content: '';
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 999px;
+  background: var(--line);
+  transition: transform 0.25s, background 0.25s, box-shadow 0.25s;
+}
+.notes-rail-dot:hover::after {
+  background: var(--brand-strong);
+  transform: scale(1.35);
+}
+.notes-rail-dot.is-active::after {
+  background: var(--brand);
+  transform: scale(1.55);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--brand) 25%, transparent);
+}
+.notes-rail-label {
+  position: absolute;
+  right: 1.3rem;
+  max-width: 15rem;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  padding: 0.25rem 0.6rem;
+  border: 1px solid var(--line);
+  border-radius: 0.5rem;
+  background: var(--surface);
+  color: var(--fg);
+  font-size: 0.74rem;
+  font-weight: 600;
+  opacity: 0;
+  transform: translateX(6px);
+  pointer-events: none;
+  transition: opacity 0.18s, transform 0.18s;
+}
+.notes-rail-dot:hover .notes-rail-label,
+.notes-rail-dot:focus-visible .notes-rail-label {
+  opacity: 1;
+  transform: none;
+}
+.notes-meta {
+  display: flex;
+  gap: 0.6rem;
+  margin-top: 0.4rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+}
+.notes-meta span + span::before {
+  content: '';
+  display: inline-block;
+  width: 0.28rem;
+  height: 0.28rem;
+  margin-right: 0.6rem;
+  vertical-align: middle;
+  border-radius: 999px;
+  background: var(--brand);
+}
+
+/* ---- Prose ---- */
+.notes-content {
+  counter-reset: nsec;
+  margin-top: 1rem;
+  font-size: 1.02rem;
+}
+.notes-content p {
+  line-height: 1.78;
+}
+.notes-content h3 {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 3rem;
+  padding-top: 1.6rem;
+  font-size: 1.3rem;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+  counter-increment: nsec;
+  scroll-margin-top: 5.5rem;
+}
+/* The dotted rule that opens each section. */
+.notes-content h3::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto 0;
+  border-top: 2.5px dotted color-mix(in srgb, var(--brand) 55%, var(--line));
+  transform-origin: left;
+}
+.notes-content h3::after {
+  content: counter(nsec, decimal-leading-zero);
+  order: -1;
+  flex: none;
+  display: grid;
+  place-items: center;
+  min-width: 2rem;
+  height: 2rem;
+  padding: 0 0.35rem;
+  border-radius: 0.6rem;
+  background: var(--brand-soft);
+  color: var(--brand-strong);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--brand) 35%, transparent);
+}
+.notes-content > div:first-child > h3:first-child {
+  margin-top: 0.4rem;
+  padding-top: 0;
+}
+.notes-content > div:first-child > h3:first-child::before {
+  display: none;
+}
+
+/* Custom bullets: a small brand dot with a halo, numbers as pills. */
+.notes-content ul {
+  list-style: none;
+  padding-left: 0;
+}
+.notes-content ul > li {
+  position: relative;
+  padding-left: 1.45rem;
+}
+.notes-content ul > li::before {
+  content: '';
+  position: absolute;
+  left: 0.2rem;
+  top: 0.72em;
+  width: 0.46rem;
+  height: 0.46rem;
+  border-radius: 999px;
+  background: var(--brand);
+  box-shadow: 0 0 0 3px var(--brand-soft);
+}
+.notes-content ol {
+  list-style: none;
+  padding-left: 0;
+  counter-reset: oli;
+}
+.notes-content ol > li {
+  position: relative;
+  padding-left: 2.1rem;
+  counter-increment: oli;
+}
+.notes-content ol > li::before {
+  content: counter(oli);
+  position: absolute;
+  left: 0;
+  top: 0.12em;
+  display: grid;
+  place-items: center;
+  width: 1.45rem;
+  height: 1.45rem;
+  border-radius: 999px;
+  background: var(--brand-soft);
+  color: var(--brand-strong);
+  font-size: 0.75rem;
+  font-weight: 800;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--brand) 35%, transparent);
+}
+
+/* ---- Tables as cards ---- */
+.notes-content .table-wrap {
+  margin-top: 1.1rem;
+  /* sideways only: with overflow-x alone the browser also makes it scroll up
+     and down, which draws a second scrollbar inside the table card */
+  overflow: auto hidden;
+  border: 1px solid var(--line);
+  border-radius: 1rem;
+  background: var(--surface);
+  box-shadow: 0 14px 34px -24px color-mix(in srgb, var(--brand) 55%, #000);
+}
+.notes-content table {
+  display: table;
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  border-collapse: separate;
+  border-spacing: 0;
+  color: var(--muted);
+  font-size: 0.96rem;
+}
+.notes-content th,
+.notes-content td {
+  min-width: 8.5rem;
+  border: 0;
+  padding: 0.85rem 1.05rem;
+  line-height: 1.6;
+}
+.notes-content table[data-kind='numeric'] th,
+.notes-content table[data-kind='numeric'] td {
+  min-width: 0;
+  padding: 0.6rem 0.85rem;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.notes-content table[data-kind='numeric'] th:first-child,
+.notes-content table[data-kind='numeric'] td:first-child {
+  text-align: left;
+}
+.notes-content thead th {
+  position: relative;
+  background: linear-gradient(180deg, var(--brand-soft), color-mix(in srgb, var(--brand-soft) 45%, var(--surface)));
+  color: var(--fg);
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  border-bottom: 2px solid color-mix(in srgb, var(--brand) 55%, transparent);
+}
+.notes-content tbody td {
+  border-bottom: 1px dotted color-mix(in srgb, var(--line) 85%, var(--muted));
+  transition: background 0.2s;
+}
+.notes-content tbody tr:last-child td {
+  border-bottom: 0;
+}
+.notes-content tbody tr:nth-child(even) td {
+  background: color-mix(in srgb, var(--raised) 40%, transparent);
+}
+.notes-content tbody tr:hover td {
+  background: color-mix(in srgb, var(--brand-soft) 80%, var(--surface));
+}
+.notes-content tbody td:first-child {
+  color: var(--fg);
+  font-weight: 650;
+  box-shadow: inset 3px 0 0 transparent;
+  transition: box-shadow 0.2s, background 0.2s;
+}
+.notes-content tbody tr:hover td:first-child {
+  box-shadow: inset 3px 0 0 var(--brand);
+}
+.notes-content td strong {
+  color: var(--fg);
+}
+
+/* A phone cannot hold a table of sentences: each row becomes its own card,
+   with the column heading printed above every value. */
+@media (max-width: 640px) {
+  .notes-content .table-wrap:has(table[data-stack='1']) {
+    overflow: visible;
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+  .notes-content table[data-stack='1'],
+  .notes-content table[data-stack='1'] tbody,
+  .notes-content table[data-stack='1'] tr,
+  .notes-content table[data-stack='1'] td {
+    display: block;
+    width: 100%;
+  }
+  .notes-content table[data-stack='1'] thead {
+    display: none;
+  }
+  .notes-content table[data-stack='1'] tbody tr {
+    margin-top: 0.75rem;
+    overflow: hidden;
+    border: 1px solid var(--line);
+    border-left: 4px solid var(--brand);
+    border-radius: 0.9rem;
+    background: var(--surface);
+    box-shadow: 0 12px 26px -22px color-mix(in srgb, var(--brand) 60%, #000);
+  }
+  .notes-content table[data-stack='1'] td {
+    min-width: 0;
+    border: 0;
+    padding: 0.5rem 1rem;
+    background: transparent !important;
+  }
+  .notes-content table[data-stack='1'] td::before {
+    content: attr(data-label);
+    display: block;
+    margin-bottom: 0.1rem;
+    color: var(--brand-strong);
+    font-size: 0.66rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .notes-content table[data-stack='1'] td:first-child {
+    padding-top: 0.8rem;
+    background: color-mix(in srgb, var(--brand-soft) 70%, transparent) !important;
+    font-size: 1.04rem;
+    box-shadow: none;
+  }
+  .notes-content table[data-stack='1'] td:first-child::before {
+    display: none;
+  }
+  .notes-content table[data-stack='1'] td:last-child {
+    padding-bottom: 0.85rem;
+  }
+}
+
+/* ---- Callouts ---- */
+.notes-content .defn {
+  position: relative;
+  overflow: hidden;
+  margin-top: 1.1rem;
+  padding: 0.95rem 1.15rem 1rem 1.4rem;
+  border: 1px solid color-mix(in srgb, var(--brand) 32%, var(--line));
+  border-radius: 1rem;
+  background: linear-gradient(135deg, var(--brand-soft), color-mix(in srgb, var(--brand-soft) 35%, var(--surface)));
+  line-height: 1.65;
+}
+.notes-content .defn::before {
+  content: '';
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 5px;
+  transform-origin: top;
+  background: linear-gradient(var(--brand), var(--brand-strong));
+}
+.notes-content .defn strong {
+  display: inline-block;
+  margin-bottom: 0.3rem;
+  padding: 0.12rem 0.55rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--brand) 18%, var(--surface));
+  color: var(--brand-strong);
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.07em;
+}
+.notes-content .worked {
+  margin-top: 1.1rem;
+  overflow: hidden;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--r3-solid);
+  border-radius: 1rem;
+  background: var(--surface);
+  box-shadow: 0 12px 28px -24px color-mix(in srgb, var(--r3-solid) 70%, #000);
+}
+.notes-content .worked .w-q,
+.notes-content .worked .w-a {
+  padding: 0.85rem 1.1rem;
+  line-height: 1.65;
+}
+.notes-content .worked .w-q {
+  color: var(--fg);
+}
+.notes-content .worked .w-a {
+  border-top: 1px dashed color-mix(in srgb, var(--r3-solid) 55%, var(--line));
+  background: color-mix(in srgb, var(--r3-solid) 9%, var(--surface));
+  color: var(--fg);
+}
+.notes-content .w-tag {
+  display: inline-block;
+  margin-bottom: 0.35rem;
+  padding: 0.1rem 0.55rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--fg) 8%, var(--surface));
+  color: var(--muted);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.notes-content .w-tag-a {
+  background: color-mix(in srgb, var(--r3-solid) 24%, var(--surface));
+  color: var(--fg);
+}
+.notes-content .det {
+  position: relative;
+  margin-top: 1.1rem;
+  padding: 1rem 1.2rem 1.1rem;
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--brand);
+  border-radius: 1rem;
+  background: var(--surface);
+  box-shadow: 0 14px 30px -24px color-mix(in srgb, var(--brand) 60%, #000);
+  transition: transform 0.25s, box-shadow 0.25s;
+}
+.notes-content .det:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 18px 36px -22px color-mix(in srgb, var(--brand) 70%, #000);
+}
+.notes-content .det-name {
+  font-size: 1.06rem;
+  line-height: 1.35;
+}
+.notes-content .exam-tip {
+  position: relative;
+  max-width: none;
+  margin-top: 1.1rem;
+  padding: 0.85rem 1.1rem 0.9rem 3.1rem;
+  border: 1px solid color-mix(in srgb, var(--r2-shaky) 40%, var(--line));
+  border-radius: 1rem;
+  background: linear-gradient(135deg, color-mix(in srgb, var(--r2-shaky) 14%, var(--surface)), var(--surface));
+}
+.notes-content .exam-tip::before {
+  content: '!';
+  position: absolute;
+  left: 0.9rem;
+  top: 0.85rem;
+  display: grid;
+  place-items: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 999px;
+  background: var(--r2-shaky);
+  color: #1a1306;
+  font-size: 0.95rem;
+  font-weight: 900;
+}
+.notes-content .exam-tip:not([data-has-label]) {
+  display: flex;
+  flex-direction: column-reverse;
+}
+.notes-content .exam-tip:not([data-has-label])::after {
+  content: 'EXAM TIP';
+  display: block;
+  margin-bottom: 0.2rem;
+  color: var(--r2-shaky);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.09em;
+}
+.notes-content .method {
+  border-radius: 0 1rem 1rem 0;
+}
+
+/* ---- Diagram frames inside notes ---- */
+.notes-content .dgm-figure {
+  position: relative;
+  margin: 1.4rem 0;
+  border-radius: 1.15rem;
+  background:
+    radial-gradient(120% 90% at 50% 0%, color-mix(in srgb, var(--brand-soft) 70%, transparent), transparent 70%),
+    var(--surface);
+  box-shadow: 0 16px 38px -26px color-mix(in srgb, var(--brand) 60%, #000);
+  transition: box-shadow 0.3s, transform 0.3s;
+}
+.notes-content .dgm-figure:hover {
+  box-shadow: 0 22px 46px -24px color-mix(in srgb, var(--brand) 75%, #000);
+  transform: translateY(-2px);
+}
+
+/* ---- Scroll reveal (classes only added when motion is allowed) ---- */
+.notes-content .rv {
+  opacity: 0;
+  transform: translateY(20px);
+  filter: blur(5px);
+  transition:
+    opacity 0.65s cubic-bezier(0.2, 0.7, 0.2, 1),
+    transform 0.65s cubic-bezier(0.2, 0.7, 0.2, 1),
+    filter 0.65s ease,
+    box-shadow 0.3s;
+}
+.notes-content .rv.rv-in {
+  opacity: 1;
+  transform: none;
+  filter: none;
+}
+.notes-content .det.rv.rv-in:hover,
+.notes-content .dgm-figure.rv.rv-in:hover {
+  transform: translateY(-2px);
+}
+/* Section rule draws itself, the number pops. */
+.notes-content h3.rv::before {
+  transform: scaleX(0);
+  transition: transform 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) 0.1s;
+}
+.notes-content h3.rv-in::before {
+  transform: scaleX(1);
+}
+.notes-content h3.rv::after {
+  transform: scale(0.4) rotate(-12deg);
+  transition: transform 0.5s cubic-bezier(0.3, 1.5, 0.4, 1) 0.15s;
+}
+.notes-content h3.rv-in::after {
+  transform: none;
+}
+.notes-content .defn.rv::before {
+  transform: scaleY(0);
+  transition: transform 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) 0.2s;
+}
+.notes-content .defn.rv-in::before {
+  transform: scaleY(1);
+}
+/* Rows and list items cascade once their block is in view. */
+.notes-content .table-wrap.rv:not(.rv-in) tbody tr {
+  opacity: 0;
+}
+.notes-content .table-wrap.rv-in tbody tr {
+  animation: notes-rise 0.55s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  animation-delay: calc(var(--i, 0) * 70ms + 120ms);
+}
+.notes-content ul.rv:not(.rv-in) > li,
+.notes-content ol.rv:not(.rv-in) > li {
+  opacity: 0;
+}
+.notes-content ul.rv-in > li,
+.notes-content ol.rv-in > li {
+  animation: notes-rise 0.5s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  animation-delay: calc(var(--i, 0) * 75ms + 80ms);
+}
+.notes-content .rv-in .det-eval {
+  animation: notes-glow 1.8s ease-out 0.4s 1 both;
+}
+@keyframes notes-rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes notes-glow {
+  0% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--r2-shaky) 55%, transparent);
+  }
+  60% {
+    box-shadow: 0 0 0 10px color-mix(in srgb, var(--r2-shaky) 0%, transparent);
+  }
+  100% {
+    box-shadow: 0 2px 6px color-mix(in srgb, var(--r2-shaky) 18%, transparent);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .notes-content .rv,
+  .notes-content .rv * {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+[data-theme='high-contrast'] .notes-content .table-wrap,
+[data-theme='high-contrast'] .notes-content .defn,
+[data-theme='high-contrast'] .notes-content .worked,
+[data-theme='high-contrast'] .notes-content .det {
+  box-shadow: none;
+  border-color: var(--fg);
+}
+
+/* ---- Readable prose ----
+   Muted grey at body size over a long measure was tiring to read. Body copy
+   now sits close to full foreground, the measure is shorter, spacing is
+   looser, and the first sentence of a long paragraph (.lead, added by
+   NotesBody) is set heavier so the eye knows where each idea starts. */
+.notes-content p {
+  max-width: 64ch;
+  margin-top: 1.05rem;
+  color: color-mix(in srgb, var(--fg) 86%, var(--muted));
+  font-size: 1.06rem;
+  line-height: 1.82;
+  letter-spacing: 0.005em;
+  hyphens: manual;
+}
+.notes-content li {
+  max-width: 64ch;
+  color: color-mix(in srgb, var(--fg) 84%, var(--muted));
+  line-height: 1.75;
+}
+.notes-content ul,
+.notes-content ol {
+  color: inherit;
+}
+.notes-content p .lead {
+  color: var(--fg);
+  font-weight: 650;
+}
+.notes-content p strong,
+.notes-content li strong {
+  color: var(--fg);
+  background: linear-gradient(transparent 62%, color-mix(in srgb, var(--brand) 22%, transparent) 62%);
+  padding: 0 0.1em;
+  border-radius: 0.15em;
+}
+
+/* ---- Hover: the page answers back ---- */
+.notes-content p,
+.notes-content li {
+  transition: color 0.2s, transform 0.2s, background 0.2s, box-shadow 0.2s;
+}
+.notes-content p:hover {
+  color: var(--fg);
+}
+.notes-content p:not(.exam-tip):hover {
+  box-shadow: -14px 0 0 -12px var(--brand);
+}
+.notes-content li:hover {
+  color: var(--fg);
+  transform: translateX(5px);
+}
+.notes-content li:hover::before {
+  box-shadow: 0 0 0 5px var(--brand-soft);
+  transform: scale(1.2);
+}
+.notes-content ul > li::before,
+.notes-content ol > li::before {
+  transition: box-shadow 0.2s, transform 0.2s;
+}
+.notes-content h3 {
+  transition: color 0.2s;
+}
+.notes-content h3:hover {
+  color: var(--brand-strong);
+}
+.notes-content h3:hover::after {
+  background: var(--brand);
+  color: var(--on-brand, #fff);
+  transform: rotate(-6deg) scale(1.08);
+}
+.notes-content h3::after {
+  transition: background 0.2s, color 0.2s, transform 0.25s cubic-bezier(0.3, 1.5, 0.4, 1);
+}
+.notes-content .defn,
+.notes-content .worked,
+.notes-content .exam-tip {
+  transition: transform 0.25s, box-shadow 0.25s;
+}
+.notes-content .defn:hover,
+.notes-content .worked:hover,
+.notes-content .exam-tip:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 18px 34px -22px color-mix(in srgb, var(--brand) 70%, #000);
+}
+.notes-content .table-wrap {
+  transition: box-shadow 0.3s, transform 0.3s;
+}
+.notes-content .table-wrap:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 20px 40px -24px color-mix(in srgb, var(--brand) 70%, #000);
+}
+@media (prefers-reduced-motion: reduce) {
+  .notes-content li:hover,
+  .notes-content .defn:hover,
+  .notes-content .worked:hover,
+  .notes-content .exam-tip:hover,
+  .notes-content .table-wrap:hover {
+    transform: none;
+  }
+}
+
+/* ---- Diagrams ink themselves as they scroll into view ---- */
+.notes-content .dgm-figure.rv:not(.rv-in) svg [data-draw] {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+}
+.notes-content .dgm-figure.rv-in svg [data-draw] {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 0;
+  animation: dgm-ink 1.5s cubic-bezier(0.4, 0.1, 0.3, 1) both;
+  animation-delay: calc(var(--di, 0) * 140ms + 150ms);
+}
+.notes-content .dgm-figure.rv:not(.rv-in) svg text,
+.notes-content .dgm-figure.rv:not(.rv-in) svg circle,
+.notes-content .dgm-figure.rv:not(.rv-in) svg polygon {
+  /* filter, not opacity: the diagrams set their own opacity on shading and
+     labels, and an animated opacity would overwrite it. */
+  filter: opacity(0);
+}
+.notes-content .dgm-figure.rv-in svg text,
+.notes-content .dgm-figure.rv-in svg circle,
+.notes-content .dgm-figure.rv-in svg polygon {
+  animation: dgm-fade 0.7s ease both;
+  animation-delay: 1.5s;
+}
+@keyframes dgm-ink {
+  from {
+    stroke-dashoffset: 1;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes dgm-fade {
+  from {
+    filter: opacity(0);
+  }
+  to {
+    filter: opacity(1);
+  }
+}
+
+/* ---- Small text that was too faint to read ---- */
+.notes-content p,
+.notes-content li {
+  color: color-mix(in srgb, var(--fg) 94%, var(--muted));
+}
+.notes-content .dgm-caption,
+.notes-content .dgm-caption p {
+  color: color-mix(in srgb, var(--fg) 92%, var(--muted));
+  font-size: 1.02rem;
+  line-height: 1.7;
+}
+.notes-content .dgm-caption strong {
+  font-size: 1.08rem;
+}
+.notes-content .dgm-caption-eyebrow {
+  font-size: 0.74rem;
+}
+.notes-content .dgm-annotations {
+  font-size: 0.98rem;
+  line-height: 1.6;
+}
+.notes-content .dgm-note,
+.notes-content .dgm-axis,
+.notes-content .dgm-label {
+  font-weight: 600;
+}

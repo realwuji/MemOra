@@ -7,13 +7,12 @@ import Pfp from '@/components/ui/Pfp'
 import SigilWordmark from '@/components/ui/SigilWordmark'
 import AtmosphereBackground from '@/components/ui/AtmosphereBackground'
 import AccentPicker from '@/components/ui/AccentPicker'
-import MascotPicker, { LookSwatch } from '@/components/ui/MascotPicker'
 import Footer from '@/components/layout/Footer'
 import { useApp } from '@/context/AppProvider'
 import { isValidEmail, passwordProblem } from '@/lib/auth'
 import { usernameProblem, suggestUsername } from '@/lib/friends'
-import { mascotById } from '@/constants/mascots'
 import { spotifyConfigured, beginSpotifyLogin } from '@/lib/spotify'
+import useIsDesktop from '@/hooks/useIsDesktop'
 
 /*
   Sign in / create account, in two stages for a new account:
@@ -60,7 +59,8 @@ function Field({ id, label, type = 'text', value, onChange, error, autoComplete,
 
 export default function SignIn() {
   const navigate = useNavigate()
-  const { signIn, signUp, account, user, friends, setMascot, setUsername, setAvatar, applyLook, showToast } = useApp()
+  const { signIn, signUp, account, user, friends, setUsername, setAvatar, showToast } = useApp()
+  const isDesktop = useIsDesktop()
   const [searchParams] = useSearchParams()
   const logoTo = account ? '/dashboard' : '/'
 
@@ -76,9 +76,6 @@ export default function SignIn() {
   const [errors, setErrors] = useState({})
   const [busy, setBusy] = useState(false)
 
-  const [mascot, setMascotChoice] = useState({ kind: 'builtin', id: 'pochita' })
-  const [useLook, setUseLook] = useState(true)
-  const built = mascot.kind === 'custom' ? null : mascotById(mascot.id)
 
   const [username, setUsernameDraft] = useState('')
   const [usernameTouched, setUsernameTouched] = useState(false)
@@ -127,26 +124,17 @@ export default function SignIn() {
     }
   }
 
-  // Applies the buddy/look regardless of whether a username is set - only
-  // the username itself is skippable.
-  const applyBuddyChoice = () => {
-    setMascot(mascot)
-    if (useLook && built) applyLook(built.look)
-  }
-
   const finishSetup = () => {
     const problem = usernameProblem(usernameValue, { taken: takenUsernames })
     if (problem) {
       setErrors({ username: problem })
       return
     }
-    applyBuddyChoice()
     setUsername(usernameValue)
     navigate('/dashboard')
   }
 
   const skipUsername = () => {
-    applyBuddyChoice()
     navigate('/dashboard')
   }
 
@@ -159,7 +147,6 @@ export default function SignIn() {
       setErrors({ username: problem })
       return
     }
-    applyBuddyChoice()
     if (!problem) setUsername(usernameValue)
     beginSpotifyLogin()
   }
@@ -212,32 +199,9 @@ export default function SignIn() {
               </div>
 
               <div className="mt-6">
-                <span className="mb-1 block text-sm font-semibold text-fg">Pick your study buddy</span>
-                <p className="mb-2 text-xs text-muted">
-                  It lives on your dashboard and your friend card, and it talks back.
-                </p>
-                <MascotPicker value={mascot} onChange={setMascotChoice} compact />
+                <span className="mb-2 block text-sm font-semibold text-fg">Accent colour</span>
+                <AccentPicker />
               </div>
-
-              {built ? (
-                <label className="mt-4 flex cursor-pointer items-center justify-between gap-3 rounded-2xl border border-line bg-surface px-4 py-3">
-                  <span className="min-w-0">
-                    <span className="block text-sm font-semibold text-fg">Use {built.name}&rsquo;s look</span>
-                    <LookSwatch look={built.look} className="mt-0.5" />
-                  </span>
-                  <input
-                    type="checkbox"
-                    checked={useLook}
-                    onChange={(e) => setUseLook(e.target.checked)}
-                    className="h-5 w-5 shrink-0 accent-[var(--brand)]"
-                  />
-                </label>
-              ) : (
-                <div className="mt-4">
-                  <span className="mb-2 block text-sm font-semibold text-fg">Accent colour</span>
-                  <AccentPicker />
-                </div>
-              )}
 
               <div className="mt-4">
                 <Field
@@ -261,7 +225,7 @@ export default function SignIn() {
                 </p>
               </div>
 
-              {spotifyConfigured() && (
+              {isDesktop && spotifyConfigured() && (
                 <div className="mt-4 flex items-center justify-between gap-3 rounded-2xl border border-line bg-surface px-4 py-3">
                   <span className="flex min-w-0 items-center gap-3">
                     <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-brand-soft">

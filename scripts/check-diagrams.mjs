@@ -18,7 +18,6 @@ import { readFileSync } from 'node:fs'
 import { getPackByName } from '../src/constants/library.js'
 import { diagramsForChapter } from '../src/constants/diagram-map.js'
 import { DIAGRAM_KEYWORDS } from '../src/constants/diagram-keywords.js'
-import { ECON_ESSAY_ANSWERS } from '../src/constants/econ-essay-answers.js'
 
 const SOURCES = {
   Economics: ['economics', 'economicsExtra', 'economicsGaps'],
@@ -102,16 +101,6 @@ const head = ['subject', 'chapters', 'illustrated', 'markers', 'flashcards', 'mc
 const w = head.map((h, i) => Math.max(h.length, ...rows.map((r) => String(r[i]).length)))
 console.log(head.map((h, i) => h.padEnd(w[i])).join('  '))
 for (const r of rows) console.log(r.map((c, i) => String(c).padEnd(w[i])).join('  '))
-
-// The essay planner's developed answers embed diagrams too - beside the
-// chain or evaluation they support - so a diagram shown only there counts
-// as shown, and one they name that does not exist is a problem.
-for (const [qid, a] of Object.entries(ECON_ESSAY_ANSWERS)) {
-  for (const d of a.diagrams || []) {
-    if (!known.has(d[0])) problems.push(`essay answer ${qid}: unknown diagram "${d[0]}"`)
-    used.add(d[0])
-  }
-}
 
 const unused = [...known].filter((k) => !used.has(k))
 if (unused.length) problems.push(`built but never shown in any note: ${unused.join(', ')}`)

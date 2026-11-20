@@ -38,8 +38,6 @@ const stat = (pack, id) => {
     case 'notes':
       return `${Object.keys(pack.notes || {}).length} chapters`
     case 'flashcards':
-    case 'active-recall':
-    case 'blurting':
       return `${pack.flashcards?.length || 0} cards`
     case 'mcq':
       return `${pack.mcq?.length || 0} questions`
@@ -47,6 +45,15 @@ const stat = (pack, id) => {
       return `${pack.examQuestions?.length || 0} questions with mark schemes`
     case 'essay-plans':
       return `${pack.essayBank?.length || 0} essay questions`
+    case 'diagram-revision':
+      return 'randomised, with animated shifts'
+    case 'diagram-bank':
+      return 'every diagram, searchable and replayable'
+    case 'application': {
+      const n = [pack.applications, pack.realCases].reduce((t, m) => t + Object.values(m || {}).reduce((a, l) => a + l.length, 0), 0)
+      const topics = new Set([...Object.keys(pack.applications || {}), ...Object.keys(pack.realCases || {})]).size
+      return `${n} cases across ${topics} topics`
+    }
     case 'mock':
       return 'timed paper, randomised'
     default:
@@ -59,9 +66,10 @@ const ICON_TINT = {
   flashcards: '#7c6cf0',
   'exam-questions': '#d9557f',
   mcq: '#2e9e6b',
-  blurting: '#e08a2c',
-  'active-recall': '#0d9488',
   'essay-plans': '#b45309',
+  'diagram-revision': '#0e7490',
+  application: '#c2410c',
+  'diagram-bank': '#0f766e',
   mock: '#4f46e5',
 }
 

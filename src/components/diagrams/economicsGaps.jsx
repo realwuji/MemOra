@@ -177,7 +177,8 @@ function LongRunPhillips() {
       <Dot x={px(nairu)} y={py(at(nairu, 0.44))} r={4} colour="var(--fg)" label="C" dy={-10} />
       <ShiftArrow x1={px(nairu) - 4} y1={py(at(nairu, 0.18)) - 4} x2={px(0.34)} y2={py(at(0.32, 0.18)) + 6} colour={DEMAND} />
       <ShiftArrow x1={px(0.34)} y1={py(at(0.32, 0.18)) - 6} x2={px(nairu) - 4} y2={py(at(nairu, 0.44)) + 6} colour={SOCIAL} />
-      <Note x={px(0.42)} y={py(0.97)}>expectations adjust → SRPC shifts up</Note>
+      <Note x={px(0.78)} y={py(0.93)}>expectations adjust:</Note>
+      <Note x={px(0.78)} y={py(0.85)}>SRPC shifts up</Note>
     </Figure>
   )
 }
@@ -283,7 +284,7 @@ function BondPriceYield() {
         A bond paying a fixed £5 coupon each year
       </Text>
       {[
-        { y: 66, price: '£100', yieldTxt: '5 ÷ 100 = 5.0%', note: 'issued at face value', colour: 'var(--muted)' },
+        { y: 66, price: '£100', yieldTxt: '5 ÷ 100 = 5.0%', note: 'face value', colour: 'var(--muted)' },
         { y: 132, price: '£125', yieldTxt: '5 ÷ 125 = 4.0%', note: 'price UP → yield DOWN', colour: SOCIAL },
         { y: 198, price: '£80', yieldTxt: '5 ÷ 80 = 6.25%', note: 'price DOWN → yield UP', colour: LOSS },
       ].map((r) => (

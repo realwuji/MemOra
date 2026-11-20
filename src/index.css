@@ -15,7 +15,9 @@
      `--color-brand` -> `bg-brand` / `text-brand`.
 
   The engine (src/context/AccessibilityProvider.jsx) sets these on <html>:
-    data-theme   -> light | dark | cream | high-contrast
+    data-theme   -> dark (shown as "Black") | cream | high-contrast
+                    The header toggle flips black <-> cream; high-contrast is
+                    only reachable from Settings > Appearance.
     data-font    -> default | dyslexic | hyperlegible
     data-spacing -> normal | relaxed | loose      (line height)
     data-letter  -> normal | wide                 (letter/word spacing)
@@ -81,18 +83,29 @@
      inheritance. Never replace the var(--brand) fallback with a literal
      colour - that would break the accent picker for every plain button. */
   --btn-tint: var(--brand);
+  /* The header theme toggle (.theme-toggle, bottom of this file): sky and
+     sun here, night and moon in the black theme. Declared in every theme
+     block, never read from a component. */
+  --tt-track: #a9cdee;
+  --tt-ring: #3b3427;
+  --tt-knob: #efc04a;
+  --tt-knob-edge: #b8892a;
+  --tt-icon: #5a3d0c;
+  --tt-star: transparent;
   color-scheme: light;
 }
 
 [data-theme='dark'] {
-  /* Deep navy, not neutral black - carries the same blue hue as light mode
-     instead of the two themes reading as unrelated palettes. */
-  --page: #060a16;
-  --surface: #0e1526;
-  --raised: #182036;
-  --line: #29334d;
-  --fg: #f1f5fb;
-  --muted: #97a2c2;
+  /* Black - a warm near-black with cream text, so it reads as the cream
+     theme's night-time twin rather than an unrelated palette. The page is
+     never pure #000 (that makes cream text bloom and hides every surface
+     step); each step up is a hair warmer and lighter. */
+  --page: #0f0d0a;
+  --surface: #181510;
+  --raised: #231f18;
+  --line: #3a3429;
+  --fg: #f5eedb;
+  --muted: #b3a88f;
   --brand: #3b82f6;
   --brand-strong: #93c5fd;
   --brand-soft: #1a2a4a;
@@ -115,11 +128,17 @@
   /* Same five hues as light, lifted lighter and slightly desaturated for a
      dark ground - never inverted, so "which band is which" stays learnable
      across a theme switch. */
-  --r0-not-started: #4a5568;
+  --r0-not-started: #554d41;
   --r1-seen: #7c8db5;
   --r2-shaky: #f0b94a;
   --r3-solid: #4fc2a0;
   --r4-exam-ready: #2ecc81;
+  --tt-track: #1f2947;
+  --tt-ring: #8f826b;
+  --tt-knob: #efe6cf;
+  --tt-knob-edge: #c9bd9d;
+  --tt-icon: #3b3427;
+  --tt-star: #f5eedb;
   color-scheme: dark;
 }
 
@@ -155,6 +174,12 @@
   --r2-shaky: #c87f1e;
   --r3-solid: #3f8f6b;
   --r4-exam-ready: #1f6b48;
+  --tt-track: #a9cdee;
+  --tt-ring: var(--fg);
+  --tt-knob: #efc04a;
+  --tt-knob-edge: #b8892a;
+  --tt-icon: #5a3d0c;
+  --tt-star: transparent;
   color-scheme: light;
 }
 
@@ -246,6 +271,12 @@
   --r2-shaky: #ff8c00;
   --r3-solid: #00c2ff;
   --r4-exam-ready: #39ff6a;
+  --tt-track: #000000;
+  --tt-ring: #ffffff;
+  --tt-knob: #ffe500;
+  --tt-knob-edge: #ffffff;
+  --tt-icon: #000000;
+  --tt-star: #ffffff;
   color-scheme: dark;
 }
 
@@ -1263,13 +1294,13 @@ body {
     50% { transform: scale(1.97) translate(-0.6%, 0.4%); }
   }
   [data-theme='dark'] .hero-video {
-    /* Partial desaturation, not full grayscale - the footage is naturally
-       blue, so easing off (rather than stripping) the colour keeps dark
-       mode in the same navy family as the page tokens above. */
-    filter: blur(14px) grayscale(0.5) saturate(0.9) brightness(0.62) contrast(1.25);
+    /* The footage is naturally blue. Both themes strip that to grey and
+       re-warm it with a little sepia, so the backdrop sits in the black /
+       cream palette instead of reading as a blue wash behind it. */
+    filter: blur(14px) grayscale(1) sepia(0.4) brightness(0.6) contrast(1.25);
   }
   [data-theme='cream'] .hero-video {
-    filter: blur(14px) saturate(0.95) sepia(0.12);
+    filter: blur(14px) grayscale(1) sepia(0.45) brightness(1.1) contrast(0.95);
   }
   .hero-video-tint {
     background: color-mix(in srgb, var(--page) 30%, transparent);
@@ -1409,9 +1440,41 @@ input[type='password']::-webkit-credentials-auto-fill-button {
   }
 }
 
-/* Comfortable custom scrollbar that follows the theme. */
-* {
-  scrollbar-color: var(--line) transparent;
+/* Scrollbars that stay put. Windows draws a thin overlay scrollbar that fades in
+   while you scroll and out a second later, which over a dark page looks like a
+   flicker at the right edge. Styling the scrollbar ourselves turns the overlay
+   off: the bar is always there, in its own reserved strip, themed to the page,
+   so nothing pops in or out and nothing is drawn over the header. Firefox has no
+   such pseudo-elements, so it gets the standard thin version. */
+html {
+  scrollbar-gutter: stable;
+}
+@supports selector(::-webkit-scrollbar) {
+  ::-webkit-scrollbar {
+    width: 12px;
+    height: 12px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    border: 3px solid transparent;
+    border-radius: 999px;
+    background-color: color-mix(in srgb, var(--fg) 24%, transparent);
+    background-clip: content-box;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: color-mix(in srgb, var(--brand) 70%, transparent);
+  }
+  ::-webkit-scrollbar-corner {
+    background: transparent;
+  }
+}
+@supports not selector(::-webkit-scrollbar) {
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: color-mix(in srgb, var(--fg) 28%, transparent) transparent;
+  }
 }
 
 /* ------------------------------------------------------- MARQUEE (ticker) */
@@ -2147,4 +2210,95 @@ input[type='password']::-webkit-credentials-auto-fill-button {
 }
 .music-link-form input:focus {
   background: var(--surface);
+}
+
+/* ------------------------------------------------------- THEME TOGGLE
+   The sun/moon pill in the header (components/layout/ThemeSwitcher.jsx).
+   Position comes from data-state, colour from the --tt-* tokens declared in
+   each theme block, so it reads correctly in every runtime theme. */
+.theme-toggle {
+  position: relative;
+  display: inline-block;
+  flex: none;
+  width: 4.5rem;
+  height: 2.25rem;
+  padding: 0;
+  border: 2px solid var(--tt-ring);
+  border-radius: 999px;
+  background: var(--tt-track);
+  box-shadow: 0 2px 0 var(--tt-ring);
+  cursor: pointer;
+  overflow: hidden;
+  transition: background-color 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
+}
+/* The global :focus-visible rule rounds to 6px; keep the pill. */
+.theme-toggle:focus-visible { border-radius: 999px; }
+.theme-toggle:hover .theme-toggle-knob { filter: brightness(1.08); }
+
+.theme-toggle-knob {
+  position: absolute;
+  top: 50%;
+  left: 0.1875rem;
+  display: grid;
+  place-items: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  margin-top: -0.875rem;
+  border-radius: 50%;
+  background: var(--tt-knob);
+  box-shadow: inset 0 0 0 2px var(--tt-knob-edge);
+  color: var(--tt-icon);
+  transition: transform 0.45s cubic-bezier(0.34, 1.4, 0.5, 1), background-color 0.4s ease, box-shadow 0.4s ease;
+}
+.theme-toggle[data-state='black'] .theme-toggle-knob { transform: translateX(2.125rem); }
+
+.theme-toggle-icon {
+  position: absolute;
+  width: 1rem;
+  height: 1rem;
+  transition: opacity 0.3s ease, transform 0.45s ease;
+}
+.theme-toggle-moon { opacity: 0; transform: rotate(-70deg) scale(0.5); }
+.theme-toggle[data-state='black'] .theme-toggle-sun { opacity: 0; transform: rotate(70deg) scale(0.5); }
+.theme-toggle[data-state='black'] .theme-toggle-moon { opacity: 1; transform: none; }
+
+.theme-toggle-stars { position: absolute; inset: 0; opacity: 0; transition: opacity 0.4s ease; }
+.theme-toggle[data-state='black'] .theme-toggle-stars { opacity: 1; }
+.theme-toggle-stars i {
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: var(--tt-star);
+}
+.theme-toggle-stars i:nth-child(1) { left: 16%; top: 26%; }
+.theme-toggle-stars i:nth-child(2) { left: 30%; top: 62%; width: 2px; height: 2px; }
+.theme-toggle-stars i:nth-child(3) { left: 42%; top: 30%; }
+.theme-toggle-stars i:nth-child(4) { left: 22%; top: 48%; width: 2px; height: 2px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .theme-toggle,
+  .theme-toggle-knob,
+  .theme-toggle-icon,
+  .theme-toggle-stars { transition: none; }
+}
+
+/* ------------------------------------------------------- THEME REVEAL
+   lib/themeTransition.js grows the new theme out of the toggle as a circle.
+   The browser's default cross-fade is switched off so the two snapshots just
+   stack (new on top) and the clip-path animation set from JS does the work.
+   While it runs, every CSS transition except the toggle's own is off, so
+   colours inside the circle are already their final values. */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+::view-transition-old(root) { z-index: 1; }
+::view-transition-new(root) { z-index: 2; }
+
+html.theme-switching :not(.theme-toggle, .theme-toggle *),
+html.theme-switching :not(.theme-toggle, .theme-toggle *)::before,
+html.theme-switching :not(.theme-toggle, .theme-toggle *)::after {
+  transition: none !important;
 }

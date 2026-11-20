@@ -19,6 +19,13 @@ export const NAV_LINKS = [
   { label: 'Community', to: '/community' },
 ]
 
+// The sun/moon theme toggle in the header (components/layout/ThemeSwitcher.jsx).
+export const THEME_TOGGLE = {
+  label: 'Black theme',
+  toCream: 'Switch to the cream theme',
+  toBlack: 'Switch to the black theme',
+}
+
 /* --------------------------------------------------------- LANDING */
 
 export const LANDING = {
@@ -198,14 +205,19 @@ export const STUDY_TECHNIQUES = [
   { id: 'flashcards', icon: 'cards', label: 'Flashcards', desc: 'Flip prompts and answers' },
   { id: 'exam-questions', icon: 'paper', label: 'Exam questions', desc: 'Practise the real thing' },
   { id: 'mcq', icon: 'quiz', label: 'MCQ', desc: 'Quick multiple choice' },
-  { id: 'blurting', icon: 'brain', label: 'Blurting', desc: 'Dump everything you know' },
-  { id: 'active-recall', icon: 'refresh', label: 'Active recall', desc: 'Test, do not re-read' },
   // The exam questions technique holds full, marked-up 25-mark essays for
   // studying what a complete answer contains. This is the different skill:
   // planning one from a cold question in the three minutes you actually get
   // before writing, across far more questions than anyone has time to write
-  // ten full essays for. See econ-essay-bank.js and EssayPlanner.jsx.
+  // ten full essays for. See econ-plans.js and EssayPlans.jsx.
   { id: 'essay-plans', icon: 'scroll', label: 'Essay plans', desc: 'Structure an answer fast' },
+  // Applied cases for each topic (see ApplicationRunner.jsx): the scenarios that
+  // used to sit inside the notes, plus dated current events.
+  { id: 'application', icon: 'lightbulb', label: 'Application', desc: 'Real cases for every topic' },
+  // Economics only (see techniqueHasContent): a context, which diagram to draw, then the shift animated.
+  { id: 'diagram-revision', icon: 'target', label: 'Diagram revision', desc: 'Which diagram? Watch it shift' },
+  // Every diagram in the bank to browse and replay (see DiagramBank.jsx).
+  { id: 'diagram-bank', icon: 'search', label: 'Diagram bank', desc: 'Every diagram, drawn step by step' },
 ]
 
 /* ------------------------------------------------ MARKETING (how it works) */
@@ -223,7 +235,7 @@ export const MARKETING = {
     heading: 'Everything you need to revise properly',
     intro: 'Real, spec-accurate practice, built topic by topic. Here is what you get.',
     items: [
-      { icon: 'cards', title: 'Real practice, your way', body: 'Focus sessions with proper content by technique. Flashcards, multiple choice with instant feedback, exam questions with mark schemes, blurting, and active recall. Pick what suits the day.' },
+      { icon: 'cards', title: 'Real practice, your way', body: 'Focus sessions with proper content by technique. Flashcards, multiple choice with instant feedback, and exam questions with mark schemes, plus essay plans, application cases, diagram revision and a diagram bank for Economics. Pick what suits the day.' },
       { icon: 'wand', title: 'Build your own decks', body: 'Study the built-in flashcard decks, or make your own. Save the ones you love, delete the ones you have nailed, and come back to them whenever you need a refresher.' },
       { icon: 'activity', title: 'See yourself improving', body: 'Progress tracking with per-subject trend sparklines, so you can watch the effort add up over time.' },
       { icon: 'target', title: 'A plan that adapts', body: 'Rate how a session went, and the next one for that subject notices. A tough topic gets an easier way back in.' },
@@ -234,7 +246,7 @@ export const MARKETING = {
     intro: 'No setup marathon. You can be studying in under a minute.',
     steps: [
       { icon: 'cap', title: 'Pick a subject', body: 'Maths, Economics, or Computer Science, plus whichever topic you want to focus on.' },
-      { icon: 'book', title: 'Pick a technique', body: 'Flashcards, MCQs, exam questions, blurting, or active recall. Whatever fits how you want to work right now.' },
+      { icon: 'book', title: 'Pick a technique', body: 'Flashcards, MCQs, exam questions and more. Whatever fits how you want to work right now.' },
       { icon: 'refresh', title: 'Rate it, and repeat', body: 'When you finish, rate how it went. Come back tomorrow and the app remembers what needs another pass.' },
     ],
   },

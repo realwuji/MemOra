@@ -3,12 +3,14 @@ import AppBar from './AppBar'
 import Footer from './Footer'
 import FocusMusic from '@/components/ui/FocusMusic'
 import LevelUp from '@/components/ui/LevelUp'
+import useIsDesktop from '@/hooks/useIsDesktop'
 
 /*
   Shell for every app page: top bar + routed page. No login gate; this is a
   single-user, on-device tool.
 */
 export default function AppLayout() {
+  const isDesktop = useIsDesktop()
   return (
     <div className="flex min-h-screen flex-col">
       <a href="#main-content" className="skip-link">
@@ -19,8 +21,8 @@ export default function AppLayout() {
         <Outlet />
       </main>
       <Footer />
-      {/* Corner Spotify player - persists across app routes, see FocusMusic. */}
-      <FocusMusic />
+      {/* Corner Spotify player - PC only, persists across app routes, see FocusMusic. */}
+      {isDesktop && <FocusMusic />}
       {/* Level-up screen - watches XP on every app page. */}
       <LevelUp />
     </div>

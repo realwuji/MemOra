@@ -9,12 +9,10 @@ import AccentPicker from '@/components/ui/AccentPicker'
 import Chip from '@/components/ui/Chip'
 import Avatar from '@/components/ui/Avatar'
 import SubjectPicker from '@/components/ui/SubjectPicker'
-import MascotPicker, { LookSwatch } from '@/components/ui/MascotPicker'
 import FriendCard from '@/components/friends/FriendCard'
 import { AssessmentQuickAdd } from '@/components/dashboard/AssessmentsCard'
 import useMe from '@/hooks/useMe'
 import { assessmentType } from '@/constants/assessments'
-import { mascotById } from '@/constants/mascots'
 import { fadeInUp } from '@/lib/motion'
 import { PRIORITISED_COURSES, ADVANCED_YEAR_GROUPS, YEAR_GROUPS, specsFor } from '@/constants/content'
 import { useApp, THEMES, THEME_META } from '@/context/AppProvider'
@@ -33,7 +31,6 @@ import { XP_RULES, LEVEL_REWARDS, xpBreakdown } from '@/lib/xp'
 
 const SECTIONS = [
   { id: 'profile', label: 'My profile', icon: 'user' },
-  { id: 'buddy', label: 'Study buddy', icon: 'sparkles' },
   { id: 'appearance', label: 'Appearance', icon: 'sun' },
   { id: 'courses', label: 'Courses', icon: 'cap' },
   { id: 'assessments', label: 'Assessment dates', icon: 'calendar' },
@@ -107,11 +104,9 @@ export default function Profile() {
     account,
     signOut,
     showToast,
-    setMascot,
     setUsername,
     setBanner,
     setBannerPos,
-    applyLook,
     setName,
     setBio,
     setAvatar,
@@ -169,7 +164,6 @@ export default function Profile() {
 
   const isAdvanced = PRIORITISED_COURSES.includes(user.courseType)
   const yearGroupOptions = isAdvanced ? ADVANCED_YEAR_GROUPS : YEAR_GROUPS.filter((y) => y !== 'University')
-  const built = user.mascot?.kind === 'custom' ? null : mascotById(user.mascot?.id)
 
   const saveSubjects = (next) => {
     const cleaned = next
@@ -316,34 +310,6 @@ export default function Profile() {
                 </Field>
               </div>
 
-            </Panel>
-          )}
-
-          {section === 'buddy' && (
-            <Panel
-              key="buddy"
-              title="Study buddy"
-              blurb="Lives on your dashboard banner, your friend card and the leaderboard. Tap it on the dashboard - it talks back."
-            >
-              <MascotPicker value={user.mascot} onChange={setMascot} />
-              {built && (
-                <div className="mt-5 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-line bg-page p-4">
-                  <div>
-                    <p className="text-sm font-bold text-fg">{built.name}&rsquo;s look</p>
-                    <LookSwatch look={built.look} className="mt-1" />
-                  </div>
-                  <Button
-                    size="sm"
-                    onClick={() => {
-                      applyLook(built.look)
-                      showToast(`${built.look.label} applied`)
-                    }}
-                  >
-                    <Icon name="wand" className="h-4 w-4" />
-                    Use this look
-                  </Button>
-                </div>
-              )}
             </Panel>
           )}
 

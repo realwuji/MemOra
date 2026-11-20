@@ -1,0 +1,489 @@
+/* ===================================================================
+   Chapter picker: hero summary, filters, grouped chapter cards.
+   --subject is the subject's own colour, set on .cp-root.
+   =================================================================== */
+.cp-root {
+  --done: var(--r3-solid, #2e9e6b);
+  --doing: var(--r2-shaky, #e0a032);
+}
+
+/* ------------------------------------------------------------- hero */
+.cp-hero {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 1.7rem 1.8rem;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--subject) 35%, var(--line));
+  border-radius: 1.7rem;
+  background:
+    radial-gradient(70% 120% at 100% 0%, color-mix(in srgb, var(--subject) 26%, transparent), transparent 65%),
+    radial-gradient(50% 90% at 0% 100%, color-mix(in srgb, var(--subject) 12%, transparent), transparent 70%),
+    var(--surface);
+  box-shadow: 0 30px 60px -40px color-mix(in srgb, var(--subject) 70%, #000);
+}
+.cp-hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(color-mix(in srgb, var(--fg) 9%, transparent) 1px, transparent 1px);
+  background-size: 22px 22px;
+  mask-image: linear-gradient(120deg, #000, transparent 60%);
+  pointer-events: none;
+}
+.cp-hero-text {
+  position: relative;
+  min-width: 0;
+}
+.cp-eyebrow {
+  margin: 0;
+  color: var(--subject);
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+.cp-title {
+  margin: 0.45rem 0 0;
+  color: var(--fg);
+  font-family: var(--font-head);
+  font-size: clamp(2rem, 4.4vw, 3rem);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+}
+.cp-sub {
+  margin: 0.7rem 0 0;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+.cp-hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+  margin-top: 1.2rem;
+}
+.cp-primary,
+.cp-ghost {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 0.75rem 1.15rem;
+  border-radius: 999px;
+  font-weight: 700;
+  line-height: 1.25;
+  text-align: left;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+}
+.cp-primary {
+  border: 0;
+  background: var(--subject);
+  color: #fff;
+  box-shadow: 0 14px 28px -14px var(--subject);
+}
+.cp-primary small {
+  display: block;
+  opacity: 0.8;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.cp-primary:hover,
+.cp-ghost:hover {
+  transform: translateY(-2px);
+}
+.cp-ghost {
+  border: 1px solid var(--line);
+  background: color-mix(in srgb, var(--surface) 70%, transparent);
+  color: var(--fg);
+}
+.cp-ghost:hover {
+  border-color: var(--subject);
+}
+.cp-ghost small {
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+.cp-hero-ring {
+  position: relative;
+}
+.cp-hero-num {
+  display: block;
+  color: var(--fg);
+  font-family: var(--font-head);
+  font-size: 2.3rem;
+  font-weight: 800;
+  line-height: 1;
+}
+.cp-hero-num small {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--muted);
+}
+.cp-hero-cap {
+  display: block;
+  margin-top: 0.15rem;
+  color: var(--muted);
+  font-size: 0.66rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+@media (max-width: 640px) {
+  .cp-hero {
+    grid-template-columns: minmax(0, 1fr);
+    padding: 1.3rem;
+  }
+  .cp-hero-ring {
+    order: -1;
+    justify-self: start;
+  }
+}
+
+/* ------------------------------------------------------------- ring */
+.cp-ring {
+  position: relative;
+  display: inline-grid;
+  flex: none;
+  place-items: center;
+}
+.cp-ring svg {
+  grid-area: 1 / 1;
+}
+.cp-ring-track {
+  fill: none;
+  stroke: color-mix(in srgb, var(--fg) 12%, transparent);
+}
+.cp-ring-fill {
+  fill: none;
+  stroke: var(--muted);
+  stroke-linecap: round;
+  transition: stroke-dasharray 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.cp-ring.is-done .cp-ring-fill {
+  stroke: var(--done);
+  filter: drop-shadow(0 0 5px color-mix(in srgb, var(--done) 65%, transparent));
+}
+.cp-ring.is-doing .cp-ring-fill {
+  stroke: var(--doing);
+}
+.cp-ring-mid {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  place-items: center;
+  text-align: center;
+  color: var(--done);
+}
+
+/* ---------------------------------------------------------- filters */
+.cp-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.9rem;
+  margin-top: 1.4rem;
+}
+.cp-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.cp-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.9rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--fg);
+  font-size: 0.86rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s, transform 0.2s;
+}
+.cp-chip:hover {
+  border-color: var(--subject);
+  transform: translateY(-1px);
+}
+.cp-chip span {
+  padding: 0.05rem 0.45rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--fg) 10%, transparent);
+  color: var(--muted);
+  font-size: 0.74rem;
+}
+.cp-chip i {
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 999px;
+  background: var(--muted);
+}
+.cp-chip.is-doing i {
+  background: var(--doing);
+}
+.cp-chip.is-done i {
+  background: var(--done);
+}
+.cp-chip.is-on {
+  border-color: var(--subject);
+  background: color-mix(in srgb, var(--subject) 18%, var(--surface));
+}
+.cp-search {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  width: min(100%, 17rem);
+  padding: 0.5rem 0.95rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--muted);
+}
+.cp-search:focus-within {
+  border-color: var(--subject);
+}
+.cp-search input {
+  width: 100%;
+  min-width: 0;
+  border: 0;
+  background: none;
+  color: var(--fg);
+  font-size: 0.9rem;
+  outline: none;
+}
+
+/* ----------------------------------------------------------- groups */
+.cp-groups {
+  display: grid;
+  gap: 2.4rem;
+  margin-top: 1.8rem;
+}
+.cp-group-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem 1.2rem;
+  padding-bottom: 0.7rem;
+  border-bottom: 1px solid var(--line);
+}
+.cp-group-head h2 {
+  margin: 0;
+  color: var(--fg);
+  font-family: var(--font-head);
+  font-size: 1.2rem;
+  font-weight: 800;
+}
+.cp-group-meter {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+}
+.cp-group-meter b {
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-variant-numeric: tabular-nums;
+}
+.cp-meter {
+  display: flex;
+  width: 9rem;
+  height: 0.5rem;
+  overflow: hidden;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--fg) 12%, transparent);
+}
+.cp-meter i {
+  display: block;
+  height: 100%;
+}
+.cp-meter .is-done {
+  background: var(--done);
+}
+.cp-meter .is-doing {
+  background: var(--doing);
+}
+.cp-sub-group {
+  margin-top: 1.1rem;
+}
+.cp-sub-label {
+  margin: 0 0 0.6rem;
+  color: var(--muted);
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.cp-grid {
+  display: grid;
+  gap: 0.8rem;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 17rem), 1fr));
+}
+.cp-empty {
+  margin-top: 1.6rem;
+  padding: 1.2rem;
+  border: 1px dashed var(--line);
+  border-radius: 1rem;
+  color: var(--muted);
+}
+
+/* ------------------------------------------------------------ cards */
+.cp-card {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 0.2rem 0.85rem;
+  min-height: 5.8rem;
+  padding: 1rem 1rem 1rem 1.15rem;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 1.15rem;
+  background: var(--surface);
+  color: var(--fg);
+  text-align: left;
+  cursor: pointer;
+  transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.2s, box-shadow 0.25s;
+}
+.cp-card::before {
+  content: '';
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 4px;
+  background: color-mix(in srgb, var(--fg) 16%, transparent);
+  transition: background 0.2s;
+}
+.cp-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(15rem circle at var(--mx, 50%) var(--my, 50%), color-mix(in srgb, var(--subject) 20%, transparent), transparent 70%);
+  opacity: 0;
+  transition: opacity 0.25s;
+  pointer-events: none;
+}
+.cp-card:hover,
+.cp-card:focus-visible {
+  transform: translateY(-4px);
+  border-color: color-mix(in srgb, var(--subject) 70%, var(--line));
+  box-shadow: 0 22px 36px -26px var(--subject);
+  outline: none;
+}
+.cp-card:hover::after,
+.cp-card:focus-visible::after {
+  opacity: 1;
+}
+.cp-card:hover::before {
+  background: var(--subject);
+}
+.cp-card.is-doing::before {
+  background: var(--doing);
+}
+.cp-card.is-done {
+  border-color: color-mix(in srgb, var(--done) 40%, var(--line));
+  background: linear-gradient(135deg, color-mix(in srgb, var(--done) 9%, var(--surface)), var(--surface) 70%);
+}
+.cp-card.is-done::before {
+  background: var(--done);
+}
+.cp-card-n {
+  grid-row: 1 / span 2;
+  align-self: start;
+  color: color-mix(in srgb, var(--subject) 55%, transparent);
+  font-family: var(--font-head);
+  font-size: 1.55rem;
+  font-weight: 800;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+.cp-card-body {
+  display: grid;
+  gap: 0.45rem;
+  min-width: 0;
+}
+.cp-card-title {
+  color: var(--fg);
+  font-size: 0.98rem;
+  font-weight: 750;
+  line-height: 1.3;
+}
+.cp-card-status {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.45rem;
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+.cp-card-status i {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 999px;
+  background: var(--muted);
+}
+.cp-card.is-doing .cp-card-status {
+  color: var(--doing);
+}
+.cp-card.is-doing .cp-card-status i {
+  background: var(--doing);
+}
+.cp-card.is-done .cp-card-status {
+  color: var(--done);
+}
+.cp-card.is-done .cp-card-status i {
+  background: var(--done);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--done) 25%, transparent);
+}
+.cp-card-status em {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.05rem 0.5rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--done) 18%, transparent);
+  font-size: 0.68rem;
+  font-style: normal;
+  font-weight: 800;
+}
+.cp-card-go {
+  position: absolute;
+  right: 0.9rem;
+  bottom: 0.7rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  color: var(--subject);
+  font-size: 0.76rem;
+  font-weight: 800;
+  opacity: 0;
+  transform: translateX(-6px);
+  transition: opacity 0.2s, transform 0.2s;
+}
+.cp-card:hover .cp-card-go,
+.cp-card:focus-visible .cp-card-go {
+  opacity: 1;
+  transform: none;
+}
+@media (hover: none) {
+  .cp-card-go {
+    display: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cp-card,
+  .cp-card-go,
+  .cp-ring-fill,
+  .cp-primary,
+  .cp-ghost {
+    transition: none;
+  }
+}

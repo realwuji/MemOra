@@ -33,6 +33,7 @@ export const ATTEMPT_MODES = [
   'flashcards',
   'exam-questions',
   'mcq',
+  // retired methods, kept so attempts already saved on a device still read
   'blurting',
   'active-recall',
   'mock-exam',
