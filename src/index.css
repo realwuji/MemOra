@@ -965,6 +965,7 @@
   align-items: center;
   justify-content: center;
   gap: 0.35rem;
+  position: relative;
   min-height: 6.25rem;
   padding: 0.75rem 0.5rem;
   border-radius: 1rem;
@@ -2432,3 +2433,50 @@ html.theme-switching :not(.theme-toggle, .theme-toggle *)::after {
 @media (prefers-reduced-motion: reduce) { .kb { display: none; } }
 [data-reduce-motion='true'] .kb { display: none; }
 [data-theme='high-contrast'] .kb { display: none; }
+
+/* ------------------------------------------------------- HERO FX
+   Dashboard banner motion layer (src/components/dashboard/HeroFX.jsx). */
+@property --ang { syntax: '<angle>'; inherits: false; initial-value: 0deg; }
+.hero-fx { position: absolute; inset: 0; z-index: 1; overflow: hidden; pointer-events: none; border-radius: inherit; mix-blend-mode: screen; opacity: 0.85; }
+[data-theme='cream'] .hero-fx, :root:not([data-theme]) .hero-fx { mix-blend-mode: normal; opacity: 0.55; }
+.hero-fx-aurora {
+  position: absolute; left: 50%; top: 50%; width: 150%; aspect-ratio: 1; margin: -75% 0 0 -75%;
+  background: conic-gradient(from var(--ang), transparent 0 10%, var(--brand) 20%, transparent 32%, var(--flash) 52%, transparent 64%, var(--paper) 80%, transparent 92%);
+  filter: blur(70px); opacity: 0.28; animation: fx-spin 16s linear infinite;
+}
+.hero-fx .kb { opacity: 0.8; }
+.hero-fx-ember {
+  position: absolute; bottom: -12px; left: var(--x); width: var(--s); height: var(--s); border-radius: 50%;
+  background: var(--c); box-shadow: 0 0 12px 3px var(--c); opacity: 0;
+  animation: fx-rise var(--t) ease-in infinite; animation-delay: var(--d);
+}
+.hero-fx-sheen {
+  position: absolute; top: -20%; bottom: -20%; left: -40%; width: 30%;
+  background: linear-gradient(100deg, transparent, color-mix(in srgb, var(--on-scrim) 38%, transparent), transparent);
+  transform: skewX(-18deg); animation: fx-sheen 6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+@keyframes fx-spin { to { --ang: 360deg; } }
+@keyframes fx-rise {
+  0% { transform: translate3d(0, 0, 0) scale(0.6); opacity: 0; }
+  12% { opacity: 0.95; }
+  100% { transform: translate3d(var(--w), -34rem, 0) scale(1.4); opacity: 0; }
+}
+@keyframes fx-sheen { 0%, 55% { left: -40%; } 100% { left: 140%; } }
+/* Stat tiles: a light that circles the border. */
+.hero-stat::before {
+  content: ''; position: absolute; inset: -1px; border-radius: inherit; padding: 1.5px; pointer-events: none;
+  background: conic-gradient(from var(--ang), transparent 0 70%, var(--glow, var(--brand)) 85%, transparent 100%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+  animation: fx-spin 4s linear infinite;
+}
+.level-ring { animation: fx-pulse 2.8s ease-in-out infinite; }
+@keyframes fx-pulse { 0%, 100% { filter: drop-shadow(0 0 0 transparent); } 50% { filter: drop-shadow(0 0 14px var(--brand)); } }
+@media (prefers-reduced-motion: reduce) {
+  .hero-fx { display: none; }
+  .hero-stat::before, .level-ring { animation: none; }
+}
+[data-reduce-motion='true'] .hero-fx { display: none; }
+[data-reduce-motion='true'] .hero-stat::before, [data-reduce-motion='true'] .level-ring { animation: none; }
+[data-theme='high-contrast'] .hero-fx, [data-theme='high-contrast'] .hero-stat::before { display: none; }
+[data-theme='high-contrast'] .level-ring { animation: none; }

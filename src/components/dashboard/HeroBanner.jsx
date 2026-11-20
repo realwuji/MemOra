@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
-import { motion } from 'framer-motion'
+import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion'
+import HeroFX from '@/components/dashboard/HeroFX'
 import Icon from '@/components/ui/Icon'
 import Pfp from '@/components/ui/Pfp'
 import Banner from '@/components/ui/Banner'
@@ -90,8 +91,31 @@ export default function HeroBanner({
   const hours = weekMinutes >= 60 ? `${(weekMinutes / 60).toFixed(1)}h` : `${weekMinutes}m`
   const type = nextAssessment ? assessmentType(nextAssessment.type) : null
 
+  // Pointer-driven 3D tilt on the whole card.
+  const tx = useSpring(useMotionValue(0), { stiffness: 120, damping: 16 })
+  const ty = useSpring(useMotionValue(0), { stiffness: 120, damping: 16 })
+  const rotY = useTransform(tx, [-1, 1], [-3, 3])
+  const rotX = useTransform(ty, [-1, 1], [2.5, -2.5])
+  const onTilt = (e) => {
+    const r = e.currentTarget.getBoundingClientRect()
+    tx.set(((e.clientX - r.left) / r.width) * 2 - 1)
+    ty.set(((e.clientY - r.top) / r.height) * 2 - 1)
+  }
+  const onLeave = () => {
+    tx.set(0)
+    ty.set(0)
+  }
+
   return (
-    <motion.section variants={fadeInUp} aria-label="Your banner" className="card overflow-hidden rounded-3xl">
+    <motion.section
+      variants={fadeInUp}
+      aria-label="Your banner"
+      className="card hero-card relative overflow-hidden rounded-3xl"
+      style={{ rotateX: rotX, rotateY: rotY, transformPerspective: 1100 }}
+      onPointerMove={onTilt}
+      onPointerLeave={onLeave}
+    >
+      <HeroFX />
       <Banner src={banner} pos={bannerPos} className="aspect-[24/7] w-full">
         <span aria-hidden="true" className="banner-scrim absolute inset-0" />
         <div className="relative flex h-full items-start justify-between p-4 sm:p-5">

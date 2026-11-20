@@ -1,4 +1,4 @@
-import { useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion'
 
 /*
@@ -35,17 +35,21 @@ export default function KineticBurst() {
   const rotY = useTransform(sx, [-1, 1], [-14, 14])
   const rotX = useTransform(sy, [-1, 1], [10, -10])
 
-  const onMove = (e) => {
-    mx.set((e.clientX / window.innerWidth) * 2 - 1)
-    my.set((e.clientY / window.innerHeight) * 2 - 1)
-  }
+  // The layer is pointer-events:none, so track the pointer on the window.
+  useEffect(() => {
+    const onMove = (e) => {
+      mx.set((e.clientX / window.innerWidth) * 2 - 1)
+      my.set((e.clientY / window.innerHeight) * 2 - 1)
+    }
+    window.addEventListener('pointermove', onMove, { passive: true })
+    return () => window.removeEventListener('pointermove', onMove)
+  }, [mx, my])
 
   return (
     <div ref={ref} className="kb" aria-hidden="true">
       <motion.div
         className="kb-stage"
         style={{ rotateX: rotX, rotateY: rotY }}
-        onPointerMove={onMove}
       >
         <div className="kb-glow" />
         {BEAMS.map((b) => (
