@@ -26,7 +26,7 @@ const BEAMS = [
   { a: '160deg', c: 'var(--quiz)', d: '-4.1s' },
 ]
 
-export default function KineticBurst() {
+export default function KineticBurst({ fixed = false }) {
   const ref = useRef(null)
   const mx = useMotionValue(0)
   const my = useMotionValue(0)
@@ -46,7 +46,7 @@ export default function KineticBurst() {
   }, [mx, my])
 
   return (
-    <div ref={ref} className="kb" aria-hidden="true">
+    <div ref={ref} className={`kb ${fixed ? 'kb-fixed' : ''}`} aria-hidden="true">
       <motion.div
         className="kb-stage"
         style={{ rotateX: rotX, rotateY: rotY }}

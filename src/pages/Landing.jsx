@@ -190,7 +190,7 @@ export default function Landing() {
   return (
     <div className="relative min-h-screen">
       <AtmosphereBackground />
-      <KineticBurst />
+      <KineticBurst fixed />
       <MarketingHeader showHowItWorks />
 
       {/* Hero - centered, one-line subtitle, matching the reference layout */}
