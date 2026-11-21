@@ -30,10 +30,10 @@ import { fadeInUp } from '@/lib/motion'
 */
 
 const KIND = {
-  mistake: { label: 'Unresolved mistake', icon: 'x', tone: 'text-danger bg-danger/10' },
-  shaky: { label: 'Shaky', icon: 'activity', tone: 'text-r2-shaky bg-r2-shaky/15' },
-  slipped: { label: 'Slipped', icon: 'chevronDown', tone: 'text-r2-shaky bg-r2-shaky/15' },
-  weak: { label: 'Weak', icon: 'target', tone: 'text-muted bg-line' },
+  mistake: { label: 'Unresolved mistake', color: 'var(--danger)' },
+  shaky: { label: 'Shaky', color: 'var(--r2-shaky)' },
+  slipped: { label: 'Slipped', color: 'var(--r2-shaky)' },
+  weak: { label: 'Weak', color: 'var(--muted)' },
 }
 
 const bandLabel = {
@@ -63,14 +63,20 @@ function reasonFor(rec) {
 function Row({ index, subject, topic, tag, reason, onStart }) {
   const color = subjectColor(subject)
   return (
-    <SpineCard as="li" color={color} rounded="rounded-2xl" className="p-3.5 pl-4">
+    <SpineCard as="li" color={color} className="p-3.5 pl-4 pr-9">
       <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
         <span
           aria-hidden="true"
-          className="grid h-9 w-9 shrink-0 place-items-center rounded-xl text-sm font-extrabold tabular-nums"
-          style={{ background: `color-mix(in srgb, ${color} 14%, transparent)`, color }}
+          className="grid h-9 w-9 shrink-0 place-items-center text-sm font-bold tabular-nums"
+          style={{
+            background: `color-mix(in srgb, ${color} 14%, transparent)`,
+            border: `1px solid color-mix(in srgb, ${color} 45%, transparent)`,
+            borderRadius: '0.45rem',
+            color,
+            fontFamily: 'var(--font-mono-ui)',
+          }}
         >
-          {index}
+          {String(index).padStart(2, '0')}
         </span>
         <div className="min-w-0 flex-1">
           <p className="flex flex-wrap items-center gap-x-2 gap-y-1">
@@ -94,7 +100,6 @@ function Row({ index, subject, topic, tag, reason, onStart }) {
 export default function CloseGaps({ gaps, total, suggestions = [], hasEvidence, onStart, onExplore }) {
   return (
     <motion.section variants={fadeInUp} className="gaps-card card relative overflow-hidden p-5 sm:p-6" aria-labelledby="gaps-title">
-      <span aria-hidden="true" className="gaps-glow absolute -right-16 -top-16 h-48 w-48 rounded-full" />
       <div className="relative flex flex-wrap items-end justify-between gap-x-4 gap-y-2">
         <div className="min-w-0">
           <h2 id="gaps-title" className="text-lg font-extrabold text-fg sm:text-xl">
@@ -126,8 +131,8 @@ export default function CloseGaps({ gaps, total, suggestions = [], hasEvidence, 
                 reason={g.reason}
                 onStart={() => onStart(g)}
                 tag={
-                  <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[0.66rem] font-bold ${kind.tone}`}>
-                    <Icon name={kind.icon} className="h-3 w-3" />
+                  <span className="srv-tag" style={{ '--tag': kind.color }}>
+                    <i aria-hidden="true" className="srv-led" />
                     {kind.label}
                   </span>
                 }
@@ -155,8 +160,12 @@ export default function CloseGaps({ gaps, total, suggestions = [], hasEvidence, 
       {suggestions.length > 0 && (
         <div className="relative mt-6">
           <div className="flex items-baseline justify-between gap-3">
-            <h3 className="text-xs font-bold uppercase tracking-[0.12em] text-muted">Suggested next</h3>
-            <p className="text-xs text-muted">One per subject - take it or pick your own.</p>
+            <h3 className="text-xs font-bold uppercase tracking-[0.12em] text-muted">
+              <span aria-hidden="true">// </span>Suggested next
+            </h3>
+            <p className="text-xs text-muted" style={{ fontFamily: 'var(--font-mono-ui)' }}>
+              one per subject - take it or pick your own
+            </p>
           </div>
           <ol className="mt-2.5 space-y-2">
             {suggestions.map((rec, i) => (
@@ -168,10 +177,8 @@ export default function CloseGaps({ gaps, total, suggestions = [], hasEvidence, 
                 reason={reasonFor(rec)}
                 onStart={() => onStart(rec)}
                 tag={
-                  <span
-                    className="inline-flex items-center rounded-full px-2 py-0.5 text-[0.66rem] font-bold"
-                    style={{ background: `color-mix(in srgb, ${subjectColor(rec.subject)} 16%, transparent)`, color: subjectColor(rec.subject) }}
-                  >
+                  <span className="srv-tag" style={{ '--tag': subjectColor(rec.subject) }}>
+                    <i aria-hidden="true" className="srv-led" />
                     {bandLabel[rec.band] || 'Not started'}
                   </span>
                 }

@@ -5,6 +5,7 @@ import Footer from './Footer'
 import FocusMusic from '@/components/ui/FocusMusic'
 import LevelUp from '@/components/ui/LevelUp'
 import PageFallback from '@/components/layout/PageFallback'
+import AtmosphereBackground from '@/components/ui/AtmosphereBackground'
 import useIsDesktop from '@/hooks/useIsDesktop'
 
 /*
@@ -32,11 +33,15 @@ export default function AppLayout() {
 
   return (
     <div className="flex min-h-screen flex-col">
+      {/* The server dot-grid sits behind every app page. The rack mode (status
+          LEDs down the edges) fits a dashboard; the content column is dimmed
+          by the backdrop's calm zone so nothing competes with it. */}
+      <AtmosphereBackground defaultMode="rack" />
       <a href="#main-content" className="skip-link">
         Skip to content
       </a>
       <AppBar />
-      <main id="main-content" tabIndex={-1} className="flex-1 focus:outline-none">
+      <main id="main-content" tabIndex={-1} className="relative z-10 flex-1 focus:outline-none">
         <Suspense fallback={<PageFallback />}>
           <Outlet />
         </Suspense>

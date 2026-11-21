@@ -9,6 +9,7 @@ import {
   fetchMyPlaylists,
   fetchNowPlaying,
 } from '@/lib/spotify'
+import { getAudioState, setMusicPlaying, startAudio, stopAudio, subscribeAudioState } from '@/lib/audioReactive'
 
 /*
   A Spotify player in the corner of every app page - YOUR Spotify.
@@ -123,6 +124,10 @@ export default function FocusMusic() {
   const [mine, setMine] = useState(null)
   const [mineError, setMineError] = useState(null)
   const [playing, setPlaying] = useState(false)
+  // Whether the server background is following the sound (lib/audioReactive.js).
+  const [audio, setAudio] = useState(getAudioState)
+  useEffect(() => subscribeAudioState(setAudio), [])
+  useEffect(() => setMusicPlaying(playing), [playing])
   const [titles, setTitles] = useState({}) // uri -> { title, thumb } from oEmbed
   const [track, setTrack] = useState(null) // { title, artist } from the account
   const [embedFailed, setEmbedFailed] = useState(false)
@@ -382,6 +387,48 @@ export default function FocusMusic() {
           )}
 
           <div className="relative flex flex-col gap-3 border-t border-line px-3 py-3">
+            {/* Sync the server background to the sound. Spotify's player does not
+                expose its audio to the page, so this listens to what the browser
+                is playing (this tab) or to the microphone, with permission, and
+                analyses it on this device only. */}
+            <div className="music-section">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <p className="text-[0.68rem] font-bold uppercase tracking-wide text-muted">Sync the server</p>
+                {audio.source ? (
+                  <button
+                    type="button"
+                    onClick={stopAudio}
+                    className="rounded-full bg-brand px-2.5 py-1 text-[0.7rem] font-bold text-on-brand hover:opacity-90"
+                  >
+                    Stop sync
+                  </button>
+                ) : (
+                  <div className="flex items-center gap-1.5">
+                    <button
+                      type="button"
+                      onClick={() => startAudio('tab')}
+                      className="rounded-full bg-brand px-2.5 py-1 text-[0.7rem] font-bold text-on-brand hover:opacity-90"
+                    >
+                      This tab
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => startAudio('mic')}
+                      className="rounded-full border border-line px-2.5 py-1 text-[0.7rem] font-bold text-fg hover:bg-raised"
+                    >
+                      Microphone
+                    </button>
+                  </div>
+                )}
+              </div>
+              <p className={`mt-1 text-[0.68rem] leading-snug ${audio.error ? 'text-danger' : 'text-muted'}`}>
+                {audio.error ||
+                  (audio.source
+                    ? 'Following the sound: the background pulses on the beat and the lights follow the bass, mids and treble.'
+                    : 'Make the background react to the beat and tone. Choose This tab and tick "Share tab audio" so it hears the music exactly, or use the microphone to hear your speakers. It is analysed on this device and never recorded or sent anywhere.')}
+              </p>
+            </div>
+
             {/* Account */}
             <div className="music-section">
               <div className="flex flex-wrap items-center justify-between gap-2">

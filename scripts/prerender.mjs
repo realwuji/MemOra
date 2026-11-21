@@ -32,8 +32,8 @@ import {
   titleFor,
   absoluteUrl,
   graphFor,
-  OG_IMAGE,
-  OG_IMAGE_ALT,
+  ogAltFor,
+  ogImageFor,
   SITE_NAME,
   SITE_BASE,
 } from '../src/lib/seo.js'
@@ -71,16 +71,16 @@ function headFor(meta) {
     <meta property="og:description" content="${desc}" />
     <meta property="og:url" content="${url}" />
     <meta property="og:locale" content="en_GB" />
-    <meta property="og:image" content="${OG_IMAGE}" />
+    <meta property="og:image" content="${ogImageFor(meta)}" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta property="og:image:type" content="image/png" />
-    <meta property="og:image:alt" content="${escapeHtml(OG_IMAGE_ALT)}" />
+    <meta property="og:image:alt" content="${escapeHtml(ogAltFor(meta))}" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="${title}" />
     <meta name="twitter:description" content="${desc}" />
-    <meta name="twitter:image" content="${OG_IMAGE}" />
-    <meta name="twitter:image:alt" content="${escapeHtml(OG_IMAGE_ALT)}" />
+    <meta name="twitter:image" content="${ogImageFor(meta)}" />
+    <meta name="twitter:image:alt" content="${escapeHtml(ogAltFor(meta))}" />
     <script type="application/ld+json" data-seo>${JSON.stringify(graphFor(meta))}</script>`
 }
 

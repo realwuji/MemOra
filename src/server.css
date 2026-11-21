@@ -1,0 +1,475 @@
+/*
+  SERVER DESIGN LANGUAGE
+
+  One shared look for the signed-in app and everything related, matching the
+  server-themed landing page. The ideas, and where they show up:
+
+    - Console labels : anything set in uppercase becomes monospace, like a
+                       status line (.uppercase, hero stat labels, tags).
+    - Panels         : cards are tight-cornered rack units, not soft bubbles
+                       (.card, .glass, .glass-strong).
+    - Status LEDs    : a small lit dot that blinks unevenly marks live state
+                       (.srv-led), used inside tags and on subject cards.
+    - Tags           : square, hairline, monospace (.srv-tag).
+    - Segmented bars : progress is a row of cells, like a load meter, not a
+                       smooth fill (.srv-bar, .xp-bar).
+    - Subject cards  : a coloured left edge, a dot-matrix texture on the
+                       right and a data packet that runs across the top edge
+                       on hover (.subject-card). Pure CSS: this replaced a
+                       WebGL shader that ran in every card.
+
+  This file is deliberately NOT inside a cascade layer. Unlayered rules beat
+  Tailwind's layered utilities (rounded-3xl and friends), so the shape of a
+  panel is decided here in one place instead of at every call site. Important
+  utilities (the footer's !rounded-none) still win, as intended.
+
+  Everything animates opacity or transform only, and all of it stops under
+  reduced motion.
+*/
+
+:root {
+  --srv-r: 0.6rem;
+  --srv-line: color-mix(in srgb, var(--fg) 16%, transparent);
+  --font-mono-ui: 'JetBrains Mono Variable', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+}
+
+/* ------------------------------------------------------------- labels */
+/* Every uppercase label in the app becomes a console label. The two reading
+   fonts (dyslexia, hyperlegible) opt out: a monospace face would work against
+   the reason someone switched them on. */
+.uppercase,
+.hero-stat-label {
+  font-family: var(--font-mono-ui);
+}
+[data-font='dyslexic'] .uppercase,
+[data-font='hyperlegible'] .uppercase,
+[data-font='dyslexic'] .hero-stat-label,
+[data-font='hyperlegible'] .hero-stat-label {
+  font-family: inherit;
+}
+
+/* ------------------------------------------------------------- panels */
+.card,
+.glass,
+.glass-strong {
+  border-radius: var(--srv-r);
+}
+.card {
+  border-color: var(--srv-line);
+  box-shadow: inset 0 1px 0 color-mix(in srgb, white 6%, transparent);
+}
+
+/* ---------------------------------------------------------- status LED */
+.srv-led {
+  display: inline-block;
+  flex: none;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--led, var(--fg));
+  /* A faint tight halo and an fainter wide one: a hint of light, not a ball. */
+  box-shadow:
+    0 0 3px color-mix(in srgb, var(--led, var(--fg)) 50%, transparent),
+    0 0 8px color-mix(in srgb, var(--led, var(--fg)) 18%, transparent);
+  animation: srv-led var(--led-t, 3.4s) steps(1, end) infinite;
+  animation-delay: var(--led-d, 0s);
+}
+@keyframes srv-led {
+  0%, 68%   { opacity: 1; }
+  69%, 75%  { opacity: 0.2; }
+  76%, 84%  { opacity: 1; }
+  85%, 88%  { opacity: 0.2; }
+  89%, 100% { opacity: 1; }
+}
+
+/* ------------------------------------------------------------------ tag */
+.srv-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.16rem 0.5rem 0.16rem 0.42rem;
+  border: 1px solid color-mix(in srgb, var(--tag, var(--fg)) 38%, transparent);
+  border-radius: 0.3rem;
+  background: color-mix(in srgb, var(--tag, var(--fg)) 8%, transparent);
+  color: var(--tag, var(--fg));
+  font-family: var(--font-mono-ui);
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+.srv-tag .srv-led {
+  --led: var(--tag, var(--fg));
+  width: 4px;
+  height: 4px;
+}
+
+/* ----------------------------------------------------- segmented bars */
+.srv-bar,
+.xp-bar {
+  position: relative;
+  height: 0.6rem;
+  border-radius: 2px;
+  overflow: hidden;
+  background: repeating-linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--fg) 14%, transparent) 0 5px,
+    transparent 5px 7px
+  );
+  box-shadow: none;
+}
+.srv-bar-fill,
+.xp-fill {
+  height: 100%;
+  border-radius: 0;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--bar, var(--brand)) 0 5px,
+    transparent 5px 7px
+  );
+  box-shadow: none;
+}
+.srv-bar-fill {
+  transition: width 0.5s ease-out;
+}
+.xp-shine,
+.xp-tip {
+  display: none;
+}
+
+/* The level ring keeps its meaning but loses the glow and the soft core. */
+.level-ring-fill {
+  filter: none;
+}
+.level-ring-core {
+  border-radius: 0.5rem;
+  background: var(--brand);
+  box-shadow: none;
+}
+
+/* ------------------------------------------------------------- hero stats */
+.hero-stat {
+  border-radius: var(--srv-r);
+  border-color: var(--srv-line);
+  background: transparent;
+  box-shadow: none;
+}
+.hero-stat-label {
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.hero-type {
+  border-radius: 0.3rem;
+  font-family: var(--font-mono-ui);
+}
+
+/* ------------------------------------------------------- subject card */
+.subject-card {
+  border-radius: var(--srv-r);
+  border: 1px solid var(--srv-line);
+  border-left: 2px solid var(--subject);
+  background-color: var(--surface);
+  box-shadow: inset 0 1px 0 color-mix(in srgb, white 6%, transparent);
+}
+.subject-card:hover {
+  border-color: color-mix(in srgb, var(--subject) 45%, var(--srv-line));
+  border-left-color: var(--subject);
+  box-shadow: inset 0 1px 0 color-mix(in srgb, white 8%, transparent);
+}
+/* Dot-matrix texture, fading in from the right. */
+.subject-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: radial-gradient(circle, color-mix(in srgb, var(--subject) 55%, transparent) 0, transparent 1.4px);
+  background-size: 14px 14px;
+  -webkit-mask-image: linear-gradient(90deg, transparent 38%, #000 100%);
+  mask-image: linear-gradient(90deg, transparent 38%, #000 100%);
+  opacity: 0.55;
+  transition: opacity 0.3s ease;
+}
+.subject-card:hover::before {
+  opacity: 0.9;
+}
+/* A data packet that runs along the top edge on hover. */
+.subject-card::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 1px;
+  pointer-events: none;
+  opacity: 0;
+  background: linear-gradient(90deg, transparent, var(--subject), transparent) no-repeat;
+  background-size: 30% 100%;
+  background-position: -40% 0;
+  /* The generic card-lift sheen also uses ::after; this overrides its shape. */
+  border-radius: 0;
+}
+.subject-card:hover::after,
+.subject-card:focus-visible::after {
+  opacity: 1;
+  animation: srv-sweep 0.9s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+@keyframes srv-sweep {
+  to { background-position: 140% 0; }
+}
+/* Status LED in the corner, in the subject colour. */
+.subject-card > .srv-led {
+  position: absolute;
+  top: 0.65rem;
+  right: 0.7rem;
+  z-index: 2;
+  --led: var(--subject);
+}
+.subject-card-tile {
+  border-radius: 0.5rem;
+  border: 1px solid color-mix(in srgb, var(--subject) 45%, transparent);
+  background: color-mix(in srgb, var(--subject) 14%, transparent);
+  color: var(--subject);
+  box-shadow: none;
+  text-shadow: none;
+}
+
+/* ------------------------------------------------------- chapter spec map */
+/* The per-subject chapter bars (BandBar.jsx) lose their soft glow and round
+   ends and are cut into cells, like the other meters. The cut is an overlay
+   of card-coloured gaps, so the fills underneath are untouched. */
+.spec-map [class*='blur-sm'] {
+  display: none;
+}
+.spec-map-track {
+  border-radius: 2px;
+}
+.spec-map-track::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(90deg, transparent 0 5px, var(--surface) 5px 7px);
+}
+.spec-map-fill,
+.spec-map-lead {
+  border-radius: 0;
+  box-shadow: none;
+}
+
+/* ------------------------------------------------------------- buttons */
+/* The charged button keeps its chrome and sweep; its label becomes console
+   text so "Start" reads like a command. */
+.btn-charge-label {
+  font-family: var(--font-mono-ui);
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+[data-font='dyslexic'] .btn-charge-label,
+[data-font='hyperlegible'] .btn-charge-label {
+  font-family: inherit;
+}
+
+/* --------------------------------------------------------------- chips */
+.srv-chip {
+  border-radius: 0.4rem;
+  font-family: var(--font-mono-ui);
+  letter-spacing: 0.01em;
+}
+[data-font='dyslexic'] .srv-chip,
+[data-font='hyperlegible'] .srv-chip {
+  font-family: inherit;
+}
+
+/* ------------------------------------------------------ console title bar */
+/* A thin strip across the top of a panel: three LEDs, a path, a right-hand
+   readout. Used on the dashboard hero. */
+.srv-titlebar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0.9rem;
+  border-bottom: 1px solid var(--srv-line);
+  background: color-mix(in srgb, var(--fg) 4%, transparent);
+  font-family: var(--font-mono-ui);
+  font-size: 0.66rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+}
+.srv-titlebar .leds {
+  display: flex;
+  gap: 5px;
+}
+.srv-titlebar .leds .srv-led:nth-child(2) { --led-t: 4.7s; --led-d: -1.2s; }
+.srv-titlebar .leds .srv-led:nth-child(3) { --led-t: 6.1s; --led-d: -3.3s; }
+.srv-titlebar .path {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ------------------------------------------------ theme switch: server flush */
+/* The theme-switch reveal (src/lib/themeTransition.js): a rippled wave spreads
+   out from the toggle button and the new theme comes on behind it through a
+   field of dots. All of it eases continuously; nothing steps.
+
+   The new page is shown through one mask built from five layers:
+     1. a radial fade centred on the button (--srv-x, --srv-y), driven by
+        --srv-reach. Dots are absent at the front and reach full strength 320px
+        behind it, so the wave has a soft trailing edge. This layer is
+        INTERSECTED with the dots below it.
+     2-5. four dot lattices, ADDED together (a union). Their pitches (14, 23,
+        37, 53px) share no common factor, so the dots never line up and land at
+        scattered-looking positions, like status lights coming on at random.
+        The three sparse ones stay small; the dense 14px grid grows to fill in
+        what is left.
+   mask-composite takes one value per layer: a layer's value says how it
+   combines with the layers beneath it. Each radius and --srv-reach is a
+   registered property so JS can animate it. --srv-x and --srv-y are plain
+   (inherited) properties set once on the root. */
+@property --srv-a {
+  syntax: '<length>';
+  inherits: false;
+  initial-value: 0px;
+}
+@property --srv-b {
+  syntax: '<length>';
+  inherits: false;
+  initial-value: 0px;
+}
+@property --srv-c {
+  syntax: '<length>';
+  inherits: false;
+  initial-value: 0px;
+}
+@property --srv-d {
+  syntax: '<length>';
+  inherits: false;
+  initial-value: 0px;
+}
+@property --srv-reach {
+  syntax: '<length>';
+  inherits: false;
+  initial-value: -600px;
+}
+::view-transition-new(root) {
+  mask-image:
+    radial-gradient(circle at var(--srv-x, 100%) var(--srv-y, 0px), #000 calc(var(--srv-reach) - 320px), transparent calc(var(--srv-reach) + 40px)),
+    radial-gradient(circle at 7px 7px, #000 var(--srv-a), transparent calc(var(--srv-a) + 0.6px)),
+    radial-gradient(circle at 11px 11px, #000 var(--srv-b), transparent calc(var(--srv-b) + 0.6px)),
+    radial-gradient(circle at 18px 18px, #000 var(--srv-c), transparent calc(var(--srv-c) + 0.6px)),
+    radial-gradient(circle at 26px 26px, #000 var(--srv-d), transparent calc(var(--srv-d) + 0.6px));
+  mask-size: 100% 100%, 14px 14px, 23px 23px, 37px 37px, 53px 53px;
+  mask-repeat: no-repeat, repeat, repeat, repeat, repeat;
+  mask-composite: intersect, add, add, add, add;
+}
+
+/* ------------------------------------------------------------- diagrams */
+/* Every subject diagram (components/diagrams) is an inline SVG inside one
+   Figure frame, so the server look is applied here once instead of in each
+   diagram: a panel frame on a faint dot grid with a console title bar, boxes
+   with small square corners and hairline strokes, monospace for the small
+   numeric labels, and an eyebrow in console style. Diagram text stays in the
+   reading font on purpose: a few thousand lines of hand-placed labels were
+   laid out for it, and a wider monospace face would risk collisions.
+   Colours are untouched, because many diagrams use them to carry meaning
+   (address / data / control, supply / demand). */
+.dgm-figure {
+  position: relative;
+  padding: 0 1rem;
+  border: 1px solid var(--srv-line);
+  border-radius: var(--srv-r);
+  background-color: var(--surface);
+  background-image: radial-gradient(circle, color-mix(in srgb, var(--fg) 11%, transparent) 0.9px, transparent 1.4px);
+  background-size: 14px 14px;
+}
+.dgm-figure .dgm-bar {
+  margin: 0 -1rem 0.9rem;
+  border-radius: calc(var(--srv-r) - 1px) calc(var(--srv-r) - 1px) 0 0;
+}
+.dgm-svg rect {
+  rx: 4px;
+  ry: 4px;
+  stroke-width: 1.4px;
+}
+.dgm-axis,
+.dgm-value {
+  font-family: var(--font-mono-ui);
+}
+[data-font='dyslexic'] .dgm-axis,
+[data-font='hyperlegible'] .dgm-axis,
+[data-font='dyslexic'] .dgm-value,
+[data-font='hyperlegible'] .dgm-value {
+  font-family: inherit;
+}
+.dgm-annotations {
+  border-radius: 0.4rem;
+}
+.dgm-annotation-n {
+  border-radius: 0.25rem;
+  font-family: var(--font-mono-ui);
+}
+.dgm-caption {
+  margin: 0.75rem -1rem 0;
+  border-radius: 0 0 calc(var(--srv-r) - 1px) calc(var(--srv-r) - 1px);
+}
+.dgm-caption-eyebrow {
+  font-family: var(--font-mono-ui);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+.dgm-caption-eyebrow::before {
+  content: '// ';
+  color: var(--muted);
+}
+
+/* ------------------------------------------------------- giant footer mark */
+/* The footer's full-width wordmark. It is clipped a little below the baseline
+   and faded out toward the bottom edge, as if the page is sinking into the
+   server. */
+.srv-giant {
+  display: flex;
+  justify-content: center;
+  overflow: hidden;
+  padding: 0 2vw;
+  line-height: 1;
+  user-select: none;
+  -webkit-mask-image: linear-gradient(180deg, #000 45%, transparent 100%);
+  mask-image: linear-gradient(180deg, #000 45%, transparent 100%);
+}
+
+/* ---------------------------------------------------- scanline banner */
+/* Faint horizontal scanlines over the profile banner, like a monitor. */
+.srv-scan {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    0deg,
+    color-mix(in srgb, black 22%, transparent) 0 1px,
+    transparent 1px 3px
+  );
+  opacity: 0.5;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .srv-led,
+  .subject-card:hover::after {
+    animation: none;
+  }
+  .subject-card::after {
+    display: none;
+  }
+}
+
+[data-theme='high-contrast'] .subject-card::before,
+[data-theme='high-contrast'] .subject-card::after,
+[data-theme='high-contrast'] .srv-scan {
+  display: none;
+}

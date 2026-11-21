@@ -28,12 +28,17 @@
 :root {
   --bg-cell: 14px;
   --bg-dot: color-mix(in srgb, var(--fg) 20%, transparent);
+  /* A lit grid dot: a very small core with a short, faint bloom (4.4px). Kept
+     deliberately subtle: it should read as the dot catching light, not as a
+     glowing ball. Several stops so there is no visible edge. */
   --bg-lit: radial-gradient(
     circle,
     var(--fg) 0,
-    var(--fg) 1.2px,
-    color-mix(in srgb, var(--fg) 40%, transparent) 2.4px,
-    transparent 5px
+    color-mix(in srgb, var(--fg) 85%, transparent) 0.5px,
+    color-mix(in srgb, var(--fg) 38%, transparent) 1.1px,
+    color-mix(in srgb, var(--fg) 15%, transparent) 2px,
+    color-mix(in srgb, var(--fg) 5%, transparent) 3.2px,
+    transparent 4.4px
   );
 }
 
@@ -125,41 +130,41 @@
 }
 .bg-blink.a {
   background-image:
-    radial-gradient(circle at 21px 35px, var(--fg) 0, var(--fg) 1.2px, color-mix(in srgb, var(--fg) 35%, transparent) 2.6px, transparent 5px),
-    radial-gradient(circle at 119px 77px, var(--fg) 0, var(--fg) 1.2px, color-mix(in srgb, var(--fg) 35%, transparent) 2.6px, transparent 5px),
-    radial-gradient(circle at 203px 147px, var(--fg) 0, var(--fg) 1.2px, color-mix(in srgb, var(--fg) 35%, transparent) 2.6px, transparent 5px);
+    radial-gradient(circle at 21px 35px, var(--fg) 0, color-mix(in srgb, var(--fg) 85%, transparent) 0.6px, color-mix(in srgb, var(--fg) 40%, transparent) 1.4px, color-mix(in srgb, var(--fg) 14%, transparent) 2.8px, color-mix(in srgb, var(--fg) 4%, transparent) 4.8px, transparent 6.5px),
+    radial-gradient(circle at 119px 77px, var(--fg) 0, color-mix(in srgb, var(--fg) 85%, transparent) 0.6px, color-mix(in srgb, var(--fg) 40%, transparent) 1.4px, color-mix(in srgb, var(--fg) 14%, transparent) 2.8px, color-mix(in srgb, var(--fg) 4%, transparent) 4.8px, transparent 6.5px),
+    radial-gradient(circle at 203px 147px, var(--fg) 0, color-mix(in srgb, var(--fg) 85%, transparent) 0.6px, color-mix(in srgb, var(--fg) 40%, transparent) 1.4px, color-mix(in srgb, var(--fg) 14%, transparent) 2.8px, color-mix(in srgb, var(--fg) 4%, transparent) 4.8px, transparent 6.5px);
   background-size: 238px 182px, 238px 182px, 238px 182px;
   animation-name: bg-blink-1;
 }
 .bg-blink.b {
   background-image:
-    radial-gradient(circle at 63px 21px, var(--fg) 0, var(--fg) 1.2px, color-mix(in srgb, var(--fg) 35%, transparent) 2.6px, transparent 5px),
-    radial-gradient(circle at 147px 119px, var(--fg) 0, var(--fg) 1.2px, color-mix(in srgb, var(--fg) 35%, transparent) 2.6px, transparent 5px),
-    radial-gradient(circle at 35px 231px, var(--fg) 0, var(--fg) 1.2px, color-mix(in srgb, var(--fg) 35%, transparent) 2.6px, transparent 5px);
+    radial-gradient(circle at 63px 21px, var(--fg) 0, color-mix(in srgb, var(--fg) 85%, transparent) 0.6px, color-mix(in srgb, var(--fg) 40%, transparent) 1.4px, color-mix(in srgb, var(--fg) 14%, transparent) 2.8px, color-mix(in srgb, var(--fg) 4%, transparent) 4.8px, transparent 6.5px),
+    radial-gradient(circle at 147px 119px, var(--fg) 0, color-mix(in srgb, var(--fg) 85%, transparent) 0.6px, color-mix(in srgb, var(--fg) 40%, transparent) 1.4px, color-mix(in srgb, var(--fg) 14%, transparent) 2.8px, color-mix(in srgb, var(--fg) 4%, transparent) 4.8px, transparent 6.5px),
+    radial-gradient(circle at 35px 231px, var(--fg) 0, color-mix(in srgb, var(--fg) 85%, transparent) 0.6px, color-mix(in srgb, var(--fg) 40%, transparent) 1.4px, color-mix(in srgb, var(--fg) 14%, transparent) 2.8px, color-mix(in srgb, var(--fg) 4%, transparent) 4.8px, transparent 6.5px);
   background-size: 182px 266px, 182px 266px, 182px 266px;
   animation-name: bg-blink-2;
 }
 .bg-blink.c {
   background-image:
-    radial-gradient(circle at 105px 63px, var(--fg) 0, var(--fg) 1.2px, color-mix(in srgb, var(--fg) 35%, transparent) 2.6px, transparent 5px),
-    radial-gradient(circle at 231px 21px, var(--fg) 0, var(--fg) 1.2px, color-mix(in srgb, var(--fg) 35%, transparent) 2.6px, transparent 5px),
-    radial-gradient(circle at 7px 105px, var(--fg) 0, var(--fg) 1.2px, color-mix(in srgb, var(--fg) 35%, transparent) 2.6px, transparent 5px);
+    radial-gradient(circle at 105px 63px, var(--fg) 0, color-mix(in srgb, var(--fg) 85%, transparent) 0.6px, color-mix(in srgb, var(--fg) 40%, transparent) 1.4px, color-mix(in srgb, var(--fg) 14%, transparent) 2.8px, color-mix(in srgb, var(--fg) 4%, transparent) 4.8px, transparent 6.5px),
+    radial-gradient(circle at 231px 21px, var(--fg) 0, color-mix(in srgb, var(--fg) 85%, transparent) 0.6px, color-mix(in srgb, var(--fg) 40%, transparent) 1.4px, color-mix(in srgb, var(--fg) 14%, transparent) 2.8px, color-mix(in srgb, var(--fg) 4%, transparent) 4.8px, transparent 6.5px),
+    radial-gradient(circle at 7px 105px, var(--fg) 0, color-mix(in srgb, var(--fg) 85%, transparent) 0.6px, color-mix(in srgb, var(--fg) 40%, transparent) 1.4px, color-mix(in srgb, var(--fg) 14%, transparent) 2.8px, color-mix(in srgb, var(--fg) 4%, transparent) 4.8px, transparent 6.5px);
   background-size: 294px 126px, 294px 126px, 294px 126px;
   animation-name: bg-blink-3;
 }
 .bg-blink.d {
   background-image:
-    radial-gradient(circle at 49px 91px, var(--fg) 0, var(--fg) 1.2px, color-mix(in srgb, var(--fg) 35%, transparent) 2.6px, transparent 5px),
-    radial-gradient(circle at 91px 175px, var(--fg) 0, var(--fg) 1.2px, color-mix(in srgb, var(--fg) 35%, transparent) 2.6px, transparent 5px);
+    radial-gradient(circle at 49px 91px, var(--fg) 0, color-mix(in srgb, var(--fg) 85%, transparent) 0.6px, color-mix(in srgb, var(--fg) 40%, transparent) 1.4px, color-mix(in srgb, var(--fg) 14%, transparent) 2.8px, color-mix(in srgb, var(--fg) 4%, transparent) 4.8px, transparent 6.5px),
+    radial-gradient(circle at 91px 175px, var(--fg) 0, color-mix(in srgb, var(--fg) 85%, transparent) 0.6px, color-mix(in srgb, var(--fg) 40%, transparent) 1.4px, color-mix(in srgb, var(--fg) 14%, transparent) 2.8px, color-mix(in srgb, var(--fg) 4%, transparent) 4.8px, transparent 6.5px);
   background-size: 112px 210px, 112px 210px;
   animation-name: bg-blink-4;
 }
 .bg-blink.e {
   background-image:
-    radial-gradient(circle at 175px 105px, var(--fg) 0, var(--fg) 1.2px, color-mix(in srgb, var(--fg) 35%, transparent) 2.6px, transparent 5px),
-    radial-gradient(circle at 315px 203px, var(--fg) 0, var(--fg) 1.2px, color-mix(in srgb, var(--fg) 35%, transparent) 2.6px, transparent 5px),
-    radial-gradient(circle at 63px 189px, var(--fg) 0, var(--fg) 1.2px, color-mix(in srgb, var(--fg) 35%, transparent) 2.6px, transparent 5px),
-    radial-gradient(circle at 259px 35px, var(--fg) 0, var(--fg) 1.2px, color-mix(in srgb, var(--fg) 35%, transparent) 2.6px, transparent 5px);
+    radial-gradient(circle at 175px 105px, var(--fg) 0, color-mix(in srgb, var(--fg) 85%, transparent) 0.6px, color-mix(in srgb, var(--fg) 40%, transparent) 1.4px, color-mix(in srgb, var(--fg) 14%, transparent) 2.8px, color-mix(in srgb, var(--fg) 4%, transparent) 4.8px, transparent 6.5px),
+    radial-gradient(circle at 315px 203px, var(--fg) 0, color-mix(in srgb, var(--fg) 85%, transparent) 0.6px, color-mix(in srgb, var(--fg) 40%, transparent) 1.4px, color-mix(in srgb, var(--fg) 14%, transparent) 2.8px, color-mix(in srgb, var(--fg) 4%, transparent) 4.8px, transparent 6.5px),
+    radial-gradient(circle at 63px 189px, var(--fg) 0, color-mix(in srgb, var(--fg) 85%, transparent) 0.6px, color-mix(in srgb, var(--fg) 40%, transparent) 1.4px, color-mix(in srgb, var(--fg) 14%, transparent) 2.8px, color-mix(in srgb, var(--fg) 4%, transparent) 4.8px, transparent 6.5px),
+    radial-gradient(circle at 259px 35px, var(--fg) 0, color-mix(in srgb, var(--fg) 85%, transparent) 0.6px, color-mix(in srgb, var(--fg) 40%, transparent) 1.4px, color-mix(in srgb, var(--fg) 14%, transparent) 2.8px, color-mix(in srgb, var(--fg) 4%, transparent) 4.8px, transparent 6.5px);
   background-size: 350px 238px, 350px 238px, 350px 238px, 350px 238px;
   animation-name: bg-blink-5;
 }
@@ -260,24 +265,24 @@
 /* Three LED columns per strip. Their tile heights are 1, 2 and 3 units, so the
    lights are not the same in every unit; each runs a different blink pattern. */
 .bg-rack > .led.a {
-  background-image: radial-gradient(circle at var(--lx1) calc(var(--u) / 2), var(--fg) 2.6px, color-mix(in srgb, var(--fg) 35%, transparent) 4px, transparent 6px);
+  background-image: radial-gradient(circle at var(--lx1) calc(var(--u) / 2), var(--fg) 0, color-mix(in srgb, var(--fg) 85%, transparent) 0.9px, color-mix(in srgb, var(--fg) 38%, transparent) 1.8px, color-mix(in srgb, var(--fg) 14%, transparent) 3.4px, color-mix(in srgb, var(--fg) 4%, transparent) 5.5px, transparent 7.5px);
   background-size: 100% var(--u);
   animation-name: bg-blink-3;
 }
 .bg-rack > .led.b {
-  background-image: radial-gradient(circle at var(--lx2) calc(var(--u) / 2), var(--fg) 2.6px, color-mix(in srgb, var(--fg) 35%, transparent) 4px, transparent 6px);
+  background-image: radial-gradient(circle at var(--lx2) calc(var(--u) / 2), var(--fg) 0, color-mix(in srgb, var(--fg) 85%, transparent) 0.9px, color-mix(in srgb, var(--fg) 38%, transparent) 1.8px, color-mix(in srgb, var(--fg) 14%, transparent) 3.4px, color-mix(in srgb, var(--fg) 4%, transparent) 5.5px, transparent 7.5px);
   background-size: 100% calc(var(--u) * 2);
   animation-name: bg-blink-1;
 }
 .bg-rack > .led.c {
-  background-image: radial-gradient(circle at var(--lx3) calc(var(--u) / 2), var(--fg) 2.6px, color-mix(in srgb, var(--fg) 35%, transparent) 4px, transparent 6px);
+  background-image: radial-gradient(circle at var(--lx3) calc(var(--u) / 2), var(--fg) 0, color-mix(in srgb, var(--fg) 85%, transparent) 0.9px, color-mix(in srgb, var(--fg) 38%, transparent) 1.8px, color-mix(in srgb, var(--fg) 14%, transparent) 3.4px, color-mix(in srgb, var(--fg) 4%, transparent) 5.5px, transparent 7.5px);
   background-size: 100% calc(var(--u) * 3);
   background-position: 0 var(--u);
   animation-name: bg-blink-5;
 }
 /* A fourth, sparse LED on the right strip only. */
 .bg-rack.r > .led.d {
-  background-image: radial-gradient(circle at calc(100% - 94px) calc(var(--u) / 2), var(--fg) 2.6px, color-mix(in srgb, var(--fg) 35%, transparent) 4px, transparent 6px);
+  background-image: radial-gradient(circle at calc(100% - 94px) calc(var(--u) / 2), var(--fg) 0, color-mix(in srgb, var(--fg) 85%, transparent) 0.9px, color-mix(in srgb, var(--fg) 38%, transparent) 1.8px, color-mix(in srgb, var(--fg) 14%, transparent) 3.4px, color-mix(in srgb, var(--fg) 4%, transparent) 5.5px, transparent 7.5px);
   background-size: 100% calc(var(--u) * 5);
   background-position: 0 calc(var(--u) * 2);
   animation-name: bg-blink-2;
@@ -427,10 +432,53 @@
   box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--fg) 55%, transparent);
 }
 
+/* ------------------------------------------------------- audio reactive */
+/* Driven by src/lib/audioReactive.js through custom properties on .atmosphere
+   (--au-level, --au-bass, --au-mid, --au-treble, --au-beat; all 0..1). The
+   `.reactive` class is on only while the user has sync running. */
+
+/* On a beat the whole grid brightens, then fades with the beat value. */
+.bg-pulse {
+  pointer-events: none;
+  background-image: var(--bg-lit);
+  background-size: var(--bg-cell) var(--bg-cell);
+  opacity: calc(var(--au-beat, 0) * 0.5);
+  will-change: opacity;
+}
+
+/* The grid and the packets get brighter with loudness. */
+.atmosphere.reactive .bg-lattice {
+  opacity: calc(0.7 + var(--au-level, 0) * 0.5);
+}
+.atmosphere.reactive .bg-packet,
+.atmosphere.reactive .bg-vpacket {
+  opacity: calc(0.5 + var(--au-level, 0) * 0.7);
+}
+
+/* The blinkers stop running their own patterns and instead light with the
+   sound: low layers on the bass, the middle one on the mids, the high ones on
+   the treble. Each has its own threshold so they do not all fire together. */
+.atmosphere.reactive .bg-blink,
+.atmosphere.reactive .bg-rack > .led {
+  animation: none;
+}
+.atmosphere.reactive .bg-blink.a { opacity: clamp(0, calc((var(--au-bass, 0) - 0.25) * 2.6), 0.9); }
+.atmosphere.reactive .bg-blink.b { opacity: clamp(0, calc((var(--au-bass, 0) - 0.45) * 3), 0.9); }
+.atmosphere.reactive .bg-blink.c { opacity: clamp(0, calc((var(--au-mid, 0) - 0.3) * 2.6), 0.9); }
+.atmosphere.reactive .bg-blink.d { opacity: clamp(0, calc((var(--au-treble, 0) - 0.25) * 2.6), 0.9); }
+.atmosphere.reactive .bg-blink.e { opacity: clamp(0, calc((var(--au-treble, 0) - 0.5) * 3), 0.9); }
+
+/* Rack LEDs: each column is a band, like the level lights on a mixer. */
+.atmosphere.reactive .bg-rack > .led.a { opacity: clamp(0, calc(var(--au-bass, 0) * 1.1), 0.95); }
+.atmosphere.reactive .bg-rack > .led.b { opacity: clamp(0, calc(var(--au-mid, 0) * 1.1), 0.95); }
+.atmosphere.reactive .bg-rack > .led.c { opacity: clamp(0, calc(var(--au-treble, 0) * 1.1), 0.95); }
+.atmosphere.reactive .bg-rack > .led.d { opacity: clamp(0, calc(var(--au-level, 0) * 1.1), 0.95); }
+
 @media (prefers-reduced-motion: reduce) {
   .bg-packet,
   .bg-vpacket,
   .bg-blink,
+  .bg-pulse,
   .bg-ptr {
     display: none;
   }

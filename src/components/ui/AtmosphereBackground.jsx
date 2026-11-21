@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { getAudioState, onAudioFrame, subscribeAudioState } from '@/lib/audioReactive'
 import './atmosphere.css'
 
 /*
@@ -105,9 +106,12 @@ const LOG_STYLE = {
   backgroundRepeat: 'repeat-y',
 }
 
-export default function AtmosphereBackground() {
-  const [mode, setMode] = useState('packets')
+// `defaultMode` is the effect shown until a [data-bg] section takes over, and
+// the one used on pages with no tagged sections (the signed-in app uses 'rack').
+export default function AtmosphereBackground({ defaultMode = 'packets' }) {
+  const [mode, setMode] = useState(defaultMode)
   const ptrRef = useRef(null)
+  const rootRef = useRef(null)
 
   // Switch mode to whichever [data-bg] section crosses the middle of the screen.
   useEffect(() => {
@@ -172,10 +176,70 @@ export default function AtmosphereBackground() {
     }
   }, [])
 
+  // Audio reactivity (src/lib/audioReactive.js). While sync is on, the analyser
+  // publishes level / bass / mid / treble / beat every frame. They are written
+  // as CSS custom properties on THIS element only (so only this subtree is
+  // restyled, not the whole page), and atmosphere.css turns them into effects
+  // under `.reactive`: blinkers and rack LEDs follow the bands, the grid
+  // brightens with loudness, the whole grid flashes on a beat. The packets and
+  // log lines also speed up with the music, through their animations'
+  // playbackRate. With sync off none of this runs.
+  useEffect(() => {
+    const root = rootRef.current
+    if (!root) return undefined
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)')
+    let anims = []
+    let rate = 1
+
+    const collect = () => {
+      anims = root
+        .getAnimations({ subtree: true })
+        .filter((a) => /^bg-(packet|vpacket|log)/.test(a.animationName || ''))
+    }
+    const reset = () => {
+      ;['level', 'bass', 'mid', 'treble', 'beat'].forEach((k) => root.style.removeProperty(`--au-${k}`))
+      anims.forEach((a) => {
+        a.playbackRate = 1
+      })
+      rate = 1
+    }
+    const applyState = (st) => {
+      const on = Boolean(st.source)
+      root.classList.toggle('reactive', on)
+      if (on) collect()
+      else reset()
+    }
+
+    applyState(getAudioState())
+    const offState = subscribeAudioState(applyState)
+    const offFrame = onAudioFrame((f) => {
+      if (!root.classList.contains('reactive')) return
+      root.style.setProperty('--au-level', f.level.toFixed(3))
+      root.style.setProperty('--au-bass', f.bass.toFixed(3))
+      root.style.setProperty('--au-mid', f.mid.toFixed(3))
+      root.style.setProperty('--au-treble', f.treble.toFixed(3))
+      root.style.setProperty('--au-beat', f.beat.toFixed(3))
+      if (!reduce.matches) {
+        const target = 1 + f.level * 1.4 + f.beat * 0.8
+        rate += (target - rate) * 0.25
+        anims.forEach((a) => {
+          a.playbackRate = rate
+        })
+      }
+    })
+    return () => {
+      offState()
+      offFrame()
+      reset()
+      root.classList.remove('reactive')
+    }
+  }, [])
+
   const on = (m) => `bg-mode m-${m}${mode === m ? ' on' : ''}`
 
   return (
     <div
+      ref={rootRef}
       className="atmosphere fixed inset-0 z-0 overflow-hidden bg-page"
       data-mode={mode}
       aria-hidden="true"
@@ -249,6 +313,10 @@ export default function AtmosphereBackground() {
           </div>
         ))}
       </div>
+
+      {/* Beat flash: a bright copy of the grid whose opacity follows --au-beat.
+          Invisible (opacity 0) unless audio sync is on. */}
+      <div className="bg-pulse absolute inset-0" />
 
       {/* A calm zone behind the content column: dims the grid and effects where
           text sits so body copy stays readable, and leaves the edges busy. */}

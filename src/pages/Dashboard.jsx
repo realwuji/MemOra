@@ -79,15 +79,16 @@ function relativeDay(ts) {
   the hour without dismissing them.
 */
 function BandPill({ band }) {
-  const tone = {
-    not_started: 'bg-r0-not-started/25 text-fg',
-    seen: 'bg-r1-seen/25 text-fg',
-    shaky: 'bg-r2-shaky/20 text-r2-shaky',
-    solid: 'bg-r3-solid/20 text-r3-solid',
-    'exam-ready': 'bg-r4-exam-ready/20 text-r4-exam-ready',
+  const colour = {
+    not_started: 'var(--muted)',
+    seen: 'var(--r1-seen)',
+    shaky: 'var(--r2-shaky)',
+    solid: 'var(--r3-solid)',
+    'exam-ready': 'var(--r4-exam-ready)',
   }
   return (
-    <span className={`inline-block rounded-full px-2 py-0.5 text-[0.7rem] font-bold ${tone[band] || tone.not_started}`}>
+    <span className="srv-tag" style={{ '--tag': colour[band] || colour.not_started }}>
+      <i aria-hidden="true" className="srv-led" />
       {bandLabel[band] || 'Not started'}
     </span>
   )

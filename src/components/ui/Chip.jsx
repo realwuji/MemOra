@@ -30,7 +30,7 @@ export default function Chip({
   children,
   ...rest
 }) {
-  const base = `inline-flex items-center justify-center rounded-full border font-medium transition-colors ${sizes[size]}`
+  const base = `srv-chip inline-flex items-center justify-center rounded-md border font-medium transition-colors ${sizes[size]}`
 
   const state = disabled
     ? 'cursor-not-allowed border-line bg-surface text-muted opacity-40'

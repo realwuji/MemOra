@@ -283,6 +283,16 @@ export function Figure({ title, desc, caption, children }) {
   const annotations = useContext(AnnotationContext)
   return (
     <figure className="dgm-figure">
+      {/* Console title bar: status LEDs and the diagram's name, like a window
+          on the server. Decorative (the figure already has a title and caption). */}
+      <div className="srv-titlebar dgm-bar" aria-hidden="true">
+        <span className="leds">
+          <i className="srv-led" />
+          <i className="srv-led" />
+          <i className="srv-led" />
+        </span>
+        <span className="path">diagram · {title}</span>
+      </div>
       <svg
         viewBox={`0 0 ${BOX.w} ${BOX.h}`}
         role="img"

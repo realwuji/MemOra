@@ -5,8 +5,8 @@ import {
   titleFor,
   absoluteUrl,
   graphFor,
-  OG_IMAGE,
-  OG_IMAGE_ALT,
+  ogAltFor,
+  ogImageFor,
   SITE_NAME,
 } from '@/lib/seo'
 
@@ -67,19 +67,19 @@ export default function Seo({ jsonLd = [] }) {
     setMeta('property', 'og:description', meta.description)
     setMeta('property', 'og:url', canonical)
     setMeta('property', 'og:locale', 'en_GB')
-    setMeta('property', 'og:image', OG_IMAGE)
+    setMeta('property', 'og:image', ogImageFor(meta))
     setMeta('property', 'og:image:width', '1200')
     setMeta('property', 'og:image:height', '630')
     setMeta('property', 'og:image:type', 'image/png')
-    setMeta('property', 'og:image:alt', OG_IMAGE_ALT)
+    setMeta('property', 'og:image:alt', ogAltFor(meta))
 
     // Twitter/X. summary_large_image is what renders the 1200x630 card;
     // plain "summary" would crop it to a small square.
     setMeta('name', 'twitter:card', 'summary_large_image')
     setMeta('name', 'twitter:title', titleFor(meta))
     setMeta('name', 'twitter:description', meta.description)
-    setMeta('name', 'twitter:image', OG_IMAGE)
-    setMeta('name', 'twitter:image:alt', OG_IMAGE_ALT)
+    setMeta('name', 'twitter:image', ogImageFor(meta))
+    setMeta('name', 'twitter:image:alt', ogAltFor(meta))
 
     const link = upsert('link[rel="canonical"]', () => {
       const l = document.createElement('link')

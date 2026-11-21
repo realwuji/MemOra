@@ -91,17 +91,28 @@ export default function HeroBanner({
   const type = nextAssessment ? assessmentType(nextAssessment.type) : null
 
   return (
-    <motion.section variants={fadeInUp} aria-label="Your banner" className="card overflow-hidden rounded-3xl">
-      <Banner src={banner} pos={bannerPos} className="aspect-[24/7] w-full">
+    <motion.section variants={fadeInUp} aria-label="Your banner" className="card overflow-hidden">
+      {/* Console title bar: three status LEDs, a path, and today's date. */}
+      <div className="srv-titlebar">
+        <span className="leds" aria-hidden="true">
+          <i className="srv-led" />
+          <i className="srv-led" />
+          <i className="srv-led" />
+        </span>
+        <span className="path">~/memoora/dashboard{username ? ` · @${username}` : ''}</span>
+        <span className="hidden sm:inline">
+          {new Date(now).toLocaleDateString(undefined, { weekday: 'short', day: 'numeric', month: 'short' })}
+        </span>
+      </div>
+      <Banner src={banner} pos={bannerPos} className="aspect-[24/6] w-full">
         <span aria-hidden="true" className="banner-scrim absolute inset-0" />
-        <div className="relative flex h-full items-start justify-between p-4 sm:p-5">
-          <p className="rounded-full bg-black/25 px-3 py-1 text-[0.7rem] font-bold uppercase tracking-widest text-white backdrop-blur-sm">
-            {new Date(now).toLocaleDateString(undefined, { weekday: 'long', day: 'numeric', month: 'long' })}
-          </p>
+        <span aria-hidden="true" className="srv-scan" />
+        <div className="relative flex h-full items-start justify-end p-4 sm:p-5">
           {showSetup && (
             <Link
               to="/profile"
-              className="inline-flex items-center gap-1.5 rounded-full bg-black/25 px-3 py-1 text-[0.7rem] font-bold text-white backdrop-blur-sm transition-colors hover:bg-black/40"
+              className="inline-flex items-center gap-1.5 rounded-md bg-black/40 px-3 py-1 text-[0.7rem] font-bold text-white backdrop-blur-sm transition-colors hover:bg-black/55"
+              style={{ fontFamily: 'var(--font-mono-ui)' }}
             >
               <Icon name="user" className="h-3.5 w-3.5" />
               Set up profile
@@ -125,14 +136,18 @@ export default function HeroBanner({
           {/* Name, handle, level */}
           <div className="min-w-0 text-center lg:pb-1 lg:text-left">
             <h1 className="text-2xl font-extrabold leading-tight text-fg sm:text-3xl">
+              <span aria-hidden="true" className="mr-2 font-medium text-muted" style={{ fontFamily: 'var(--font-mono-ui)' }}>
+                &gt;
+              </span>
               {greetingFor(new Date(now).getHours())}
               {name ? `, ${name}` : ''}
+              <span aria-hidden="true" className="t-cursor" style={{ marginLeft: '0.2em' }} />
             </h1>
             <p className="mt-1 flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-sm text-muted lg:justify-start">
               {username && <span className="font-semibold text-fg">@{username}</span>}
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-brand-soft px-2.5 py-0.5 text-xs font-bold text-brand-strong">
-                <Icon name="star" className="h-3.5 w-3.5" />
-                Level {lvl.level} · {lvl.title}
+              <span className="srv-tag" style={{ '--tag': 'var(--fg)' }}>
+                <i aria-hidden="true" className="srv-led" />
+                LVL {String(lvl.level).padStart(2, '0')} · {lvl.title}
               </span>
             </p>
           </div>

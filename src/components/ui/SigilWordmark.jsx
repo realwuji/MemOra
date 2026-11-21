@@ -22,6 +22,7 @@
   Sizes:
   - 'nav'  : 21px (navbar / small contexts)
   - 'hero' : 6xl–8xl (landing hero, marketing hero)
+  - 'giant': ~16vw (the full-width footer wordmark)
 */
 
 import { useCallback, useEffect, useRef, useState } from 'react'
@@ -149,6 +150,15 @@ function SigilWordmarkText({ className = '', animate = false }) {
 }
 
 export default function SigilWordmark({ size = 'nav', className = '', animate = false }) {
+  if (size === 'giant') {
+    // Footer wordmark: scales with the viewport so it spans the page width.
+    return (
+      <SigilWordmarkText
+        animate={animate}
+        className={`text-[clamp(3rem,16vw,21rem)] text-brand ${className}`}
+      />
+    )
+  }
   if (size === 'hero') {
     return (
       <SigilWordmarkText

@@ -4,7 +4,9 @@
   See SigilWordmark.jsx for the behaviour. This file is the look: JetBrains
   Mono ExtraBold, a muted ">" prompt, fixed-width letter cells (so scrambling
   through other glyphs never shifts the layout), a split-slice glitch, and a
-  blinking block cursor. Only transform and opacity animate.
+  blinking block cursor. Only transform and opacity animate. There is no hover
+  glow: a text-shadow on the giant footer wordmark was clipped into a visible
+  rectangle by the footer's overflow, so hover is the scramble and glitch only.
 */
 
 .term-word {
@@ -15,15 +17,10 @@
   letter-spacing: -0.04em;
   line-height: 1;
   white-space: nowrap;
-  transition: text-shadow 0.25s ease;
 }
 .t-inner {
   display: inline-flex;
   align-items: baseline;
-}
-/* Phosphor glow while hovered. */
-.term-word:hover {
-  text-shadow: 0 0 0.5em color-mix(in srgb, currentColor 45%, transparent);
 }
 
 /* The prompt: a quieter tone of the same colour. Appears first at boot. */

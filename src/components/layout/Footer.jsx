@@ -39,17 +39,20 @@ export default function Footer() {
           ))}
         </div>
 
-        <div className="mt-14 flex flex-col items-center gap-6 border-t border-line pt-8 text-center sm:flex-row sm:items-end sm:justify-between sm:text-left">
-          <div>
-            <Link to={logoTo} className="flex items-center gap-2 text-fg">
-              <SigilWordmark />
-            </Link>
-            <p className="mt-2 text-sm text-muted">{SITE.tagline}</p>
-          </div>
-          <p className="text-xs text-muted">
+        <div className="mt-14 flex flex-col items-center gap-2 border-t border-line pt-8 text-center sm:flex-row sm:items-baseline sm:justify-between sm:text-left">
+          <p className="text-sm text-muted">{SITE.tagline}</p>
+          <p className="text-xs text-muted" style={{ fontFamily: 'var(--font-mono-ui)' }}>
             &copy; {year} {SITE.name} &middot; free, no account needed to try it
           </p>
         </div>
+      </div>
+
+      {/* The large wordmark: full width, sinking into the bottom edge. It keeps
+          the typing, hover scramble, idle glitch and blinking cursor. */}
+      <div className="srv-giant">
+        <Link to={logoTo} aria-label="Memoora home" className="block">
+          <SigilWordmark size="giant" animate />
+        </Link>
       </div>
     </footer>
   )

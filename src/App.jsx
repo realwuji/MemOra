@@ -3,7 +3,6 @@ import { Routes, Route, Navigate, useLocation, useParams, useSearchParams } from
 import { MotionConfig } from 'framer-motion'
 import AppLayout from '@/components/layout/AppLayout'
 import Landing from '@/pages/Landing'
-import CursorGlow from '@/components/ui/CursorGlow'
 import ScrollToTop from '@/components/layout/ScrollToTop'
 import Seo from '@/components/layout/Seo'
 import Toast from '@/components/ui/Toast'
@@ -87,7 +86,6 @@ export default function App() {
           don't run JavaScript. */}
       <Seo />
       <ScrollToTop />
-      <CursorGlow />
       <Toast />
       <Suspense fallback={<PageFallback />}>
       <Routes>
