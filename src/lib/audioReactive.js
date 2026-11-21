@@ -23,11 +23,14 @@
   Nothing starts without a click, and nothing runs unless sync is on.
 
   WHAT IT PRODUCES, every animation frame while running:
-    level  overall loudness, 0..1
-    bass   30-160 Hz, 0..1
-    mid    160-2000 Hz, 0..1
-    treble 2000-9000 Hz, 0..1
-    beat   1 on a detected kick, then decays toward 0
+    level    overall loudness, 0..1
+    bass     30-160 Hz, 0..1
+    mid      160-2000 Hz, 0..1
+    treble   2000-9000 Hz, 0..1
+    beat     1 on a detected kick, then decays toward 0
+    spectrum SPECTRUM_BINS values, 0..1, log-spaced from 40 Hz to 12 kHz (low
+             notes on the left, high on the right). This is what draws the
+             equalizer bars in the background.
 
   Each band is normalised against its own recent peak, so quiet and loud tracks
   behave alike. A beat is a jump in bass energy over its running average, with
@@ -43,7 +46,8 @@ let stream = null
 let analyser = null
 let raf = 0
 
-const ZERO = { level: 0, bass: 0, mid: 0, treble: 0, beat: 0 }
+export const SPECTRUM_BINS = 64
+const ZERO = { level: 0, bass: 0, mid: 0, treble: 0, beat: 0, spectrum: new Array(SPECTRUM_BINS).fill(0) }
 
 const emitState = () => stateListeners.forEach((fn) => fn(state))
 const setState = (patch) => {
@@ -127,7 +131,7 @@ export async function startAudio(kind) {
   const AudioCtx = window.AudioContext || window.webkitAudioContext
   ctx = new AudioCtx()
   analyser = ctx.createAnalyser()
-  analyser.fftSize = 1024
+  analyser.fftSize = 2048 // finer low-frequency resolution for the spectrum
   analyser.smoothingTimeConstant = 0.55
   // Analysis only: the source is NOT connected to ctx.destination, so nothing
   // is played back (that would double the music or cause feedback).
@@ -144,6 +148,20 @@ export async function startAudio(kind) {
     for (let i = a; i <= b; i += 1) sum += bins[i]
     return sum / ((b - a + 1) * 255)
   }
+
+  // Spectrum: SPECTRUM_BINS log-spaced bands from 40 Hz to 12 kHz. Each band
+  // averages the FFT bins that fall inside it (at least one), is scaled against
+  // one shared running peak so the shape of the music is kept, then smoothed
+  // per band with a fast attack and slow release so the bars rise quickly and
+  // fall like a real level meter.
+  const specRanges = Array.from({ length: SPECTRUM_BINS }, (_, i) => {
+    const lo = 40 * Math.pow(12000 / 40, i / SPECTRUM_BINS)
+    const hi = 40 * Math.pow(12000 / 40, (i + 1) / SPECTRUM_BINS)
+    const a = Math.min(bins.length - 2, Math.max(1, Math.round(lo / hzPerBin)))
+    return [a, Math.min(bins.length - 1, Math.max(a, Math.round(hi / hzPerBin)))]
+  })
+  const spec = new Array(SPECTRUM_BINS).fill(0)
+  let specPeak = 0.2
 
   // Per-band running peak, so each band is scaled to 0..1 against its own
   // recent maximum, and a slow average of bass for beat detection.
@@ -176,7 +194,26 @@ export async function startAudio(kind) {
     }
     beat *= 0.87
 
-    pushFrame({ level: Math.min(1, level * 2.2), bass: out.bass, mid: out.mid, treble: out.treble, beat })
+    let frameMax = 0
+    const rawSpec = specRanges.map((r) => {
+      const v = mean(r)
+      if (v > frameMax) frameMax = v
+      return v
+    })
+    specPeak = Math.max(frameMax, specPeak * 0.994, 0.08)
+    for (let i = 0; i < SPECTRUM_BINS; i += 1) {
+      const v = Math.pow(Math.min(1, rawSpec[i] / specPeak), 0.9)
+      spec[i] += (v - spec[i]) * (v > spec[i] ? 0.6 : 0.13)
+    }
+
+    pushFrame({
+      level: Math.min(1, level * 2.2),
+      bass: out.bass,
+      mid: out.mid,
+      treble: out.treble,
+      beat,
+      spectrum: spec.slice(),
+    })
     raf = requestAnimationFrame(loop)
   }
   raf = requestAnimationFrame(loop)

@@ -30,6 +30,15 @@ import './atmosphere.css'
 
 const CELL = 14 // px, must match --bg-cell in atmosphere.css
 
+// Equalizer geometry. A bar every second grid column (so there is a gap between
+// bars), as tall as 45% of the screen at most, and offset from the bottom by the
+// remainder of height / CELL so the bars' dots land exactly on the grid's rows.
+const barGeometry = () => ({
+  count: Math.max(8, Math.floor(window.innerWidth / (CELL * 2))),
+  maxRows: Math.max(4, Math.floor((window.innerHeight * 0.45) / CELL)),
+  bottom: window.innerHeight % CELL,
+})
+
 // Packets along rows. `row` is a grid row, `dur` the seconds to cross the
 // screen, `delay` a negative offset so packets are already mid-flight on load,
 // `len` the trail length in px, `rtl` the direction. Fixed values, not random,
@@ -112,6 +121,21 @@ export default function AtmosphereBackground({ defaultMode = 'packets' }) {
   const [mode, setMode] = useState(defaultMode)
   const ptrRef = useRef(null)
   const rootRef = useRef(null)
+  const [geo, setGeo] = useState(barGeometry)
+  const geoRef = useRef(geo)
+  const barRefs = useRef([])
+  const topRefs = useRef([])
+
+  // Keep the bar count and heights in step with the window.
+  useEffect(() => {
+    const onResize = () => {
+      const next = barGeometry()
+      geoRef.current = next
+      setGeo(next)
+    }
+    window.addEventListener('resize', onResize)
+    return () => window.removeEventListener('resize', onResize)
+  }, [])
 
   // Switch mode to whichever [data-bg] section crosses the middle of the screen.
   useEffect(() => {
@@ -203,11 +227,41 @@ export default function AtmosphereBackground({ defaultMode = 'packets' }) {
       })
       rate = 1
     }
+    // Equalizer bars: each bar takes its share of the spectrum (low notes on the
+    // left) and a ripple that rolls across them, stronger when it is loud, so the
+    // row moves like a wave even between hits. Heights are whole grid cells, so a
+    // bar is always a stack of complete dots. The top row mirrors the bottom one
+    // at about half height.
+    const lastRows = []
+    const drawBars = (f) => {
+      const g = geoRef.current
+      const sp = f.spectrum
+      const t = performance.now() / 1000
+      for (let i = 0; i < g.count; i += 1) {
+        const bin = Math.min(sp.length - 1, Math.floor((i / g.count) * sp.length))
+        const ripple = 0.12 * f.level * Math.sin(i * 0.45 - t * 4.2)
+        const v = Math.max(0, Math.min(1, sp[bin] + ripple))
+        const rows = Math.round(v * g.maxRows)
+        if (rows !== lastRows[i]) {
+          lastRows[i] = rows
+          if (barRefs.current[i]) barRefs.current[i].style.height = `${rows * CELL}px`
+          if (topRefs.current[i]) topRefs.current[i].style.height = `${Math.round(rows * 0.55) * CELL}px`
+        }
+      }
+    }
+    const clearBars = () => {
+      lastRows.length = 0
+      barRefs.current.forEach((el) => el && (el.style.height = '0px'))
+      topRefs.current.forEach((el) => el && (el.style.height = '0px'))
+    }
     const applyState = (st) => {
       const on = Boolean(st.source)
       root.classList.toggle('reactive', on)
       if (on) collect()
-      else reset()
+      else {
+        reset()
+        clearBars()
+      }
     }
 
     applyState(getAudioState())
@@ -219,8 +273,9 @@ export default function AtmosphereBackground({ defaultMode = 'packets' }) {
       root.style.setProperty('--au-mid', f.mid.toFixed(3))
       root.style.setProperty('--au-treble', f.treble.toFixed(3))
       root.style.setProperty('--au-beat', f.beat.toFixed(3))
+      if (f.spectrum && !reduce.matches) drawBars(f)
       if (!reduce.matches) {
-        const target = 1 + f.level * 1.4 + f.beat * 0.8
+        const target = 1 + f.level * 2.4 + f.beat * 1.2
         rate += (target - rate) * 0.25
         anims.forEach((a) => {
           a.playbackRate = rate
@@ -231,6 +286,7 @@ export default function AtmosphereBackground({ defaultMode = 'packets' }) {
       offState()
       offFrame()
       reset()
+      clearBars()
       root.classList.remove('reactive')
     }
   }, [])
@@ -321,6 +377,36 @@ export default function AtmosphereBackground({ defaultMode = 'packets' }) {
       {/* A calm zone behind the content column: dims the grid and effects where
           text sits so body copy stays readable, and leaves the edges busy. */}
       <div className="bg-calm absolute inset-0" />
+
+      {/* Equalizer: dot-built bars along the bottom edge, mirrored more faintly
+          from the top. Hidden unless audio sync is on (CSS), driven from the
+          audio effect above. Above the calm zone so the music is never dimmed. */}
+      <div className="bg-spectrum">
+        <div className="bg-spec-row bottom" style={{ bottom: geo.bottom }}>
+          {Array.from({ length: geo.count }, (_, i) => (
+            <i
+              key={i}
+              ref={(el) => {
+                barRefs.current[i] = el
+              }}
+              className="bg-bar"
+              style={{ left: i * CELL * 2 }}
+            />
+          ))}
+        </div>
+        <div className="bg-spec-row top">
+          {Array.from({ length: geo.count }, (_, i) => (
+            <i
+              key={i}
+              ref={(el) => {
+                topRefs.current[i] = el
+              }}
+              className="bg-bar"
+              style={{ left: i * CELL * 2 }}
+            />
+          ))}
+        </div>
+      </div>
 
       <div ref={ptrRef} className="bg-ptr absolute inset-0">
         <div className="row"><i /></div>

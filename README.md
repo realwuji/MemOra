@@ -183,6 +183,13 @@ src/
 │   └── NotFound.jsx
 ```
 
+## Design
+
+The look is a server: monochrome panels, status LEDs, data packets moving along a
+dot grid, console type. The full design system, with the shared classes, motion and
+performance rules and a do and don't list, is in [`DESIGN.md`](./DESIGN.md). Read it
+before changing any UI.
+
 ## Conventions
 
 - **Colours:** never hard-code hex. Use semantic token utilities (`bg-page`,

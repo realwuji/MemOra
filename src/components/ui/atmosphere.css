@@ -442,13 +442,14 @@
   pointer-events: none;
   background-image: var(--bg-lit);
   background-size: var(--bg-cell) var(--bg-cell);
-  opacity: calc(var(--au-beat, 0) * 0.5);
+  opacity: calc(var(--au-beat, 0) * 0.65);
   will-change: opacity;
 }
 
 /* The grid and the packets get brighter with loudness. */
+/* Quieter when it is quiet, so the music has something to rise out of. */
 .atmosphere.reactive .bg-lattice {
-  opacity: calc(0.7 + var(--au-level, 0) * 0.5);
+  opacity: calc(0.6 + var(--au-level, 0) * 0.8);
 }
 .atmosphere.reactive .bg-packet,
 .atmosphere.reactive .bg-vpacket {
@@ -474,11 +475,62 @@
 .atmosphere.reactive .bg-rack > .led.c { opacity: clamp(0, calc(var(--au-treble, 0) * 1.1), 0.95); }
 .atmosphere.reactive .bg-rack > .led.d { opacity: clamp(0, calc(var(--au-level, 0) * 1.1), 0.95); }
 
+/* Equalizer bars: dot-built, one every second grid column, rising from the
+   bottom edge and mirrored more faintly from the top. Heights are set from JS in
+   whole cells (AtmosphereBackground.jsx), so every bar is a stack of complete
+   grid dots. Brighter than the ambient dots on purpose: when sync is on, the
+   music is the main event. */
+:root {
+  --bg-lit-strong: radial-gradient(
+    circle,
+    var(--fg) 0,
+    var(--fg) 1.2px,
+    color-mix(in srgb, var(--fg) 55%, transparent) 2.2px,
+    color-mix(in srgb, var(--fg) 22%, transparent) 3.6px,
+    color-mix(in srgb, var(--fg) 7%, transparent) 5px,
+    transparent 6.5px
+  );
+}
+.bg-spectrum {
+  display: none;
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.atmosphere.reactive .bg-spectrum {
+  display: block;
+}
+.bg-spec-row {
+  position: absolute;
+  left: 0;
+  right: 0;
+}
+.bg-spec-row.top {
+  top: 0;
+}
+.bg-bar {
+  position: absolute;
+  bottom: 0;
+  width: var(--bg-cell);
+  height: 0;
+  background-image: var(--bg-lit-strong);
+  background-size: var(--bg-cell) var(--bg-cell);
+  background-position: 0 100%;
+  transition: height 70ms linear;
+}
+.bg-spec-row.top .bg-bar {
+  top: 0;
+  bottom: auto;
+  background-position: 0 0;
+  opacity: 0.5;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .bg-packet,
   .bg-vpacket,
   .bg-blink,
   .bg-pulse,
+  .bg-spectrum,
   .bg-ptr {
     display: none;
   }

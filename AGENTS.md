@@ -10,6 +10,10 @@ rules here, not there.
 If you are a human contributor, this doubles as the contributor guide. See
 `README.md` for the product tour.
 
+**Changing anything visual?** Read [`DESIGN.md`](./DESIGN.md) first. It is the design
+system: the server look, the shared classes, the motion and performance rules, and a
+list of what to do and not do. This file's golden rules still apply on top of it.
+
 ## What this project is
 
 **Memoora** - a mood-aware study companion, built for every mind. It checks a
