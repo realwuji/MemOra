@@ -6,10 +6,8 @@
 export const TEACHER_DOMAIN = 'teachers.memoora.invalid'
 
 export const TEACHERS = [
-  { name: 'Boothy', key: 'boothy' },
-  { name: 'Singh', key: 'singh' },
-  { name: 'Garrod', key: 'garrod' },
-  { name: 'Miah', key: 'miah' },
+  { name: 'Maths teachers', key: 'mathsteachers' },
+  { name: 'Economics teachers', key: 'economicsteachers' },
 ]
 
 export const teacherEmail = (key) => `${key}@${TEACHER_DOMAIN}`

@@ -93,7 +93,7 @@ export default function SignIn() {
     setPassword('')
   }
 
-  // Signing in takes an email, or a teacher's name (Boothy, Singh, Garrod, Miah).
+  // Signing in takes an email, or a teacher username (mathsteachers or economicsteachers).
   const teacher = TEACHERS.find((t) => t.key === email.trim().toLowerCase())
   const loginEmail = !isSignUp && teacher ? teacherEmail(teacher.key) : email
 

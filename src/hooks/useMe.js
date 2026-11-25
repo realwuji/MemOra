@@ -2,6 +2,7 @@ import { useMemo } from 'react'
 import { useApp } from '@/context/AppProvider'
 import { computeXp, levelFromXp, xpForLevel, MAX_LEVEL } from '@/lib/xp'
 import { isOwner } from '@/constants/owner'
+import { isTeacher } from '@/constants/teachers'
 import { studyStreak } from '@/lib/sessions'
 
 /*
