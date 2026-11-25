@@ -1077,3 +1077,28 @@
   font-size: 0.58rem;
   font-weight: 700;
 }
+
+/* One family for the buttons across the top of a diagram: All diagrams, Switch diagram,
+   Previous, Next. The same pill, border and hover (the sheen in server.css), so none of them
+   looks like plain text next to the others. */
+.db-bar .ep-back,
+.db-bar .tj-btn,
+.db-pager .dr-btn {
+  min-width: 0;
+  padding: 0.45rem 1rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--fg);
+  font-size: 0.85rem;
+  font-weight: 700;
+  transition: transform 0.15s, background 0.15s, border-color 0.15s;
+}
+.db-bar .ep-back:hover,
+.db-bar .tj-btn:hover,
+.db-bar .tj-btn[aria-expanded='true'],
+.db-pager .dr-btn:hover {
+  transform: translateY(-1px);
+  border-color: var(--brand);
+  background: var(--brand-soft);
+}
