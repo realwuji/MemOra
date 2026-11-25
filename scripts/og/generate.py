@@ -30,6 +30,7 @@ import json
 import pathlib
 import random
 import re
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -363,6 +364,17 @@ def build_svg(path, meta):
     return f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {W} {H}" width="{W}" height="{H}">{defs}{"".join(parts)}</svg>'
 
 
+def svg_to_png(svg, out):
+    """rsvg-convert where it exists, otherwise headless Chrome (what a Windows machine has)."""
+    if shutil.which("rsvg-convert"):
+        subprocess.run(["rsvg-convert", "-w", str(W), "-h", str(H), str(svg), "-o", str(out)], check=True)
+        return
+    chrome = next((c for c in ["C:/Program Files/Google/Chrome/Application/chrome.exe", "C:/Program Files (x86)/Google/Chrome/Application/chrome.exe", shutil.which("google-chrome"), shutil.which("chromium")] if c and pathlib.Path(c).exists()), None)
+    if not chrome:
+        raise SystemExit("Need rsvg-convert or Chrome to turn the SVG into a PNG")
+    subprocess.run([chrome, "--headless=new", "--disable-gpu", "--hide-scrollbars", f"--window-size={W},{H}", f"--screenshot={out}", pathlib.Path(svg).resolve().as_uri()], check=True, capture_output=True)
+
+
 def main():
     pages = json.loads(
         subprocess.run(
@@ -379,7 +391,7 @@ def main():
             svg = pathlib.Path(tmp) / "og.svg"
             svg.write_text(build_svg(path, meta))
             out = OUT_DIR / f"{slug_of(path)}.png"
-            subprocess.run(["rsvg-convert", "-w", str(W), "-h", str(H), str(svg), "-o", str(out)], check=True)
+            svg_to_png(svg, out)
             print(f"wrote public/og/{out.name}  ({MODE.get(path, 'packets')})")
 
 
