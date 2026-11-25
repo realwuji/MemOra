@@ -1,6 +1,6 @@
-# DESIGN.md - the Memoora design system
+# DESIGN.md - the Memoraa design system
 
-Read this before you touch any UI. It describes how Memoora looks and moves, why
+Read this before you touch any UI. It describes how Memoraa looks and moves, why
 it is built that way, and what to do and not do when you add to it.
 
 - `AGENTS.md` is the contributor guide (structure, commands, golden rules).
@@ -15,7 +15,7 @@ you can check any claim yourself.
 
 ## 1. The idea
 
-Memoora looks like a server that is working for you. Black and white, hairline
+Memoraa looks like a server that is working for you. Black and white, hairline
 panels, small status lights, data moving quietly along a dot grid, console
 type for labels. The metaphor is used as a **design language**, not as a gimmick:
 
@@ -25,7 +25,7 @@ type for labels. The metaphor is used as a **design language**, not as a gimmick
 | Status LED              | Tags, subject cards, the theme toggle, the hero title bar               |
 | Data packet             | Bright streaks travelling along rows and columns of the background grid |
 | Load meter              | Progress bars and the chapter map: a row of cells, not a smooth fill    |
-| Terminal prompt         | The wordmark `> memoora`, the dashboard greeting, `//` comment labels   |
+| Terminal prompt         | The wordmark `> memoraa`, the dashboard greeting, `//` comment labels   |
 | Log lines               | The background in the footer and legal pages                            |
 | Addressing a memory cell | The cursor: the row and column under the pointer light up              |
 
@@ -90,7 +90,7 @@ If an addition does not fit this metaphor, ask whether it needs to exist.
 
 ### Name
 
-The product is **Memoora** (two o's). Use it in all display text, metadata and
+The product is **Memoraa** (two o's). Use it in all display text, metadata and
 docs.
 
 **Do not rename these**, even though they still say "memora". Changing them
@@ -103,7 +103,7 @@ would wipe saved user data or break deploys:
 
 ### The wordmark
 
-`> memoora` followed by a blinking block cursor, set in JetBrains Mono
+`> memoraa` followed by a blinking block cursor, set in JetBrains Mono
 ExtraBold. The `>` prompt is a quieter tone of the same colour.
 
 Use the component, never hand-typed text:
@@ -126,7 +126,7 @@ The animated version has four effects (all in `SigilWordmark.jsx`):
 
 Rules:
 
-- It renders as one image labelled "Memoora" (`role="img"` + `aria-label`), so
+- It renders as one image labelled "Memoraa" (`role="img"` + `aria-label`), so
   scrambled glyphs are never read aloud or copied. Keep that.
 - Letters sit in fixed-width cells so scrambling never shifts the layout.
 - **No hover glow.** A text-shadow on the giant footer mark was clipped into a
@@ -138,10 +138,10 @@ Rules:
 
 | File | Use |
 | ---- | --- |
-| `memoora-wordmark-white.svg` | On dark backgrounds |
-| `memoora-wordmark-black.svg` | On light backgrounds |
-| `memoora-wordmark-white-on-black.svg`, `...-black-on-white.svg` | When a solid background is needed (previews, embeds) |
-| `memoora-monogram-white.svg`, `...-black.svg` | Small spaces: the `>` prompt plus cursor |
+| `memoraa-wordmark-white.svg` | On dark backgrounds |
+| `memoraa-wordmark-black.svg` | On light backgrounds |
+| `memoraa-wordmark-white-on-black.svg`, `...-black-on-white.svg` | When a solid background is needed (previews, embeds) |
+| `memoraa-monogram-white.svg`, `...-black.svg` | Small spaces: the `>` prompt plus cursor |
 
 All are outlined paths, so they render the same everywhere with no font
 installed. Do not stretch, outline, add effects, recolour, or put them on busy
@@ -279,7 +279,7 @@ any selectable pill. The pill shape is no longer used for chips.
 ```jsx
 <div className="srv-titlebar">
   <span className="leds" aria-hidden="true"><i className="srv-led" /><i className="srv-led" /><i className="srv-led" /></span>
-  <span className="path">~/memoora/dashboard</span>
+  <span className="path">~/memoraa/dashboard</span>
 </div>
 ```
 

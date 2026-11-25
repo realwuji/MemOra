@@ -1,5 +1,5 @@
 /*
-  The Memoora wordmark: a terminal prompt.  > memoora▮
+  The Memoraa wordmark: a terminal prompt.  > memoraa▮
 
   Set in JetBrains Mono ExtraBold. The wordmark inherits its colour from its
   parent (e.g. `text-brand`), so it follows the theme. The ">" prompt is a
@@ -16,7 +16,7 @@
   Static wordmarks (footer, sign-in, legal pages) show the same mark with only
   the blinking cursor. Reduced motion turns every effect off.
 
-  The wordmark is exposed as one image labelled "Memoora": scrambled glyphs
+  The wordmark is exposed as one image labelled "Memoraa": scrambled glyphs
   must never be read out or copied as text.
 
   Sizes:
@@ -28,7 +28,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import './sigil.css'
 
-const WORD = 'memoora'
+const WORD = 'memoraa'
 const GLYPHS = '01<>/\\|_-+*#%&@$=:;?!'
 const FRAME_MS = 45
 const BOOT_START_MS = 380 // after the prompt appears
@@ -117,7 +117,7 @@ function AnimatedWordmark({ className }) {
   }, [])
 
   return (
-    <span role="img" aria-label="Memoora" className={`term-word ${className}`}>
+    <span role="img" aria-label="Memoraa" className={`term-word ${className}`}>
       <span aria-hidden="true" className="t-inner">
         <span className="t-prompt">&gt;</span>
         {WORD.split('').map((c, i) => (
@@ -131,7 +131,7 @@ function AnimatedWordmark({ className }) {
 
 function StaticWordmark({ className }) {
   return (
-    <span role="img" aria-label="Memoora" className={`term-word ${className}`}>
+    <span role="img" aria-label="Memoraa" className={`term-word ${className}`}>
       <span aria-hidden="true" className="t-inner">
         <span className="t-prompt static">&gt;</span>
         <span className="t-static-text">{WORD}</span>

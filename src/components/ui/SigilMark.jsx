@@ -4,7 +4,7 @@ import { SIGIL } from '@/constants/sigil-geometry'
 import './sigil.css'
 
 /*
-  The Memoora command sigil — a Geass-inspired angular command mark.
+  The Memoraa command sigil — a Geass-inspired angular command mark.
 
   Anatomy:
   - upper-left / upper-right  : the two bold wing-forms sweeping outward-upward

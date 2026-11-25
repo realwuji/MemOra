@@ -1,5 +1,5 @@
 /*
-  Memoora command sigil — geometry for viewBox 0 0 128 128, fill currentColor.
+  Memoraa command sigil — geometry for viewBox 0 0 128 128, fill currentColor.
 
   Anatomy (redrawn to properly match the reference - spike pointing UP):
   - central-point: the main vertical spike pointing boldly UPWARDS in the center

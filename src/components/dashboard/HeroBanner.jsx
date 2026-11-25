@@ -104,7 +104,7 @@ export default function HeroBanner({
           <i className="srv-led" />
           <i className="srv-led" />
         </span>
-        <span className="path">~/memoora/dashboard{username ? ` · @${username}` : ''}</span>
+        <span className="path">~/memoraa/dashboard{username ? ` · @${username}` : ''}</span>
         <span className="hidden sm:inline">
           {new Date(now).toLocaleDateString(undefined, { weekday: 'short', day: 'numeric', month: 'short' })}
         </span>
@@ -151,7 +151,7 @@ export default function HeroBanner({
             <p className="mt-1 flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-sm text-muted lg:justify-start">
               {username && <span className="font-semibold text-fg">@{username}</span>}
               {owner && (
-                <span className="owner-tag" title="Owner of Memoora">
+                <span className="owner-tag" title="Owner of Memoraa">
                   <svg viewBox="0 0 24 24" aria-hidden="true" className="owner-tag-crown">
                     <path d="M3 8l4.5 4L12 5l4.5 7L21 8l-2 11H5L3 8z" fill="currentColor" />
                   </svg>

@@ -16,7 +16,7 @@ list of what to do and not do. This file's golden rules still apply on top of it
 
 ## What this project is
 
-**Memoora** - a mood-aware study companion, built for every mind. It checks a
+**Memoraa** - a mood-aware study companion, built for every mind. It checks a
 student's mood before and during each study session and shapes the session
 around it: a goal-tuned motivational line, real practice content, a mid-session
 check-in, and a nudge to take a break when they are struggling.

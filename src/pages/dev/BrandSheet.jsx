@@ -6,7 +6,7 @@ import SigilLockup from '@/components/ui/SigilLockup'
 import { ACCENTS, ACCENT_META, THEME_META } from '@/context/AppProvider'
 
 /*
-  Dev-only brand sheet for the Memoora command sigil. Registered in App.jsx
+  Dev-only brand sheet for the Memoraa command sigil. Registered in App.jsx
   only when import.meta.env.DEV, so it never ships. Theme and accent chips
   scope REAL data-theme / data-accent attributes, so every preview runs the
   production tokens, not approximations.
@@ -57,7 +57,7 @@ export default function BrandSheet() {
 
   return (
     <div className="mx-auto max-w-5xl p-6 pb-24">
-      <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-muted">Memoora · Brand identity system</p>
+      <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-muted">Memoraa · Brand identity system</p>
       <h1 className="mt-1 text-3xl font-extrabold text-fg">The command sigil</h1>
       <p className="mt-1 max-w-2xl text-sm text-muted">
         Dev only, never ships. An original activation mark: command blade, cradling sweep, rising shard.

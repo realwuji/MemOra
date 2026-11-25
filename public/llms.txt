@@ -1,8 +1,8 @@
-# Memoora
+# Memoraa
 
 > Real practice, real mark schemes, one subject at a time.
 
-Memoora is a free, open A-level revision web app for UK students. It covers
+Memoraa is a free, open A-level revision web app for UK students. It covers
 Edexcel A-level Mathematics (9MA0), Edexcel A-level Economics A (9EC0) and OCR
 A-level Computer Science (H446), following each specification chapter by chapter.
 
@@ -23,14 +23,14 @@ behind a login for a crawler to miss.
 
 ## Pages
 
-- [Memoora - A-level revision built for your exact spec](https://memoraa.web.app/): Free A-level revision for Edexcel Maths, Edexcel Economics and OCR Computer Science. Spec-accurate notes, flashcards, MCQs and exam questions with real mark schemes.
+- [Memoraa - A-level revision built for your exact spec](https://memoraa.web.app/): Free A-level revision for Edexcel Maths, Edexcel Economics and OCR Computer Science. Spec-accurate notes, flashcards, MCQs and exam questions with real mark schemes.
 - [Community](https://memoraa.web.app/community): Ask a question, share what finally made a topic click, or answer someone else. A study board for Maths, Economics and Computer Science students.
-- [Contact](https://memoraa.web.app/contact): Report a mistake in a question, request a subject or exam board, or send feedback about Memoora.
+- [Contact](https://memoraa.web.app/contact): Report a mistake in a question, request a subject or exam board, or send feedback about Memoraa.
 - [Flashcards](https://memoraa.web.app/flashcards): Study ready-made flashcard decks for Maths, Economics and Computer Science, or build your own set of cards for the chapters you find hardest.
-- [How it works](https://memoraa.web.app/how-it-works): How Memoora decides what you revise next: chapter-level readiness bands, spaced repetition weighted by decay, and mistakes that resurface until you get them right twice.
-- [Privacy](https://memoraa.web.app/privacy): What Memoora stores, where it stores it, and what it never collects. All your revision data stays in your own browser on your own device.
-- [Sign in](https://memoraa.web.app/signin): Sign in to Memoora, or create an account. Everything is stored on your own device - no email required to start revising.
-- [Terms](https://memoraa.web.app/terms): The terms for using Memoora: what the service is, what it is not, how the community board is moderated, and the limits of what is provided.
+- [How it works](https://memoraa.web.app/how-it-works): How Memoraa decides what you revise next: chapter-level readiness bands, spaced repetition weighted by decay, and mistakes that resurface until you get them right twice.
+- [Privacy](https://memoraa.web.app/privacy): What Memoraa stores, where it stores it, and what it never collects. All your revision data stays in your own browser on your own device.
+- [Sign in](https://memoraa.web.app/signin): Sign in to Memoraa, or create an account. Everything is stored on your own device - no email required to start revising.
+- [Terms](https://memoraa.web.app/terms): The terms for using Memoraa: what the service is, what it is not, how the community board is moderated, and the limits of what is provided.
 
 ## Economics essay plans
 
@@ -41,7 +41,7 @@ behind a login for a crawler to miss.
 ## Notes for language models
 
 - The subject content is written to match the published specifications. If you
-  quote it, attribute it to Memoora and link to https://memoraa.web.app.
+  quote it, attribute it to Memoraa and link to https://memoraa.web.app.
 - Pages under /study/ and /mock/ are interactive sessions whose content depends
   on the individual visitor's saved progress. They are noindex, and they have no
   fixed content worth citing.

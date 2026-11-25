@@ -3,7 +3,7 @@
 */
 
 export const SITE = {
-  name: 'Memoora',
+  name: 'Memoraa',
   // Wordmark split point: the two halves get styled differently (see
   // Wordmark.jsx). Not every name splits on a space, so this is explicit.
   wordmarkSplit: ['Mem', 'Ora'],
@@ -292,11 +292,11 @@ export const LEGAL = {
   privacy: {
     title: 'Privacy',
     updated: 'September 2026',
-    intro: "The short version: almost nothing about you is collected. Your account (an email and a password) is handled by Firebase, the sign-in service Memoora uses; everything else - your profile, progress and revision - never leaves this browser.",
+    intro: "The short version: almost nothing about you is collected. Your account (an email and a password) is handled by Firebase, the sign-in service Memoraa uses; everything else - your profile, progress and revision - never leaves this browser.",
     sections: [
       {
-        heading: 'What Memoora stores',
-        body: "Your profile, subjects, exam dates, study sessions, and revision progress (decks, notes, essay plans, everything you answer) are saved with this browser's localStorage, on the device you're using. None of that is uploaded anywhere. The one exception is your account: your name, email and password go to Firebase (a Google service) to create a real sign-in - Memoora's own code never sees or stores your password, and doesn't have a server of its own for the rest of your data to go to either.",
+        heading: 'What Memoraa stores',
+        body: "Your profile, subjects, exam dates, study sessions, and revision progress (decks, notes, essay plans, everything you answer) are saved with this browser's localStorage, on the device you're using. None of that is uploaded anywhere. The one exception is your account: your name, email and password go to Firebase (a Google service) to create a real sign-in - Memoraa's own code never sees or stores your password, and doesn't have a server of its own for the rest of your data to go to either.",
       },
       {
         heading: 'What that means in practice',
@@ -304,7 +304,7 @@ export const LEGAL = {
       },
       {
         heading: 'Accounts and passwords',
-        body: "Creating an account sends your name, email and password to Firebase to create a real, sign-in-anywhere account. Firebase hashes and stores the password; Memoora never sees it in plain text and never stores it at all. This is the one part of Memoora that isn't purely local - an account that only worked on the one device you made it on wasn't worth having.",
+        body: "Creating an account sends your name, email and password to Firebase to create a real, sign-in-anywhere account. Firebase hashes and stores the password; Memoraa never sees it in plain text and never stores it at all. This is the one part of Memoraa that isn't purely local - an account that only worked on the one device you made it on wasn't worth having.",
       },
       {
         heading: 'Analytics and tracking',
@@ -312,7 +312,7 @@ export const LEGAL = {
       },
       {
         heading: 'Changes',
-        body: "If Memoora ever changes how it handles data again, for example by syncing revision progress across devices, this page gets updated first and the change is explained plainly, not buried.",
+        body: "If Memoraa ever changes how it handles data again, for example by syncing revision progress across devices, this page gets updated first and the change is explained plainly, not buried.",
       },
     ],
   },
@@ -323,11 +323,11 @@ export const LEGAL = {
     sections: [
       {
         heading: 'What this is',
-        body: 'Memoora is a free revision tool built as a personal project. It is not a company, and using it does not create any kind of formal agreement beyond the obvious: be reasonable, and don’t rely on it for anything critical.',
+        body: 'Memoraa is a free revision tool built as a personal project. It is not a company, and using it does not create any kind of formal agreement beyond the obvious: be reasonable, and don’t rely on it for anything critical.',
       },
       {
         heading: 'No guarantees',
-        body: "Memoora is provided as-is. Content is built carefully against real specifications, but it can still contain mistakes, and it is not a substitute for your teacher, your textbook, or the official specification and past papers from your exam board.",
+        body: "Memoraa is provided as-is. Content is built carefully against real specifications, but it can still contain mistakes, and it is not a substitute for your teacher, your textbook, or the official specification and past papers from your exam board.",
       },
       {
         heading: 'Your data, your device',
@@ -335,17 +335,17 @@ export const LEGAL = {
       },
       {
         heading: 'Acceptable use',
-        body: "Use Memoora for studying. Don't try to break it, scrape it at scale, or use it in a way that disrupts it for other people.",
+        body: "Use Memoraa for studying. Don't try to break it, scrape it at scale, or use it in a way that disrupts it for other people.",
       },
       {
         heading: 'Changes',
-        body: 'Memoora is a project that keeps evolving. Features, content, and these terms can change as it does.',
+        body: 'Memoraa is a project that keeps evolving. Features, content, and these terms can change as it does.',
       },
     ],
   },
   contact: {
     title: 'Contact',
-    intro: "Memoora is a personal project, not a company with a support line, but bug reports and ideas are genuinely welcome.",
+    intro: "Memoraa is a personal project, not a company with a support line, but bug reports and ideas are genuinely welcome.",
     githubUrl: 'https://github.com/DedStrke/MemOra',
     githubLabel: 'Open an issue on GitHub',
     githubBody: 'The fastest way to report a bug, request a subject, or suggest a feature. Every issue gets read.',

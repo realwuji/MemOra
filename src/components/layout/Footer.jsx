@@ -50,7 +50,7 @@ export default function Footer() {
       {/* The large wordmark: full width, sinking into the bottom edge. It keeps
           the typing, hover scramble, idle glitch and blinking cursor. */}
       <div className="srv-giant">
-        <Link to={logoTo} aria-label="Memoora home" className="block">
+        <Link to={logoTo} aria-label="Memoraa home" className="block">
           <SigilWordmark size="giant" animate />
         </Link>
       </div>

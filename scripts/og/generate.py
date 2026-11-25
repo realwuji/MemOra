@@ -44,7 +44,7 @@ FONT_DIR = ROOT / "node_modules" / "@fontsource-variable"
 BRICOLAGE = FONT_DIR / "bricolage-grotesque" / "files" / "bricolage-grotesque-latin-wght-normal.woff2"
 MONO = FONT_DIR / "jetbrains-mono" / "files" / "jetbrains-mono-latin-wght-normal.woff2"
 OUT_DIR = ROOT / "public" / "og"
-WORDMARK = ROOT / "public" / "brand" / "memoora-wordmark-white.svg"
+WORDMARK = ROOT / "public" / "brand" / "memoraa-wordmark-white.svg"
 
 W, H = 1200, 630
 CELL = 14
@@ -275,7 +275,7 @@ def chip(x, y, label, font=F_MONO, size=20):
 # ---------------------------------------------------------------- one image
 def build_svg(path, meta):
     slug = slug_of(path)
-    rng = random.Random(f"memoora-og-{slug}")
+    rng = random.Random(f"memoraa-og-{slug}")
     mode = MODE.get(path, "packets")
     px, py, pw, ph = PANEL
 
@@ -298,7 +298,7 @@ def build_svg(path, meta):
     parts.append(f'<line x1="{px}" x2="{px + pw}" y1="{py + BAR_H}" y2="{py + BAR_H}" stroke="#ffffff" stroke-opacity=".16"/>')
     for i in range(3):
         parts.append(lit(px + 30 + i * 22, py + BAR_H / 2, op=(1.0, 0.85, 0.6)[i], scale=2.3))
-    path_label = f"~/memoora/{slug}"
+    path_label = f"~/memoraa/{slug}"
     parts.append(f'<path fill="{MUTED}" d="{text_path(F_MONO, path_label, 19, px + 100, py + BAR_H / 2 + 6.5)}"/>')
     dw = measure(F_MONO, DOMAIN, 19, 0.0)
     parts.append(f'<path fill="{MUTED}" d="{text_path(F_MONO, DOMAIN, 19, px + pw - 28 - dw, py + BAR_H / 2 + 6.5)}"/>')

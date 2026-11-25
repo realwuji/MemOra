@@ -56,7 +56,7 @@ function GuidelinesGate({ onAgree }) {
       <ul className="readable mt-3 space-y-2 text-sm text-muted">
         <li>· Be someone you'd want replying to you - no put-downs, no pile-ons.</li>
         <li>· Never share your name, school, town, phone number, email or any social handle here.</li>
-        <li>· No private messaging exists on Memoora - everything is posted where everyone can see it, on purpose.</li>
+        <li>· No private messaging exists on Memoraa - everything is posted where everyone can see it, on purpose.</li>
         <li>· Report anything that worries you. A moderator reviews every report.</li>
       </ul>
       <Button onClick={onAgree} className="mt-4" size="sm">

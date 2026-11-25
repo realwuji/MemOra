@@ -1,4 +1,4 @@
-# Memoora - https://memoraa.web.app/
+# Memoraa - https://memoraa.web.app/
 # Free A-level revision for Edexcel Maths, Edexcel Economics and OCR Computer Science.
 
 User-agent: *

@@ -30,7 +30,7 @@ const DESTINATIONS = [
   { to: '/mistakes', icon: 'x', label: 'Mistakes', desc: 'Questions you got wrong' },
   { to: '/flashcards', icon: 'cards', label: 'Flashcards', desc: 'Decks and your own cards' },
   { to: '/community', icon: 'users', label: 'Community', desc: 'Ask and answer questions' },
-  { to: '/how-it-works', icon: 'brain', label: 'How it works', desc: 'What Memoora actually does' },
+  { to: '/how-it-works', icon: 'brain', label: 'How it works', desc: 'What Memoraa actually does' },
 ]
 
 export default function NotFound() {
