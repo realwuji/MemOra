@@ -119,7 +119,7 @@ export default function LevelUp() {
               </ul>
             )}
             <p className="mt-4 text-xs text-muted">
-              {me.levelInfo.toNext.toLocaleString()} XP to level {shown.to + 1}.
+              {me.levelInfo.capped ? 'You have reached the top level.' : `${me.levelInfo.toNext.toLocaleString()} XP to level ${shown.to + 1}.`}
             </p>
             <Button className="mt-4 w-full" onClick={close}>
               Keep going

@@ -211,11 +211,17 @@ export default function HeroBanner({
               <p className="min-w-0">
                 <span className="text-base font-extrabold text-fg">{lvl.title}</span>
                 <span className="ml-2 text-xs font-semibold text-muted">
-                  {lvl.toNext.toLocaleString()} XP to level {lvl.level + 1}
+                  {lvl.capped ? 'Max level' : `${lvl.toNext.toLocaleString()} XP to level ${lvl.level + 1}`}
                 </span>
               </p>
               <p className="text-xs tabular-nums text-muted">
-                <span className="font-bold text-fg">{xp.toLocaleString()}</span> / {lvl.next.toLocaleString()} XP
+                {lvl.capped ? (
+                  <span className="font-bold text-fg">{lvl.xp.toLocaleString()} XP · MAX</span>
+                ) : (
+                  <>
+                    <span className="font-bold text-fg">{xp.toLocaleString()}</span> / {lvl.next.toLocaleString()} XP
+                  </>
+                )}
               </p>
             </div>
             <div className="xp-bar mt-2">

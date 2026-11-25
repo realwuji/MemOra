@@ -481,7 +481,7 @@ export default function Profile() {
                     Level {me.level} <span className="text-base font-bold text-brand-strong">{me.levelInfo.title}</span>
                   </p>
                   <p className="text-sm text-muted">
-                    {me.xp.toLocaleString()} XP · {me.levelInfo.toNext.toLocaleString()} to level {me.level + 1}
+                    {me.levelInfo.capped ? `${me.levelInfo.xp.toLocaleString()} XP · max level` : `${me.xp.toLocaleString()} XP · ${me.levelInfo.toNext.toLocaleString()} to level ${me.level + 1}`}
                   </p>
                   <div className="mt-2 h-2 overflow-hidden rounded-full bg-line/70">
                     <div className="h-full rounded-full bg-brand" style={{ width: `${Math.max(3, me.levelInfo.progress * 100)}%` }} />

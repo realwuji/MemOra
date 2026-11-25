@@ -41,7 +41,11 @@ export const computeXp = (args) => xpBreakdown(args).reduce((s, r) => s + r.xp, 
 export const xpForLevel = (level) =>
   level <= 1 ? 0 : Math.round(90 * Math.pow(level - 1, 1.55) + 60 * (level - 1))
 
+// Level 100 is the top. Past it nothing is earned: the bar stays full and the title reads Unbounded.
+export const MAX_LEVEL = 100
+
 export const LEVEL_TITLES = [
+  { min: 100, title: 'Unbounded' },
   { min: 30, title: 'Sensei' },
   { min: 25, title: 'A* Machine' },
   { min: 20, title: 'Legend' },
@@ -70,9 +74,15 @@ export const LEVEL_REWARDS = [
 export const rewardsAtLevel = (level) => LEVEL_REWARDS.filter((r) => r.level === level)
 export const nextReward = (level) => LEVEL_REWARDS.find((r) => r.level > level) || null
 
-export function levelFromXp(xp) {
+export function levelFromXp(xpIn) {
+  // XP stops counting at the top level, so the bar cannot grow past full
+  const xp = Math.min(xpIn, xpForLevel(MAX_LEVEL))
   let level = 1
-  while (xp >= xpForLevel(level + 1)) level += 1
+  while (level < MAX_LEVEL && xp >= xpForLevel(level + 1)) level += 1
+  if (level >= MAX_LEVEL) {
+    const top = xpForLevel(MAX_LEVEL)
+    return { level, floor: top, next: top, toNext: 0, title: levelTitle(level), progress: 1, capped: true, xp: top }
+  }
   const floor = xpForLevel(level)
   const next = xpForLevel(level + 1)
   return {
@@ -82,6 +92,8 @@ export function levelFromXp(xp) {
     toNext: next - xp,
     title: levelTitle(level),
     progress: Math.max(0, Math.min(1, (xp - floor) / (next - floor))),
+    capped: false,
+    xp,
   }
 }
 
