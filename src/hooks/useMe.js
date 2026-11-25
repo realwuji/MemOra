@@ -1,6 +1,7 @@
 import { useMemo } from 'react'
 import { useApp } from '@/context/AppProvider'
-import { computeXp, levelFromXp } from '@/lib/xp'
+import { computeXp, levelFromXp, xpForLevel, MAX_LEVEL } from '@/lib/xp'
+import { isOwner } from '@/constants/owner'
 import { studyStreak } from '@/lib/sessions'
 
 /*
@@ -27,7 +28,8 @@ function deviceId(account) {
 export default function useMe(now = Date.now()) {
   const { user, account, sessions, attempts, essayPlanDrafts, daily, realName } = useApp()
   return useMemo(() => {
-    const xp = computeXp({ sessions, attempts, essayPlanDrafts, daily })
+    // The owner's account sits at the top level (Unbounded) on every device
+    const xp = isOwner(account?.email) ? xpForLevel(MAX_LEVEL) : computeXp({ sessions, attempts, essayPlanDrafts, daily })
     const lvl = levelFromXp(xp)
     const streak = studyStreak(sessions, attempts)
     const weekMinutes = sessions
