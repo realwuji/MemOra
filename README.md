@@ -118,7 +118,9 @@ src/
 │   └── safety.js                # Safety utilities
 ├── constants/
 │   ├── content.js               # ALL copy + option definitions
-│   ├── library.js               # AI revision content index (flashcards / MCQ / exam Qs)
+│   ├── packs.js                 # Subjects for the app: light packs now, full content on demand
+│   ├── pack-*.js                # One assembled pack per subject (maths, economics, computer-science)
+│   ├── library.js               # Every pack at once, for scripts only (the app never imports it)
 │   ├── subjects/                # Per-subject revision content (Maths, Econ, CS)
 │   │   ├── maths-*.js
 │   │   ├── econ-*.js
@@ -196,7 +198,7 @@ before changing any UI.
   `text-fg`, `bg-surface`, `border-line`, `bg-brand`, `text-brand-strong`,
   `bg-flash-soft`, and so on). Add tokens in `src/index.css`.
 - **Copy** lives in `src/constants/content.js`; **revision content** in
-  `library.js` and subject folders; **demo data** is generated inline.
+  `pack-<subject>.js` (read through `packs.js`); **demo data** is generated inline.
 - **Animations:** import variants from `src/lib/motion.js`.
 - **Imports:** use the `@/` alias for anything under `src/`.
 - **Components:** one per file, `PascalCase.jsx`, default export named like the
@@ -204,9 +206,25 @@ before changing any UI.
 
 ## Adding a revision subject
 
-Add an entry to `REVISION` in `src/constants/library.js` with `id`, `name`,
-`topics`, `flashcards`, `mcq`, and `examQuestions`. The flashcard maker, study
-session, and progress page pick it up automatically.
+Each subject is its own module, `src/constants/pack-<id>.js`, whose default export
+is the assembled pack: `id`, `name`, `topics`, `groups` (the chapter outline),
+`flashcards`, `mcq` and `examQuestions`, plus `notes` and anything else it has.
+
+1. Create `src/constants/pack-<id>.js` (copy `pack-maths.js` as the shape; run the
+   export through `dedupeContent` from `pack-dedupe.js`).
+2. Add it to `REVISION` in `src/constants/library.js` and a loader to
+   `src/constants/pack-loaders.js`.
+3. Run `npm run dev` or `npm run build`: `scripts/generate-pack-manifest.mjs`
+   rewrites `src/constants/pack-manifest.js` (outline and counts) and fails if
+   step 2 was missed.
+
+The app reads subjects through `src/constants/packs.js`, never `library.js`:
+`getPackByName()` gives the light pack (outline and counts, available at once),
+and `loadPack()` / `usePack()` fetch a subject's full content, which is its own
+chunk. A page that only lists chapters or shows counts must not need the
+content; one that shows questions or notes must load it. Importing `library.js`
+from the app puts every subject (about 2.7MB) in the first download of the page.
+The flashcard maker, study session, and progress page pick it up automatically.
 
 ## Working with AI coding assistants
 

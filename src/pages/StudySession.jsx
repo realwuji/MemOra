@@ -7,12 +7,16 @@ import Icon from '@/components/ui/Icon'
 import RevisionRunner from '@/components/ui/RevisionRunner'
 import ChapterPicker from '@/components/ui/ChapterPicker'
 import { fadeInUp } from '@/lib/motion'
-import { STUDY_TECHNIQUES, PRIORITISED_COURSES } from '@/constants/content'
-import { getPackByName } from '@/constants/library'
+import { STUDY_TECHNIQUES, PRIORITISED_COURSES, PACK_LOAD_ERROR, STUDY_NEXT } from '@/constants/content'
+import { getPackByName } from '@/constants/packs'
+import usePack from '@/hooks/usePack'
+import PageFallback from '@/components/layout/PageFallback'
 import { useApp } from '@/context/AppProvider'
 import { slugify, resolveSlug } from '@/lib/slug'
 import { computeAllChapterStates } from '@/lib/attempts'
 import { computeNextBestAction, relevantTopics } from '@/lib/pace'
+import { useFocusMode } from '@/lib/focusMode'
+import jumpToTop from '@/lib/jumpToTop'
 
 function shuffle(arr) {
   const a = [...arr]
@@ -79,7 +83,13 @@ export default function StudySession() {
     user?.courseName ||
     'Revision'
   const technique = techniqueParam || 'flashcards'
+  // `pack` is the LIGHT pack: name, chapter outline, counts. It is all the
+  // chapter picker and the recommender need, so the page opens at once. The
+  // content (flashcards, questions, notes) is `fullPack`, fetched in the
+  // background from the moment the page opens, so it is usually there by the
+  // time a chapter is tapped (constants/packs.js).
   const pack = getPackByName(subject)
+  const { pack: fullPack, error: packError, retry: retryPack } = usePack(pack)
   // `subject` can arrive as a URL slug ("computer-science"), which must never
   // reach the UI - the pack carries the properly-cased display name.
   const subjectLabel = pack?.name || subject
@@ -91,7 +101,7 @@ export default function StudySession() {
   // are keyed by paper and spec topic, and the planner carries its own
   // filters for those, so a chapter picker here would just be a second,
   // worse version of the same thing.
-  const hasChapters = Boolean(pack?.groups?.length) && technique !== 'essay-plans' && technique !== 'diagram-revision' && technique !== 'diagram-bank' && technique !== 'application'
+  const hasChapters = Boolean(pack?.groups?.length) && technique !== 'essay-plans' && technique !== 'diagram-revision' && technique !== 'diagram-bank' && technique !== 'application' && technique !== 'past-papers'
 
   // A chapter bar segment (Progress/Dashboard) links straight here with
   // ?chapter=<topic> so tapping it lands on that exact chapter, not the
@@ -112,6 +122,11 @@ export default function StudySession() {
   // XP the finished session earned on its own (answers add theirs as they
   // happen), shown on the done screen with the buddy cheering.
   const [earnedXp, setEarnedXp] = useState(0)
+
+  // Reading a chapter, working a question, drawing a diagram: while a session
+  // is running the backdrop goes quiet (see src/lib/focusMode.js). It comes
+  // back on the picker and the results screen.
+  useFocusMode(phase === 'running')
 
   const chapterLabel = chapter === ALL ? subjectLabel : chapter
 
@@ -137,7 +152,14 @@ export default function StudySession() {
   // so following a link never starts a timed session by itself.
   const pickChapter = (t) => {
     setChapter(t)
-    startStudying(t)
+    // Content not here yet: wait on the 'ready' phase, which starts the run
+    // the moment it arrives. After a failed download, tapping a chapter again
+    // is a retry.
+    if (fullPack) startStudying(t)
+    else {
+      if (packError) retryPack()
+      setPhase('ready')
+    }
   }
 
   // Jump straight into another technique on the same chapter, from the empty
@@ -147,14 +169,14 @@ export default function StudySession() {
   }
 
   const startStudying = (which = chapter) => {
-    if (!pack) return
+    if (!fullPack) return
     const inChapter = (items) =>
       which === ALL ? items : items.filter((it) => it.topic === which)
     setRunPack({
-      ...pack,
-      flashcards: shuffle(inChapter(pack.flashcards)),
-      mcq: shuffle(inChapter(pack.mcq)).map(shuffleOptions),
-      examQuestions: shuffle(inChapter(pack.examQuestions)),
+      ...fullPack,
+      flashcards: shuffle(inChapter(fullPack.flashcards)),
+      mcq: shuffle(inChapter(fullPack.mcq)).map(shuffleOptions),
+      examQuestions: shuffle(inChapter(fullPack.examQuestions)),
     })
     setStartedAt(Date.now())
     setPhase('running')
@@ -163,8 +185,8 @@ export default function StudySession() {
   // No "ready?" screen for any method or subject: arriving at a session (a link,
   // or Another session) starts it straight away.
   useEffect(() => {
-    if (phase === 'ready' && pack) startStudying()
-  }, [phase, pack]) // eslint-disable-line react-hooks/exhaustive-deps
+    if (phase === 'ready' && fullPack) startStudying()
+  }, [phase, fullPack]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // Real elapsed time, not a guess - this is what the dashboard's "hours
   // spent" is built from. Clamp to a sane range in case a tab was left open.
@@ -175,7 +197,7 @@ export default function StudySession() {
   // separate, optional step that updates the same record - before this,
   // walking away from the rating screen lost the whole session, which is
   // why streaks and weekly minutes never seemed to move.
-  const finishSession = () => {
+  const recordSession = () => {
     const minutes = elapsedMinutes()
     const id = logSession({
       subject,
@@ -184,10 +206,39 @@ export default function StudySession() {
       topic: chapter === ALL ? null : chapter,
       minutes,
     })
+    setRecentTopic(`${chapterLabel} · ${techniqueLabel}`)
+    return { id, minutes }
+  }
+  const finishSession = () => {
+    const { id, minutes } = recordSession()
     setSessionId(id)
     setEarnedXp(minutes + 10)
-    setRecentTopic(`${chapterLabel} · ${techniqueLabel}`)
     setPhase('done')
+  }
+
+  // The chapter that follows this one in the course, for "Finish and continue".
+  // Only for a single chapter of a method that has chapters.
+  const nextTopic = useMemo(() => {
+    if (chapter === ALL || !hasChapters) return null
+    const at = pickerTopics.indexOf(chapter)
+    return at >= 0 ? pickerTopics[at + 1] || null : null
+  }, [chapter, hasChapters, pickerTopics])
+  // Ends this session (it is logged like any other) and opens the next chapter in
+  // the same method, at the top.
+  const finishAndContinue = () => {
+    if (!nextTopic) return
+    recordSession()
+    setSessionId(null)
+    setChapter(nextTopic)
+    startStudying(nextTopic)
+    jumpToTop()
+  }
+  // From the "Session saved" screen: no session left to log, just open the next chapter.
+  const continueFromSaved = () => {
+    if (!nextTopic) return
+    setSessionId(null)
+    setChapter(nextTopic)
+    startStudying(nextTopic)
   }
 
   const rateDifficulty = (n) => {
@@ -218,7 +269,7 @@ export default function StudySession() {
   )
 
   return (
-    <Section width={phase === 'chapter' || technique === 'essay-plans' || technique === 'diagram-bank' ? 'default' : 'narrow'} animateOnMount className="pt-10 pb-28">
+    <Section width={technique === 'diagram-bank' ? 'wide' : phase === 'chapter' || technique === 'essay-plans' || technique === 'diagram-revision' ? 'default' : 'narrow'} animateOnMount className="pt-10 pb-28">
       <motion.div variants={fadeInUp} className="mb-6 flex flex-wrap gap-2">
         <Button as={Link} to="/dashboard" variant="ghost" size="sm" className="-ml-4">
           <Icon name="arrowLeft" className="h-4 w-4" />
@@ -231,7 +282,12 @@ export default function StudySession() {
         )}
       </motion.div>
 
-      <AnimatePresence mode="wait">
+      {/* Each screen (chapter list, notes or questions, results) opens at the top.
+          They share one route, so the router's own scroll reset never runs: without
+          this, picking a chapter from far down the list opened its notes just as
+          far down. It jumps once the old screen has gone, so it does not slide
+          out of view while it fades. */}
+      <AnimatePresence mode="wait" onExitComplete={jumpToTop}>
         {/* CHAPTER PICKER */}
         {phase === 'chapter' && pack && (
           <ChapterPicker
@@ -245,6 +301,33 @@ export default function StudySession() {
             onPick={pickChapter}
             allKey={ALL}
           />
+        )}
+
+        {/* WAITING for the subject's content (a separate download), or it failed */}
+        {phase === 'ready' && pack && !runPack && (
+          <motion.div key="loading" variants={fadeInUp} initial="hidden" animate="show" exit={{ opacity: 0 }}>
+            {packError ? (
+              <div className="card p-8 text-center" role="alert">
+                <p className="text-lg font-semibold text-fg">{PACK_LOAD_ERROR.title}</p>
+                <p className="mt-1 text-sm text-muted">{PACK_LOAD_ERROR.hint}</p>
+                <div className="mt-5">
+                  <Button size="sm" onClick={retryPack}>
+                    {PACK_LOAD_ERROR.retry}
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <PageFallback />
+            )}
+            {hasChapters && (
+              <div className="mt-6 text-center">
+                <Button size="sm" variant="ghost" onClick={() => setPhase('chapter')}>
+                  <Icon name="arrowLeft" className="h-4 w-4" />
+                  All chapters
+                </Button>
+              </div>
+            )}
+          </motion.div>
         )}
 
         {/* RUNNING: real, shuffled revision content */}
@@ -262,10 +345,14 @@ export default function StudySession() {
                 <h1 className="truncate text-xl font-bold text-fg">{chapterLabel}</h1>
               </div>
               <div className="flex items-center gap-2">
-                {hasChapters && (
+                {hasChapters ? (
                   <Button size="sm" variant="secondary" onClick={() => setPhase('chapter')}>
                     <Icon name="arrowLeft" className="h-4 w-4" />
                     All chapters
+                  </Button>
+                ) : (
+                  <Button as={Link} to={`/start/${slugify(subject)}`} size="sm" variant="secondary">
+                    Change method
                   </Button>
                 )}
                 <Button size="sm" onClick={finishSession}>
@@ -275,6 +362,7 @@ export default function StudySession() {
             </div>
 
             <RevisionRunner
+              key={chapter}
               pack={runPack}
               technique={technique}
               chapter={chapter === ALL ? null : chapter}
@@ -289,6 +377,19 @@ export default function StudySession() {
                 })
               }
             />
+
+            {nextTopic && (
+              <div className="card mt-10 flex flex-wrap items-center justify-between gap-4 p-5">
+                <div className="min-w-0">
+                  <p className="text-xs font-semibold uppercase tracking-widest text-muted">{STUDY_NEXT.eyebrow}</p>
+                  <p className="mt-1 text-lg font-bold text-fg">{nextTopic}</p>
+                </div>
+                <Button onClick={finishAndContinue}>
+                  {STUDY_NEXT.cta}
+                  <Icon name="arrowRight" className="h-4 w-4" />
+                </Button>
+              </div>
+            )}
           </motion.div>
         )}
 
@@ -325,6 +426,12 @@ export default function StudySession() {
                 <Icon name="home" className="h-5 w-5" />
                 Back to dashboard
               </Button>
+              {nextTopic && (
+                <Button onClick={continueFromSaved}>
+                  {STUDY_NEXT.again}: {nextTopic}
+                  <Icon name="arrowRight" className="h-5 w-5" />
+                </Button>
+              )}
               <Button
                 variant="secondary"
                 onClick={() => setPhase(hasChapters ? 'chapter' : 'ready')}

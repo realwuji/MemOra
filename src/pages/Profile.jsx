@@ -14,6 +14,7 @@ import { AssessmentQuickAdd } from '@/components/dashboard/AssessmentsCard'
 import useMe from '@/hooks/useMe'
 import { assessmentType } from '@/constants/assessments'
 import { fadeInUp } from '@/lib/motion'
+import { swapTheme } from '@/lib/themeTransition'
 import { PRIORITISED_COURSES, ADVANCED_YEAR_GROUPS, YEAR_GROUPS, specsFor } from '@/constants/content'
 import { useApp, THEMES, THEME_META } from '@/context/AppProvider'
 import { AVATAR_STYLES, AVATAR_BACKGROUNDS, AVATAR_BG_HEX } from '@/lib/avatar'
@@ -319,7 +320,7 @@ export default function Profile() {
                 <Choice
                   label="Theme"
                   value={theme}
-                  onChange={setTheme}
+                  onChange={(t) => swapTheme(() => setTheme(t))}
                   options={THEMES.map((t) => ({ value: t, label: THEME_META[t].label }))}
                 />
                 <div>

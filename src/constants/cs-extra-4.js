@@ -10,7 +10,7 @@
   asks about something the notes do not teach.
 
   Same conventions as the earlier batches: topic strings match the
-  chapter outline in library-extra.js exactly; MCQ correct answers are
+  chapter outline in pack-computer-science.js exactly; MCQ correct answers are
   spread across all four positions; mark schemes list marking points and
   end with a "Final answer:" line to self-mark a whole response against.
   No em dashes.

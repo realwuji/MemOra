@@ -7,12 +7,12 @@ import Icon from '@/components/ui/Icon'
 import BandBar from '@/components/ui/BandBar'
 import { useApp } from '@/context/AppProvider'
 import { PRIORITISED_COURSES, subjectColor, subjectIcon } from '@/constants/content'
-import { getPackByName } from '@/constants/library'
+import { getPackByName, countsOf } from '@/constants/packs'
 import { fadeInUp, staggerContainer } from '@/lib/motion'
 import { slugify, resolveSlug } from '@/lib/slug'
 import { computeAllChapterStates } from '@/lib/attempts'
 import { computeNextBestAction, relevantTopics, subjectBandCounts, subjectReadiness } from '@/lib/pace'
-import { ALL_TECHNIQUES, techniqueHasContent, studyPathFor, normaliseMode } from '@/lib/techniques'
+import { techniquesFor, techniqueHasContent, studyPathFor, normaliseMode } from '@/lib/techniques'
 
 /*
   Start: the two screens between "I want to revise" and revising.
@@ -33,27 +33,28 @@ import { ALL_TECHNIQUES, techniqueHasContent, studyPathFor, normaliseMode } from
   and the one the recommender would pick is marked.
 */
 
+// Counts come from the light pack, so this page never downloads the content.
 const stat = (pack, id) => {
+  const counts = countsOf(pack)
   switch (normaliseMode(id)) {
     case 'notes':
-      return `${Object.keys(pack.notes || {}).length} chapters`
+      return `${counts.notes} chapters`
     case 'flashcards':
-      return `${pack.flashcards?.length || 0} cards`
+      return `${counts.flashcards} cards`
     case 'mcq':
-      return `${pack.mcq?.length || 0} questions`
+      return `${counts.mcq} questions`
     case 'exam-questions':
-      return `${pack.examQuestions?.length || 0} questions with mark schemes`
+      return `${counts.examQuestions} questions with mark schemes`
     case 'essay-plans':
-      return `${pack.essayBank?.length || 0} essay questions`
+      return `${counts.essayBank} essay questions`
     case 'diagram-revision':
       return 'randomised, with animated shifts'
     case 'diagram-bank':
       return 'every diagram, searchable and replayable'
-    case 'application': {
-      const n = [pack.applications, pack.realCases].reduce((t, m) => t + Object.values(m || {}).reduce((a, l) => a + l.length, 0), 0)
-      const topics = new Set([...Object.keys(pack.applications || {}), ...Object.keys(pack.realCases || {})]).size
-      return `${n} cases across ${topics} topics`
-    }
+    case 'past-papers':
+      return 'every question, by paper and sitting'
+    case 'application':
+      return `${counts.applicationItems} cases across ${counts.applicationTopics} topics`
     case 'mock':
       return 'timed paper, randomised'
     default:
@@ -70,6 +71,7 @@ const ICON_TINT = {
   'diagram-revision': '#0e7490',
   application: '#c2410c',
   'diagram-bank': '#0f766e',
+  'past-papers': '#be123c',
   mock: '#4f46e5',
 }
 
@@ -235,7 +237,7 @@ export default function Start() {
       </motion.div>
 
       <motion.div variants={staggerContainer} className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {ALL_TECHNIQUES.map((t) => {
+        {techniquesFor(pack).map((t) => {
           const available = techniqueHasContent(pack, t.id)
           const isRec = available && recommended === t.id
           const tint = ICON_TINT[t.id] || color

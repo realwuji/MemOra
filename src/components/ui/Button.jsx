@@ -34,9 +34,7 @@ const asMotion = (Component) => {
     - as: render as a different element/component (e.g. Link). Defaults to <button>.
     - ...rest: any native props (onClick, type, to, href, disabled, etc.)
 
-  'ghost' and 'link' skip the charge chrome on purpose: ghost is meant to
-  stay minimal (it's the button you reach for next to two or three others
-  in a row), and a hyperlink with a coloured current running through it
+  'link' skips the charge chrome on purpose, since a hyperlink with a coloured current running through it
   would just read as broken.
 */
 // One chrome for every real button. 'secondary' and 'subtle' are kept as
@@ -48,7 +46,7 @@ const chromeVariants = {
   primary: 'btn-charge',
   secondary: 'btn-charge',
   subtle: 'btn-charge',
-  ghost: 'bg-transparent text-brand-strong hover:bg-brand-soft',
+  ghost: 'btn-charge',
 }
 
 const linkClass =
@@ -82,7 +80,7 @@ export default function Button({
     )
   }
 
-  const hasCharge = variant !== 'ghost'
+  const hasCharge = true
   const labelClass = `${hasCharge ? 'btn-charge-label' : ''} inline-flex items-center ${sizes[size].gap}`
 
   return (

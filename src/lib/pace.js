@@ -4,7 +4,7 @@
   computeChapterState this whole model already runs on (see lib/attempts.js);
   nothing here tracks its own separate state.
 */
-import { topicLevelMap } from '@/constants/library'
+import { topicLevelMap } from '@/constants/pack-lookup'
 import { computeChapterState } from './attempts'
 import { unresolvedMistakeChapters } from './mistakes'
 

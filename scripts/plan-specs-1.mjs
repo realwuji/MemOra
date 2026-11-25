@@ -84,7 +84,7 @@ export const SPECS_1 = {
   },
   10: {
     cols: ['Likely effects of an increase in consumption', 'Limits'],
-    left: [D(CAD, 'Consumer confidence', { t: 'Confidence raises spending today' }), D(CIR, 'What makes the multiplier large', { t: 'What makes the multiplier large', d: [182] })],
+    left: [D(CAD, 'Consumer confidence', { t: 'Confidence raises spending today' }), D(CIR, 'What makes the multiplier large', { t: 'What makes the multiplier large', d: [181] })],
     right: [E(CIR, 'Why the multiplier may be smaller', { t: 'Why the effect may be smaller' }), E(CSI, 'Interest rates', { t: 'Interest rates may limit it' })],
     judge: 'More consumption raises AD, output and jobs, and the multiplier amplifies it, but if spending is on imports or the economy has no spare capacity, the gain is smaller and prices rise.',
   },
@@ -95,7 +95,7 @@ export const SPECS_1 = {
   },
   12: {
     cols: ['Likely effects of higher real wages', 'Limits'],
-    left: [D(CAD, 'Real disposable income', { t: 'Higher real income raises consumption' }), D(CIR, 'What makes the multiplier large', { t: 'What makes the multiplier large', d: [182] })],
+    left: [D(CAD, 'Real disposable income', { t: 'Higher real income raises consumption' }), D(CIR, 'What makes the multiplier large', { t: 'What makes the multiplier large', d: [181] })],
     right: [E(CIR, 'Why the multiplier may be smaller', { t: 'Why the effect may be smaller' }), D(AS, 'Wage rates', { t: 'Higher wages raise firms\' costs' })],
     judge: 'Higher real wages raise incomes and consumption, but if they exceed productivity growth they raise firms\' costs and shift SRAS left; the gain depends on whether pay rises are matched by productivity.',
   },
@@ -139,18 +139,18 @@ export const SPECS_1 = {
   },
   21: {
     cols: ['Two factors that change the international price of coffee beans', ''],
-    left: [D(SUP, 'Weather, shocks and expectations', { t: 'Weather and shocks to supply', d: [21] }), D(DEM, 'Income', { t: 'Rising incomes raise demand', d: [19] })],
+    left: [D(SUP, 'Weather, shocks and expectations', { t: 'Weather and shocks to supply', d: [22] }), D(DEM, 'Income', { t: 'Rising incomes raise demand', d: [19] })],
     right: [],
   },
   22: {
     cols: ['How a change in the value of exports affects growth', 'Limits'],
-    left: [D(CAD, 'The exchange rate', { t: 'The exchange rate and net exports' }), D(CIR, 'What makes the multiplier large', { t: 'What makes the multiplier large', d: [182] })],
+    left: [D(CAD, 'The exchange rate', { t: 'The exchange rate and net exports' }), D(CIR, 'What makes the multiplier large', { t: 'What makes the multiplier large', d: [181] })],
     right: [E(CAD, 'The exchange rate', { t: 'Why exports may not rise' }), E(CAD, 'Real income abroad and at home', { t: 'Why higher incomes abroad may not help' })],
     judge: 'Higher export revenue raises AD and growth, magnified by the multiplier, but the effect depends on how responsive exports are to the exchange rate and on demand abroad, and a weaker pound also raises import costs.',
   },
   23: {
     cols: ['How a rise in the value of exports affects the economy', 'Limits'],
-    left: [D(CAD, 'Real income abroad and at home', { t: 'Higher incomes abroad raise export demand' }), D(CIR, 'What makes the multiplier large', { t: 'What makes the multiplier large', d: [182] })],
+    left: [D(CAD, 'Real income abroad and at home', { t: 'Higher incomes abroad raise export demand' }), D(CIR, 'What makes the multiplier large', { t: 'What makes the multiplier large', d: [181] })],
     right: [E(CAD, 'Real income abroad and at home', { t: 'Why higher incomes abroad may not help' }), E(CAD, 'The exchange rate', { t: 'Why a lower exchange rate may not raise exports' })],
     judge: 'A rise in exports raises AD, output and employment and improves the current account. The gain is larger with spare capacity and a high multiplier, and smaller if exporters rely on imported inputs.',
   },

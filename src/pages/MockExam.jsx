@@ -5,7 +5,9 @@ import Section from '@/components/ui/Section'
 import Button from '@/components/ui/Button'
 import Icon from '@/components/ui/Icon'
 import { fadeInUp, staggerContainer } from '@/lib/motion'
-import { getPackByName, topicLevelMap } from '@/constants/library'
+import { getPackByName, topicLevelMap } from '@/constants/packs'
+import usePack from '@/hooks/usePack'
+import PageFallback from '@/components/layout/PageFallback'
 import { EXAM_BOARD_META } from '@/constants/content'
 import { useApp } from '@/context/AppProvider'
 import { slugify, resolveSlug } from '@/lib/slug'
@@ -96,7 +98,11 @@ export default function MockExam() {
   const subject = resolveSlug(subjectSlug, subjectNames)
   const pickSubject = (name) => navigate(`/mock/${slugify(name)}`)
 
-  const pack = subject ? getPackByName(subject) : null
+  // The subject's questions are fetched (a few hundred KB, once); everything
+  // the page shows before then (its name, the chapter outline) is in the light pack.
+  const lightPack = subject ? getPackByName(subject) : null
+  const { pack } = usePack(lightPack)
+  const packLoading = Boolean(lightPack) && !pack
   const board =
     (subject && EXAM_BOARD_META[subject]) ||
     (subject && user.subjects?.find((s) => s.name === subject)?.spec
@@ -254,6 +260,8 @@ export default function MockExam() {
       </Section>
     )
   }
+
+  if (packLoading) return <PageFallback />
 
   return (
     <Section width="narrow" animateOnMount className="pt-10 pb-28">

@@ -20,6 +20,9 @@ dist-ssr
 # Generated at build time by scripts/generate-essay-plans.mjs
 public/essay-plans.txt
 
+# Copied from node_modules at dev/build time by scripts/copy-pyodide.mjs
+public/pyodide/
+
 # Firebase deploy cache / logs
 .firebase
 firebase-debug.log

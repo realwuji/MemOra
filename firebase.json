@@ -27,6 +27,11 @@
         "headers": [{ "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }]
       },
       {
+        "//": "Past paper pages (about 90 MB, opened one at a time): a week in the browser, so a second visit costs nothing on a slow connection.",
+        "source": "/past-papers/**",
+        "headers": [{ "key": "Cache-Control", "value": "public, max-age=604800" }]
+      },
+      {
         "source": "/hero/**",
         "headers": [{ "key": "Cache-Control", "value": "public, max-age=604800" }]
       }

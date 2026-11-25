@@ -2380,6 +2380,18 @@ html {
   animation: tt-led 2.6s steps(1, end) infinite;
   transition: opacity 0.3s ease;
 }
+/* The glow is its own layer so the blink can be an opacity change. It used to
+   animate box-shadow on the dot itself, which the compositor cannot do, so the
+   page produced a main-thread frame (and a style recalculation) on every
+   screen refresh for as long as the header was on screen. */
+.theme-toggle-stars i::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  box-shadow: 0 0 6px color-mix(in srgb, var(--fg) 70%, transparent);
+  animation: tt-led-glow 2.6s steps(1, end) infinite;
+}
 .theme-toggle-stars i:nth-child(1) { left: 0.8rem; }
 .theme-toggle-stars i:nth-child(2) { right: 0.8rem; }
 .theme-toggle-stars i:nth-child(3),
@@ -2388,8 +2400,12 @@ html {
 .theme-toggle[data-state='cream'] .theme-toggle-stars i:nth-child(2) { opacity: 1; }
 .theme-toggle[data-state='black'] .theme-toggle-stars i:nth-child(1) { opacity: 1; }
 @keyframes tt-led {
-  0%, 100% { filter: none; box-shadow: 0 0 6px color-mix(in srgb, var(--fg) 70%, transparent); }
-  50% { filter: opacity(0.3); box-shadow: none; }
+  0%, 100% { filter: none; }
+  50% { filter: opacity(0.3); }
+}
+@keyframes tt-led-glow {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -2397,7 +2413,8 @@ html {
   .theme-toggle::after,
   .theme-toggle-knob,
   .theme-toggle-icon,
-  .theme-toggle-stars i { transition: none; animation: none; }
+  .theme-toggle-stars i,
+  .theme-toggle-stars i::after { transition: none; animation: none; }
 }
 
 /* ------------------------------------------------------- THEME REVEAL

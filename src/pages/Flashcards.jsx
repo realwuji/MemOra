@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useLayoutEffect, useRef, useState } from 'react'
 import { motion, useReducedMotion } from 'framer-motion'
 import Section from '@/components/ui/Section'
 import Breadcrumbs from '@/components/ui/Breadcrumbs'
@@ -9,7 +9,9 @@ import FlipCard from '@/components/ui/FlipCard'
 import Chip from '@/components/ui/Chip'
 import { fadeInUp, staggerContainer } from '@/lib/motion'
 import { useApp } from '@/context/AppProvider'
-import { REVISION } from '@/constants/library'
+import { REVISION_LIGHT, countsOf, loadPack, preloadPack } from '@/constants/packs'
+import { PACK_LOAD_ERROR } from '@/constants/content'
+import jumpToTop from '@/lib/jumpToTop'
 import { generateFlashcards, chatConfigured } from '@/lib/chat'
 
 /*
@@ -19,11 +21,14 @@ import { generateFlashcards, chatConfigured } from '@/lib/chat'
     - create: build a deck (title + card rows) and save it to the store
 */
 
-// One prebuilt deck per subject, mapped from the REVISION library.
-const AI_DECKS = REVISION.map((pack) => ({
+// One prebuilt deck per subject. The page lists them from the light packs (a
+// count each) and fetches a subject's cards only when its deck is opened (or
+// about to be: see DeckCard's onWarm), so the page itself carries no content.
+const AI_DECKS = REVISION_LIGHT.map((pack) => ({
   id: `ai-${pack.id}`,
+  packId: pack.id,
   title: pack.name,
-  cards: pack.flashcards,
+  count: countsOf(pack).flashcards,
 }))
 
 function StudyView({ deck, onExit }) {
@@ -223,11 +228,13 @@ function CreateView({ onSave, onCancel }) {
   )
 }
 
-function DeckCard({ title, subtitle, accent, onOpen, onDelete }) {
+function DeckCard({ title, subtitle, accent, onOpen, onDelete, onWarm, busy }) {
   return (
     <motion.div
       variants={fadeInUp}
       className="flex h-full flex-col card card-lift p-6"
+      onPointerEnter={onWarm}
+      onFocus={onWarm}
     >
       <div className="flex items-start justify-between gap-3">
         <span className={`flex h-11 w-11 items-center justify-center rounded-xl ${accent}`}>
@@ -247,9 +254,9 @@ function DeckCard({ title, subtitle, accent, onOpen, onDelete }) {
       <h3 className="mt-3 font-semibold text-fg">{title}</h3>
       <p className="text-sm text-muted">{subtitle}</p>
       <div className="mt-4 pt-1">
-        <Button variant="subtle" size="sm" onClick={onOpen}>
+        <Button variant="subtle" size="sm" onClick={onOpen} disabled={busy}>
           <Icon name="play" className="h-4 w-4" />
-          Study
+          {busy ? 'Loading' : 'Study'}
         </Button>
       </div>
     </motion.div>
@@ -400,10 +407,41 @@ export default function Flashcards() {
   const { decks, saveDeck, deleteDeck } = useApp()
   const [view, setView] = useState('home')
   const [activeDeck, setActiveDeck] = useState(null)
+  const [opening, setOpening] = useState(null) // id of an AI deck whose cards are on their way
+  const [openError, setOpenError] = useState(false)
+  // Which open request is the latest, and which view is showing now, so a slow
+  // download cannot pull someone out of the screen they moved on to.
+  const openSeq = useRef(0)
+  const viewRef = useRef(view)
+  viewRef.current = view
+  // Home, studying a deck and the builders are separate screens on one route, so
+  // each opens at the top rather than at the offset the last one was left at.
+  useLayoutEffect(() => {
+    jumpToTop()
+  }, [view])
 
   const openDeck = (deck) => {
-    setActiveDeck(deck)
-    setView('study')
+    // A saved deck carries its own cards; an AI deck's are fetched first.
+    if (!deck.packId) {
+      setActiveDeck(deck)
+      setView('study')
+      return
+    }
+    const seq = ++openSeq.current
+    setOpening(deck.id)
+    setOpenError(false)
+    loadPack(deck.packId)
+      .then((pack) => {
+        if (seq !== openSeq.current || viewRef.current !== 'home') return // they moved on
+        setActiveDeck({ ...deck, cards: pack?.flashcards || [] })
+        setView('study')
+      })
+      .catch(() => {
+        if (seq === openSeq.current) setOpenError(true)
+      })
+      .finally(() => {
+        if (seq === openSeq.current) setOpening(null)
+      })
   }
   const goHome = () => {
     setActiveDeck(null)
@@ -454,12 +492,19 @@ export default function Flashcards() {
               <DeckCard
                 key={deck.id}
                 title={deck.title}
-                subtitle={`${deck.cards.length} cards`}
+                subtitle={`${deck.count} cards`}
                 accent="bg-flash-soft text-flash"
+                busy={opening === deck.id}
+                onWarm={() => preloadPack(deck.packId)}
                 onOpen={() => openDeck(deck)}
               />
             ))}
           </motion.div>
+          {openError && (
+            <p role="alert" className="mt-3 text-sm text-danger">
+              {PACK_LOAD_ERROR.title}. {PACK_LOAD_ERROR.hint}
+            </p>
+          )}
 
           {/* Your decks */}
           <motion.div

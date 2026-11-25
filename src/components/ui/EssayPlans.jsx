@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import BankDiagram from '@/components/ui/BankDiagram'
 import PlanBoxes from '@/components/ui/PlanBoxes'
-import { MARK_SPLIT, PLAN_AREAS, minutesFor } from '@/constants/econ-plans'
+import { MARK_SPLIT, PLAN_AREAS, minutesFor } from '@/constants/econ-plans-meta'
 import './essay-plans.css'
 
 /*

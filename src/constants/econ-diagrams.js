@@ -50,7 +50,8 @@ export const ECON_CHAPTER_DIAGRAMS = {
   ],
   'Price Determination and the Price Mechanism': [
     { id: 'supply-demand', after: 'equilibrium' },
-    { id: 'demand-shift' },
+    // With the table of the four cases, not at the very end of the chapter.
+    { id: 'demand-shift', after: 'A memory aid' },
     { id: 'consumer-producer-surplus' },
     { id: 'surplus-change', after: 'Consumer surplus' },
   ],

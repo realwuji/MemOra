@@ -59,6 +59,23 @@
   box-shadow: inset 0 1px 0 color-mix(in srgb, white 6%, transparent);
 }
 
+/* ------------------------------------------------------------ the pointer */
+/* The page used to set no cursor at all, so over any text the browser drew its
+   own I-beam: a tall, bright bar from the operating system, sitting on top of
+   hairline panels and console labels. The pointer here is the grid's (the
+   backdrop lights the row, column and cell under it, see atmosphere.css), so
+   reading text keeps the plain arrow. A cursor set on the root is inherited,
+   and the browser only picks an I-beam when the cursor is "auto", so this one
+   line covers every paragraph, table cell and card without a rule for each.
+
+   What is left alone on purpose: links keep the hand and buttons their own
+   cursor (they set it themselves), and text fields keep the text cursor (the
+   browser sets that on inputs and textareas, and there it tells you where you
+   are typing). The sketch pad sets its own tool cursors with explicit classes. */
+html {
+  cursor: default;
+}
+
 /* ---------------------------------------------------------- status LED */
 .srv-led {
   display: inline-block;
@@ -472,4 +489,56 @@
 [data-theme='high-contrast'] .subject-card::after,
 [data-theme='high-contrast'] .srv-scan {
   display: none;
+}
+
+/* ------------------------------------------------- hover sheen on plain buttons
+   Buttons that are not the charged <Button> (the diagram bank's back, pager and
+   play buttons, the topic jump, the scope switch) get a bright band that crosses them
+   once on hover, the same cue the charged buttons give. Transform and opacity only,
+   so it is cheap on a low-end device, and it is off for reduced motion. */
+.ep-back,
+.dr-btn,
+.tj-btn,
+.dr-scope-btn {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+.ep-back::after,
+.dr-btn::after,
+.tj-btn::after,
+.dr-scope-btn::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0;
+  background: linear-gradient(105deg, transparent 30%, color-mix(in srgb, var(--fg) 22%, transparent) 50%, transparent 70%);
+  transform: translate3d(-110%, 0, 0);
+}
+.ep-back:hover::after,
+.dr-btn:hover::after,
+.tj-btn:hover::after,
+.dr-scope-btn:hover::after,
+.ep-back:focus-visible::after,
+.dr-btn:focus-visible::after,
+.tj-btn:focus-visible::after,
+.dr-scope-btn:focus-visible::after {
+  opacity: 1;
+  animation: srv-sheen 0.7s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+@keyframes srv-sheen {
+  to {
+    transform: translate3d(110%, 0, 0);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ep-back:hover::after,
+  .dr-btn:hover::after,
+  .tj-btn:hover::after,
+  .dr-scope-btn:hover::after {
+    animation: none;
+    opacity: 0;
+  }
 }

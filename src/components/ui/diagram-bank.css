@@ -1,77 +1,564 @@
-/* Diagram bank: topic sections of thumbnails, then an in-depth view. */
+/*
+  Diagram bank: an index of topics, sections of thumbnails, then an in-depth
+  view. Built from the server design language (DESIGN.md): hairline panels, the
+  shared tight radius, mono labels, nothing blurred, only transform and opacity
+  animate. Every colour is a theme token.
+*/
 .db-root {
-  max-width: 72rem;
+  --db-top: 9.75rem; /* clears the app bar and the session bar above */
+  max-width: 84rem;
   margin: 0 auto;
 }
-.db-filters {
-  display: grid;
-  gap: 0.8rem;
-  margin-top: 1.25rem;
-}
-.db-search {
-  width: 100%;
-  max-width: 34rem;
-  padding: 0.6rem 0.95rem;
-  border: 1px solid var(--line);
-  border-radius: 0.8rem;
-  background: var(--surface);
-  color: var(--fg);
-  font-size: 0.95rem;
-}
-.db-search:focus {
-  outline: 2px solid var(--brand);
+
+/* The bank's LEDs and edges are Economics' own colour. */
+.db-root .srv-led {
+  --led: var(--subject, #2e9e6b);
 }
 
-/* ---------------------------------------------------------- sections */
-.db-section {
-  margin-top: 2.4rem;
-}
-.db-section-head {
+/* ------------------------------------------------------------- header */
+.db-head {
   display: flex;
   flex-wrap: wrap;
   align-items: flex-end;
   justify-content: space-between;
-  gap: 0.4rem 1.2rem;
-  margin-bottom: 0.9rem;
-  padding-bottom: 0.7rem;
-  border-bottom: 1px solid var(--line);
+  gap: 1.2rem 2rem;
 }
-.db-theme {
+.db-label {
   margin: 0;
-  color: var(--brand-strong);
-  font-size: 0.72rem;
-  font-weight: 800;
-  letter-spacing: 0.14em;
+  color: var(--muted);
+  font-family: var(--font-mono-ui);
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
 }
+.db-label::before {
+  content: '// ';
+}
+.db-title {
+  margin: 0.35rem 0 0.6rem;
+  color: var(--fg);
+  font-family: var(--font-head);
+  font-size: clamp(2.3rem, 5.5vw, 3.6rem);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+.db-lede {
+  margin: 0;
+  max-width: 34rem;
+  color: var(--muted);
+  font-size: 0.98rem;
+  line-height: 1.55;
+}
+.db-stats {
+  display: flex;
+  margin: 0;
+  border: 1px solid var(--srv-line);
+  border-radius: var(--srv-r, 0.6rem);
+  background: var(--surface);
+  overflow: hidden;
+}
+.db-stats div {
+  padding: 0.7rem 1.15rem;
+  border-left: 1px solid var(--srv-line);
+}
+.db-stats div:first-child {
+  border-left: 0;
+}
+.db-stats dt {
+  color: var(--muted);
+  font-family: var(--font-mono-ui);
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.db-stats dd {
+  margin: 0.2rem 0 0;
+  color: var(--fg);
+  font-family: var(--font-mono-ui);
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+/* ------------------------------------------------------------ toolbar */
+/* One rack panel that stays in view under the study bar, so search, the
+   micro / macro switch and "jump to" are always to hand. */
+.db-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem 0.8rem;
+  margin-top: 1.5rem;
+  padding: 0.55rem;
+  border: 1px solid var(--srv-line);
+  border-radius: var(--srv-r, 0.6rem);
+  background: var(--surface);
+}
+@media (min-width: 720px) {
+  .db-toolbar {
+    position: sticky;
+    top: calc(var(--db-top) - 0.7rem);
+    z-index: 25;
+  }
+  /* closes the gap between the study bar and this one, so nothing shows through it */
+  .db-toolbar::before {
+    content: '';
+    position: absolute;
+    left: -1px;
+    right: -1px;
+    bottom: 100%;
+    height: 0.75rem;
+    background: var(--page);
+  }
+}
+.db-search {
+  flex: 1 1 15rem;
+  max-width: 28rem;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.5rem 0.8rem;
+  border: 1px solid var(--srv-line);
+  border-radius: var(--srv-r, 0.6rem);
+  background: color-mix(in srgb, var(--fg) 3%, transparent);
+  color: var(--muted);
+  transition: border-color 0.15s;
+}
+.db-search:focus-within {
+  border-color: var(--fg);
+}
+.db-search input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  background: none;
+  color: var(--fg);
+  font-size: 0.92rem;
+}
+.db-search input:focus-visible {
+  outline: none;
+}
+.db-search input::placeholder {
+  color: var(--muted);
+}
+.db-found {
+  flex: none;
+  color: var(--muted);
+  font-family: var(--font-mono-ui);
+  font-size: 0.64rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* ----------------------------------------------------- content + jump */
+.db-layout {
+  margin-top: 1.4rem;
+}
+
+/* "Jump to a topic": a button that names the topic you are reading, and a small
+   panel with a search for the rest. */
+.tj {
+  position: relative;
+  margin-left: auto;
+}
+.tj-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  max-width: 100%;
+  padding: 0.55rem 0.85rem;
+  border: 1px solid var(--srv-line);
+  border-radius: var(--srv-r, 0.6rem);
+  background: var(--surface);
+  color: var(--fg);
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.15s;
+}
+.tj-btn:hover,
+.tj-btn[aria-expanded='true'] {
+  border-color: var(--fg);
+}
+.tj-btn:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+}
+.tj-k {
+  flex: none;
+  color: var(--muted);
+  font-family: var(--font-mono-ui);
+  font-size: 0.64rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.tj-v {
+  min-width: 0;
+  max-width: 15rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.tj-pop {
+  position: absolute;
+  top: calc(100% + 0.4rem);
+  right: 0;
+  z-index: 40;
+  width: min(26rem, calc(100vw - 2rem));
+  border: 1px solid var(--srv-line);
+  border-radius: var(--srv-r, 0.6rem);
+  background: var(--surface);
+  overflow: hidden;
+  animation: tj-in 0.16s ease-out both;
+}
+@keyframes tj-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+}
+.tj-search {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.6rem 0.9rem;
+  border-bottom: 1px solid var(--srv-line);
+  color: var(--muted);
+}
+.tj-search input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  background: none;
+  color: var(--fg);
+  font-size: 0.92rem;
+}
+.tj-search input::placeholder {
+  color: var(--muted);
+}
+.tj-list {
+  max-height: min(24rem, 60vh);
+  overflow: auto;
+  padding-bottom: 0.4rem;
+}
+.tj-theme {
+  margin: 0;
+  padding: 0.75rem 0.9rem 0.3rem;
+  color: var(--muted);
+  font-family: var(--font-mono-ui);
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.tj-theme::before {
+  content: '// ';
+}
+.tj-item {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.8rem;
+  width: 100%;
+  padding: 0.5rem 0.9rem;
+  border: 0;
+  border-left: 2px solid transparent;
+  background: none;
+  color: var(--fg);
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+}
+.tj-item small {
+  flex: none;
+  color: var(--muted);
+  font-family: var(--font-mono-ui);
+  font-size: 0.68rem;
+  font-weight: 700;
+}
+.tj-item:hover,
+.tj-item:focus-visible {
+  background: color-mix(in srgb, var(--fg) 6%, transparent);
+  outline: none;
+}
+.tj-item.is-on {
+  border-left-color: var(--subject, #2e9e6b);
+}
+.tj-none {
+  margin: 0;
+  padding: 1rem 0.9rem;
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+[data-font='dyslexic'] .tj-k,
+[data-font='hyperlegible'] .tj-k,
+[data-font='dyslexic'] .tj-theme,
+[data-font='hyperlegible'] .tj-theme,
+[data-font='dyslexic'] .tj-item small,
+[data-font='hyperlegible'] .tj-item small {
+  font-family: inherit;
+}
+@media (prefers-reduced-motion: reduce) {
+  .tj-pop {
+    animation: none;
+  }
+}
+
+/* ------------------------------------------------------ theme racks */
+/* One rack panel per theme of the course, with its console title bar; the topics
+   of that theme sit inside it, each with its own grid. */
+.db-themes {
+  display: grid;
+  gap: 1.4rem;
+  min-width: 0;
+}
+.db-rack {
+  border: 1px solid var(--srv-line);
+  border-radius: var(--srv-r, 0.6rem);
+  background: var(--surface);
+  overflow: hidden;
+}
+.db-readout {
+  margin-left: auto;
+  flex: none;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  white-space: nowrap;
+}
+.db-rack-head {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.1rem;
+  border-bottom: 1px solid var(--srv-line);
+}
+.db-rack-no {
+  display: grid;
+  place-items: center;
+  width: 3rem;
+  height: 3rem;
+  border: 1px solid var(--srv-line);
+  border-radius: var(--srv-r, 0.6rem);
+  background: color-mix(in srgb, var(--subject, #2e9e6b) 9%, transparent);
+  color: var(--subject, #2e9e6b);
+  font-family: var(--font-mono-ui);
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+.db-rack-head h3 {
+  margin: 0.15rem 0 0;
+  color: var(--fg);
+  font-family: var(--font-head);
+  font-size: 1.4rem;
+  font-weight: 800;
+  line-height: 1.2;
+}
+/* A row of cells for how much of the bank this theme holds: the load meter of DESIGN.md. */
+.db-meter {
+  display: grid;
+  grid-template-columns: repeat(10, 0.45rem);
+  gap: 2px;
+  height: 0.5rem;
+}
+.db-meter i {
+  background: color-mix(in srgb, var(--fg) 12%, transparent);
+}
+.db-meter i.on {
+  background: var(--subject, #2e9e6b);
+}
+@media (max-width: 640px) {
+  .db-rack-head {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+  .db-meter {
+    display: none;
+  }
+}
+.db-topic-no {
+  display: inline-block;
+  margin-right: 0.65rem;
+  padding: 0.15rem 0.4rem;
+  border: 1px solid var(--srv-line);
+  border-radius: 0.3rem;
+  color: var(--muted);
+  font-family: var(--font-mono-ui);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  vertical-align: 0.18em;
+}
+.db-section {
+  padding: 1.1rem 1.1rem 1.3rem;
+  border-bottom: 1px solid var(--srv-line);
+  scroll-margin-top: calc(var(--db-top) + 3.8rem);
+}
+.db-section:last-child {
+  border-bottom: 0;
+}
+.db-section-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.35rem 1.2rem;
+  margin-bottom: 0.9rem;
+}
 .db-section-head h3 {
-  margin: 0.1rem 0 0;
+  margin: 0;
   color: var(--fg);
   font-family: var(--font-head);
   font-size: 1.3rem;
   font-weight: 800;
+  line-height: 1.2;
 }
 .db-section-meta {
   display: grid;
+  justify-items: end;
+  gap: 0.1rem;
   margin: 0;
   color: var(--muted);
-  font-size: 0.8rem;
-  font-weight: 700;
+  font-size: 0.78rem;
   text-align: right;
 }
+.db-section-meta b {
+  color: var(--fg);
+  font-family: var(--font-mono-ui);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
 .db-section-meta span {
-  font-weight: 500;
+  max-width: 26rem;
 }
 .db-grid {
   display: grid;
-  gap: 1rem;
+  gap: 1.5rem 1.25rem;
   grid-template-columns: repeat(auto-fill, minmax(min(100%, 19rem), 1fr));
 }
 
-/* ------------------------------------------------------------ thumbs */
+/* ----------------------------------------------------------- showcase */
+/* A random diagram that draws itself, holds, then hands over to the next. */
+.db-show {
+  margin-top: 1.4rem;
+  border: 1px solid var(--srv-line);
+  border-left: 2px solid var(--subject, #2e9e6b);
+  border-radius: var(--srv-r, 0.6rem);
+  background: var(--surface);
+  overflow: hidden;
+}
+.db-show-body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+}
+@media (min-width: 900px) {
+  .db-show-body {
+    grid-template-columns: minmax(0, 1.75fr) minmax(17rem, 1fr);
+  }
+}
+.db-show-canvas {
+  min-width: 0;
+}
+.db-show-canvas .dr-canvas {
+  height: 100%;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  background: var(--surface);
+}
+.db-show-canvas .dr-caption {
+  background: none;
+}
+.db-show-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: 1.1rem 1.2rem 1.2rem;
+  border-top: 1px solid var(--srv-line);
+}
+@media (min-width: 900px) {
+  .db-show-info {
+    border-top: 0;
+    border-left: 1px solid var(--srv-line);
+  }
+}
+.db-show-info h3 {
+  margin: 0.4rem 0 0.45rem;
+  color: var(--fg);
+  font-family: var(--font-head);
+  font-size: 1.3rem;
+  font-weight: 800;
+  line-height: 1.2;
+}
+.db-show-cap {
+  margin: 0 0 1rem;
+  color: var(--muted);
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+.db-facts {
+  margin: 0 0 0.9rem;
+  border-top: 1px solid var(--srv-line);
+}
+.db-facts div {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.8rem;
+  padding: 0.45rem 0;
+  border-bottom: 1px solid var(--srv-line);
+  font-size: 0.84rem;
+}
+.db-facts dt {
+  color: var(--muted);
+  font-family: var(--font-mono-ui);
+  font-size: 0.64rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  line-height: 1.7;
+  text-transform: uppercase;
+}
+.db-facts dd {
+  margin: 0;
+  color: var(--fg);
+  font-weight: 600;
+  text-align: right;
+}
+.db-show-acts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: auto;
+  padding-top: 0.9rem;
+}
+.db-show-acts .dr-btn-primary {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+[data-font='dyslexic'] .db-label,
+[data-font='hyperlegible'] .db-label,
+[data-font='dyslexic'] .db-rack-name,
+[data-font='hyperlegible'] .db-rack-name,
+[data-font='dyslexic'] .db-facts dt,
+[data-font='hyperlegible'] .db-facts dt {
+  font-family: inherit;
+}
+
+/* ------------------------------------------------------------- cards */
 .db-thumb {
   display: grid;
-  gap: 0.55rem;
+  align-content: start;
+  gap: 0.6rem;
   padding: 0;
   border: 0;
   background: none;
@@ -83,11 +570,30 @@
   position: relative;
   display: block;
   overflow: hidden;
-  border: 1px solid var(--line);
-  border-radius: 1.1rem;
+  border: 1px solid var(--srv-line);
+  border-radius: var(--srv-r, 0.6rem);
   background: var(--surface);
   aspect-ratio: 16 / 10;
-  transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.2s, box-shadow 0.25s;
+  transition: border-color 0.2s;
+}
+/* Viewfinder corners: a hairline L at each corner of the frame. */
+.db-thumb-art::after {
+  content: '';
+  position: absolute;
+  inset: 7px;
+  z-index: 2;
+  pointer-events: none;
+  opacity: 0.3;
+  transition: opacity 0.2s;
+  background:
+    linear-gradient(var(--fg), var(--fg)) 0 0 / 10px 1px no-repeat,
+    linear-gradient(var(--fg), var(--fg)) 0 0 / 1px 10px no-repeat,
+    linear-gradient(var(--fg), var(--fg)) 100% 0 / 10px 1px no-repeat,
+    linear-gradient(var(--fg), var(--fg)) 100% 0 / 1px 10px no-repeat,
+    linear-gradient(var(--fg), var(--fg)) 0 100% / 10px 1px no-repeat,
+    linear-gradient(var(--fg), var(--fg)) 0 100% / 1px 10px no-repeat,
+    linear-gradient(var(--fg), var(--fg)) 100% 100% / 10px 1px no-repeat,
+    linear-gradient(var(--fg), var(--fg)) 100% 100% / 1px 10px no-repeat;
 }
 .db-thumb-art .dr-canvas {
   height: 100%;
@@ -101,90 +607,83 @@
 .db-thumb-art .dr-svg {
   height: 100%;
 }
+/* Held for a moment while a thumbnail scrolls into view. Still, on purpose:
+   dozens of animated placeholders would repaint the page continuously. */
 .db-thumb-ph {
   display: block;
   width: 100%;
   height: 100%;
-  background: linear-gradient(110deg, transparent 30%, color-mix(in srgb, var(--fg) 7%, transparent) 50%, transparent 70%) 0 0 / 200% 100%;
-  animation: db-shimmer 1.6s linear infinite;
-}
-@keyframes db-shimmer {
-  to {
-    background-position: -200% 0;
-  }
-}
-.db-thumb-over {
-  position: absolute;
-  inset: 0;
-  display: grid;
-  place-items: center;
-  background: linear-gradient(to top, color-mix(in srgb, var(--brand) 55%, transparent), color-mix(in srgb, var(--surface) 55%, transparent));
-  opacity: 0;
-  backdrop-filter: blur(2px);
-  transition: opacity 0.22s;
-}
-.db-thumb-over span {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.45rem;
-  padding: 0.6rem 1.15rem;
-  border-radius: 999px;
-  background: var(--fg);
-  color: var(--surface);
-  font-size: 0.92rem;
-  font-weight: 800;
-  transform: translateY(8px) scale(0.96);
-  transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+  background: color-mix(in srgb, var(--fg) 4%, transparent);
 }
 .db-thumb:hover .db-thumb-art,
 .db-thumb:focus-visible .db-thumb-art {
-  transform: translateY(-4px);
-  border-color: var(--brand);
-  box-shadow: 0 22px 36px -24px var(--brand);
+  border-color: var(--subject, var(--fg));
 }
-.db-thumb:hover .db-thumb-over,
-.db-thumb:focus-visible .db-thumb-over {
+.db-thumb:hover .db-thumb-art::after,
+.db-thumb:focus-visible .db-thumb-art::after {
+  opacity: 0.9;
+}
+.db-thumb-go {
+  flex: none;
+  margin-top: 0.1rem;
+  opacity: 0;
+  transform: translateX(-4px);
+  transition: opacity 0.18s, transform 0.18s;
+}
+.db-thumb:hover .db-thumb-go,
+.db-thumb:focus-visible .db-thumb-go {
   opacity: 1;
-}
-.db-thumb:hover .db-thumb-over span,
-.db-thumb:focus-visible .db-thumb-over span {
   transform: none;
 }
 .db-thumb:focus-visible {
   outline: none;
 }
+.db-thumb:focus-visible .db-thumb-art {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+}
 @media (hover: none) {
-  .db-thumb-over {
+  .db-thumb-go {
     opacity: 1;
-    place-items: end center;
-    padding-bottom: 0.6rem;
-    background: linear-gradient(to top, color-mix(in srgb, var(--surface) 80%, transparent), transparent 45%);
-    backdrop-filter: none;
-  }
-  .db-thumb-over span {
-    padding: 0.3rem 0.8rem;
-    font-size: 0.78rem;
     transform: none;
   }
 }
 .db-thumb-meta {
   display: flex;
-  gap: 0.55rem;
+  gap: 0.6rem;
+  align-items: flex-start;
   padding: 0 0.15rem;
-  color: var(--muted);
-  font-size: 0.82rem;
+  color: var(--fg);
+  font-size: 0.92rem;
+  font-weight: 600;
   line-height: 1.35;
 }
 .db-thumb-meta b {
   flex: none;
-  color: var(--brand-strong);
-  font-weight: 800;
+  padding-top: 0.12rem;
+  color: var(--muted);
+  font-family: var(--font-mono-ui);
+  font-size: 0.72rem;
+  font-weight: 700;
 }
-.db-thumb-meta span {
-  display: -webkit-box;
-  overflow: hidden;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
+.db-thumb-title {
+  flex: 1;
+  min-width: 0;
+}
+/* The diagram you just came back from. A hairline ring that fades, so the eye
+   finds its place again without anything jumping. */
+.db-thumb.is-returned .db-thumb-art {
+  border-color: var(--fg);
+  animation: db-returned 2.2s ease-out both;
+}
+@keyframes db-returned {
+  0%,
+  55% {
+    box-shadow: 0 0 0 3px var(--fg);
+  }
+  100% {
+    box-shadow: 0 0 0 3px transparent;
+  }
 }
 
 /* ------------------------------------------------------------ detail */
@@ -199,8 +698,41 @@
   margin-bottom: 0;
 }
 .db-pager {
+  position: relative;
   display: flex;
+  flex-wrap: wrap;
   gap: 0.5rem;
+}
+.db-pager .dr-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  white-space: nowrap;
+}
+.db-jump {
+  position: absolute;
+  z-index: 20;
+  top: calc(100% + 0.5rem);
+  right: 0;
+  width: min(30rem, calc(100vw - 2.5rem));
+  max-height: min(34rem, 70vh);
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  overflow: hidden;
+  border: 1px solid var(--srv-line);
+  border-radius: var(--srv-r, 0.6rem);
+  background: var(--surface);
+}
+.db-jump .dp {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  min-height: 0;
+}
+.db-jump .dp-search {
+  max-width: none;
+  border: 0;
+  border-bottom: 1px solid var(--srv-line);
+  border-radius: 0;
 }
 .db-detail-head {
   display: flex;
@@ -210,22 +742,22 @@
 }
 .db-number {
   flex: none;
-  padding: 0.5rem 0.9rem;
-  border-radius: 0.9rem;
-  background: var(--brand);
-  color: var(--on-brand, #fff);
-  font-family: var(--font-head);
-  font-size: 1.3rem;
+  padding: 0.4rem 0.75rem;
+  border: 1px solid var(--fg);
+  border-radius: var(--srv-r, 0.6rem);
+  background: var(--fg);
+  color: var(--surface);
+  font-family: var(--font-mono-ui);
+  font-size: 1.05rem;
   font-weight: 800;
-  box-shadow: 0 14px 26px -16px var(--brand);
 }
 .db-detail-title {
   margin: 0.15rem 0 0;
   color: var(--fg);
   font-family: var(--font-head);
-  font-size: clamp(1.15rem, 2.2vw, 1.55rem);
+  font-size: clamp(1.2rem, 2.4vw, 1.65rem);
   font-weight: 800;
-  line-height: 1.25;
+  line-height: 1.2;
 }
 .db-detail {
   display: grid;
@@ -235,14 +767,14 @@
 }
 @media (min-width: 1000px) {
   .db-detail {
-    grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+    grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
   }
 }
 .db-detail-main,
 .db-detail-side {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  gap: 1.1rem;
+  gap: 1rem;
   min-width: 0;
 }
 .db-hint {
@@ -251,91 +783,297 @@
   gap: 0.5rem;
   margin: 0;
   color: var(--muted);
-  font-size: 0.88rem;
+  font-size: 0.86rem;
   font-weight: 600;
 }
 .db-panel {
-  padding: 1.1rem 1.25rem 1.25rem;
-  border: 1px solid var(--line);
-  border-radius: 1.2rem;
+  padding: 1rem 1.15rem 1.15rem;
+  border: 1px solid var(--srv-line);
+  border-radius: var(--srv-r, 0.6rem);
   background: var(--surface);
 }
 .db-panel h3 {
-  margin: 0 0 0.7rem;
-  color: var(--fg);
-  font-size: 0.8rem;
-  font-weight: 800;
-  letter-spacing: 0.1em;
+  margin: 0 0 0.75rem;
+  color: var(--muted);
+  font-family: var(--font-mono-ui);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
+}
+.db-panel h3::before {
+  content: '// ';
 }
 .db-moves {
   display: grid;
   gap: 0.7rem;
-  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
 }
 .db-move {
-  padding: 0.8rem 0.95rem;
-  border: 1px solid color-mix(in srgb, var(--c) 45%, var(--line));
-  border-left: 4px solid var(--c);
-  border-radius: 0.9rem;
+  overflow: hidden;
+  border: 1px solid var(--srv-line);
+  border-radius: var(--srv-r, 0.6rem);
+  background: color-mix(in srgb, var(--c) 4%, transparent);
 }
 .db-move b {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.6rem 0.9rem;
+  border-bottom: 1px solid var(--srv-line);
+  background: color-mix(in srgb, var(--c) 12%, transparent);
   color: var(--c);
-  font-size: 1.05rem;
+  font-family: var(--font-mono-ui);
+  font-size: 0.95rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+.db-move b::before {
+  content: '';
+  width: 0.5rem;
+  height: 0.5rem;
+  background: var(--c);
 }
 .db-move ul {
-  margin: 0.4rem 0 0;
-  padding-left: 1.1rem;
-  color: color-mix(in srgb, var(--fg) 90%, var(--muted));
-  font-size: 0.88rem;
-  line-height: 1.5;
+  margin: 0;
+  padding: 0.35rem 0.9rem 0.5rem;
+  list-style: none;
+  counter-reset: mv;
 }
-.db-notes-ref {
-  margin: 0 0 0.8rem;
-  color: var(--brand-strong);
+.db-move li {
+  display: grid;
+  grid-template-columns: 1.6rem minmax(0, 1fr);
+  column-gap: 0.4rem;
+  padding: 0.5rem 0;
+  counter-increment: mv;
+}
+.db-move li::before {
+  content: counter(mv, decimal-leading-zero);
+  grid-row: 1 / span 2;
+  padding-top: 0.2rem;
+  color: var(--c);
+  font-family: var(--font-mono-ui);
+  font-size: 0.68rem;
+  font-weight: 700;
+  opacity: 0.85;
+}
+.db-move-main {
+  grid-column: 2;
+  color: var(--fg);
+  font-size: 0.9rem;
+  font-weight: 600;
+  line-height: 1.35;
+}
+.db-move-note {
+  grid-column: 2;
+  margin-top: 0.15rem;
+  color: var(--muted);
   font-size: 0.82rem;
+  line-height: 1.4;
+}
+.db-areas {
+  display: grid;
+  gap: 0.5rem;
+  margin: 0;
+}
+.db-areas div {
+  display: grid;
+  grid-template-columns: 2.2rem minmax(0, 1fr);
+  gap: 0.2rem 0.6rem;
+  align-items: baseline;
+}
+.db-areas dt {
+  color: var(--fg);
+  font-family: var(--font-mono-ui);
+  font-size: 0.8rem;
   font-weight: 800;
 }
-.db-notes {
-  max-height: 34rem;
-  overflow: auto;
+.db-areas dd {
+  margin: 0;
+  color: var(--fg);
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+.db-areas dd small {
+  display: block;
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+.db-notes-ref {
+  margin: 0 0 0.6rem;
+  color: var(--fg);
+  font-size: 0.9rem;
+  font-weight: 700;
+  line-height: 1.35;
+}
+.db-notes-idea {
+  margin: 0;
+  color: var(--fg);
+  font-size: 0.95rem;
+  line-height: 1.6;
 }
 .db-notes-link {
   display: inline-flex;
   align-items: center;
-  gap: 0.4rem;
-  margin-top: 0.9rem;
-  color: var(--brand-strong);
-  font-weight: 800;
+  gap: 0.45rem;
+  margin-top: 0.95rem;
+  padding: 0.5rem 0.85rem;
+  border: 1px solid var(--fg);
+  border-radius: var(--srv-r, 0.6rem);
+  color: var(--fg);
+  font-family: var(--font-mono-ui);
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
   text-decoration: none;
+  text-transform: uppercase;
+  transition: background-color 0.15s, color 0.15s;
 }
-.db-notes-link:hover {
-  text-decoration: underline;
+.db-notes-link:hover,
+.db-notes-link:focus-visible {
+  background: var(--fg);
+  color: var(--surface);
 }
 .db-report p {
   margin: 0 0 0.8rem;
   color: var(--muted);
+  font-size: 0.9rem;
   line-height: 1.55;
 }
 .db-report strong {
   color: var(--fg);
 }
+
+/* --------------------------------------------------- the diagram picker */
+.dp-search {
+  display: block;
+}
+.dp-list {
+  display: grid;
+  gap: 0.9rem;
+  min-height: 0;
+  max-height: 100%;
+  overflow: auto;
+  padding: 0.75rem 0.9rem 0.9rem;
+}
+.dp-group h4 {
+  margin: 0 0 0.3rem;
+  color: var(--muted);
+  font-family: var(--font-mono-ui);
+  font-size: 0.64rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.dp-group ul {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  gap: 0.15rem;
+}
+.dp-item {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  width: 100%;
+  padding: 0.35rem 0.5rem;
+  border: 1px solid transparent;
+  border-radius: var(--srv-r, 0.6rem);
+  background: none;
+  color: var(--fg);
+  font-size: 0.88rem;
+  line-height: 1.35;
+  text-align: left;
+  cursor: pointer;
+}
+.dp-item b {
+  flex: none;
+  min-width: 2.3rem;
+  color: var(--muted);
+  font-family: var(--font-mono-ui);
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+.dp-item:hover {
+  border-color: var(--srv-line);
+}
+.dp-item.is-on {
+  border-color: var(--fg);
+  font-weight: 700;
+}
+.dp-item:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 1px;
+}
+.dp-empty {
+  margin: 0;
+  padding: 1rem;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .db-thumb-art,
-  .db-thumb-over,
-  .db-thumb-over span {
+  .db-thumb-go,
+  .tj-btn,
+  .db-notes-link {
     transition: none;
   }
-  .db-thumb-ph {
+  .db-thumb.is-returned .db-thumb-art {
     animation: none;
   }
 }
-.db-pager .dr-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  white-space: nowrap;
+
+/* The next three diagrams, shown small under the one on screen. */
+.db-up {
+  margin: 0 0 0.9rem;
 }
-.db-section-meta {
-  justify-items: end;
+.db-up .db-label {
+  margin-bottom: 0.45rem;
+}
+.db-up-row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.5rem;
+}
+.db-up-item {
+  position: relative;
+  padding: 0;
+  border: 1px solid var(--srv-line);
+  border-radius: 0.4rem;
+  background: var(--surface);
+  overflow: hidden;
+  cursor: pointer;
+  transition: border-color 0.15s;
+}
+.db-up-item:hover,
+.db-up-item:focus-visible {
+  border-color: var(--subject, var(--fg));
+  outline: none;
+}
+.db-up-art {
+  display: block;
+  aspect-ratio: 16 / 10;
+}
+.db-up-art .dr-canvas {
+  height: 100%;
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  background: none;
+  pointer-events: none;
+}
+.db-up-art .dr-svg {
+  height: 100%;
+}
+.db-up-no {
+  position: absolute;
+  left: 0.3rem;
+  bottom: 0.2rem;
+  color: var(--muted);
+  font-family: var(--font-mono-ui);
+  font-size: 0.58rem;
+  font-weight: 700;
 }

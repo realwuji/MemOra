@@ -425,7 +425,7 @@ export const BUILT_PLANS = {
     ],
     "d": {
      "ids": [
-      182
+      181
      ]
     }
    }
@@ -502,7 +502,7 @@ export const BUILT_PLANS = {
     ],
     "d": {
      "ids": [
-      182
+      181
      ]
     }
    }
@@ -869,7 +869,7 @@ export const BUILT_PLANS = {
     ],
     "d": {
      "ids": [
-      21
+      22
      ]
     }
    },
@@ -919,7 +919,7 @@ export const BUILT_PLANS = {
     ],
     "d": {
      "ids": [
-      182
+      181
      ]
     }
    }
@@ -972,7 +972,7 @@ export const BUILT_PLANS = {
     ],
     "d": {
      "ids": [
-      182
+      181
      ]
     }
    }
@@ -2826,7 +2826,7 @@ export const BUILT_PLANS = {
     ],
     "d": {
      "ids": [
-      185
+      169
      ]
     }
    }
@@ -2978,7 +2978,7 @@ export const BUILT_PLANS = {
     ],
     "d": {
      "ids": [
-      185
+      169
      ]
     }
    }
@@ -3164,7 +3164,7 @@ export const BUILT_PLANS = {
     ],
     "d": {
      "ids": [
-      209
+      208
      ]
     }
    },
@@ -3715,12 +3715,7 @@ export const BUILT_PLANS = {
      "Supply shifts right by the amount of the subsidy per unit, so price to the consumer falls and quantity rises towards Q*.",
      "Producers receive Pc + subsidy; the government cost is subsidy × new quantity.",
      "It can also be used to support infant industries, raise employment or improve competitiveness."
-    ],
-    "d": {
-     "ids": [
-      58
-     ]
-    }
+    ]
    }
   ],
   "right": [
@@ -4645,7 +4640,7 @@ export const BUILT_PLANS = {
     ],
     "d": {
      "ids": [
-      182
+      181
      ]
     }
    },
@@ -4788,7 +4783,7 @@ export const BUILT_PLANS = {
     ],
     "d": {
      "ids": [
-      209
+      208
      ]
     }
    },
@@ -5662,7 +5657,7 @@ export const BUILT_PLANS = {
     ],
     "d": {
      "ids": [
-      188
+      187
      ]
     }
    },
@@ -5677,7 +5672,7 @@ export const BUILT_PLANS = {
     ],
     "d": {
      "ids": [
-      182
+      181
      ]
     }
    }
@@ -5729,12 +5724,7 @@ export const BUILT_PLANS = {
      "Poor roads, ports, power and water raise the cost of everything and deter investment.",
      "Unreliable electricity forces firms to buy generators; goods rot on the way to market.",
      "Infrastructure is a public good the private sector under-provides."
-    ],
-    "d": {
-     "ids": [
-      188
-     ]
-    }
+    ]
    },
    {
     "title": "Infrastructure",
@@ -5746,7 +5736,7 @@ export const BUILT_PLANS = {
     ],
     "d": {
      "ids": [
-      188
+      187
      ]
     }
    }
@@ -6126,12 +6116,7 @@ export const BUILT_PLANS = {
      "Technological progress raises output from the same inputs and is the main driver of long-run growth.",
      "It raises total factor productivity rather than just adding inputs, so its effect is not subject to diminishing returns in the same way.",
      "R&D spending, patents and university research all feed it."
-    ],
-    "d": {
-     "ids": [
-      188
-     ]
-    }
+    ]
    },
    {
     "title": "The determinants of investment",
@@ -6923,12 +6908,7 @@ export const BUILT_PLANS = {
      "Reduces firms’ transport and communication costs, raising profitability and attracting FDI.",
      "Improves geographical mobility of labour, so raises the effective quantity of labour.",
      "It is also a demand-side stimulus while being built, so it works on AD and LRAS together."
-    ],
-    "d": {
-     "ids": [
-      188
-     ]
-    }
+    ]
    },
    {
     "title": "Weather and shocks: dams reduce the risk",
@@ -7104,12 +7084,7 @@ export const BUILT_PLANS = {
      "Directly raises the quality of labour and hence output per worker.",
      "Reduces structural unemployment by closing the skills mismatch - especially where there are shortages, such as STEM.",
      "Attracts FDI, since firms locate where skilled labour is available."
-    ],
-    "d": {
-     "ids": [
-      188
-     ]
-    }
+    ]
    },
    {
     "title": "Tax and benefit reform",
@@ -9192,12 +9167,7 @@ export const BUILT_PLANS = {
      "Directly raises the quality of labour and hence output per worker.",
      "Reduces structural unemployment by closing the skills mismatch - especially where there are shortages, such as STEM.",
      "Attracts FDI, since firms locate where skilled labour is available."
-    ],
-    "d": {
-     "ids": [
-      188
-     ]
-    }
+    ]
    },
    {
     "title": "Labour mobility",

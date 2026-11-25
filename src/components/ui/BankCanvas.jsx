@@ -1,8 +1,10 @@
 import { memo, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { useReducedMotion } from 'framer-motion'
-import { prepare, frame, polyLen } from '@/lib/bankEngine'
+import { prepare, frame, polyLen, textWidth } from '@/lib/bankEngine'
+import useHeadFont from '@/hooks/useHeadFont'
 import { MOVES } from '@/constants/dr-moves'
 import { FIXES } from '@/data/diagram-fixes'
+import { AREAS } from '@/data/diagram-areas'
 import './diagram-revision.css'
 
 /*
@@ -32,14 +34,9 @@ function arrowHead(p, atStart, size) {
   return `${a[0]},${a[1]} ${bx - uy * w},${by + ux * w} ${bx + uy * w},${by - ux * w}`
 }
 
-// Word-wrap a paragraph into the width of its text box, measuring real glyphs.
-let measureCtx = null
-const width = (txt, size, bold) => {
-  if (typeof document === 'undefined') return txt.length * size * 0.55
-  measureCtx ||= document.createElement('canvas').getContext('2d')
-  measureCtx.font = `${bold ? 800 : 600} ${size}px 'Bricolage Grotesque Variable', 'Instrument Sans Variable', sans-serif`
-  return measureCtx.measureText(txt).width
-}
+// Word-wrap a paragraph into the width of its text box, measuring real glyphs
+// in the font the page is set in (a reading-support font is much wider).
+const width = textWidth
 /*
   PowerPoint's own line breaks (`br` in data/diagram-bank.json: offsets into the
   paragraph's text) are used when the slide has them, so every label wraps
@@ -94,6 +91,8 @@ function wrapPara(p, maxW, forceNoWrap, breaks) {
   return lines.filter((l) => l.length).map((r) => ({ al: p.al, r }))
 }
 
+// Also given `fk` (the heading font), which is not read: memo compares every prop,
+// so a change of font makes the text wrap again, in the new glyph widths.
 const Text = memo(function Text({ t, fade, nudge }) {
   const innerW = Math.max(40, t.w - t.ins[0] - t.ins[2])
   const lines = t.para.flatMap((p, pi) => wrapPara(p, innerW, t.nw, t.br?.[pi]))
@@ -157,12 +156,17 @@ function resolveLabels(svg, prep) {
   const out = {}
   const DIRS = [[0, -1], [0, 1], [-1, 0], [1, 0], [-0.7, -0.7], [0.7, -0.7], [-0.7, 0.7], [0.7, 0.7]]
   const clashes = (b, self) => solid.some((p) => hitsLine(b, p, 2.5)) || boxes.some((o) => o !== self && overlap(b, o))
+  // How far a label sticks out of the frame. A label is never moved further out
+  // than it already is: in a wide reading font a label near the edge used to be
+  // pushed clear of a curve and straight out of the picture.
+  const [vx, vy, vw, vh] = prep.vb
+  const outside = (r) => Math.max(0, vx - r.x, vy - r.y, r.x + r.width - (vx + vw), r.y + r.height - (vy + vh))
   boxes.forEach((b) => {
     if (!clashes(b, b)) return
     for (const d of [8, 14, 20, 28, 38, 50]) {
       for (const [dx, dy] of DIRS) {
         const moved = { x: b.x + dx * d, y: b.y + dy * d, width: b.width, height: b.height }
-        if (!clashes(moved, b)) {
+        if (!clashes(moved, b) && outside(moved) <= outside(b) + 0.5) {
           out[b.i] = [dx * d, dy * d]
           b.x = moved.x
           b.y = moved.y
@@ -179,7 +183,7 @@ function resolveLabels(svg, prep) {
   changing this frame are redrawn, not all fifty, and a finished label is not
   re-wrapped and re-measured sixty times a second.
 */
-const Item = memo(function Item({ it, p, pts, ghost, hovered, nudge }) {
+const Item = memo(function Item({ it, p, pts, ghost, hovered, nudge, fk }) {
   if (p <= 0 && !ghost) return null
   if (it.k === 's') {
     const w = Math.max(1.8, Math.min(3.8, it.w * 0.62))
@@ -218,20 +222,23 @@ const Item = memo(function Item({ it, p, pts, ghost, hovered, nudge }) {
       <polygon points={it.p.map(([x, y]) => `${x},${y}`).join(' ')} fill={it.c ? colour(it.c) : 'none'} fillOpacity={(it.o ?? 0.3) * Math.min(0.9, 1) * p} stroke={it.sc ? colour(it.sc) : 'none'} strokeWidth={Math.max(1.5, it.w * 0.8)} strokeDasharray={it.d ? it.d.join(' ') : undefined} opacity={p} />
     )
   if (it.k === 'd') return <circle cx={it.x} cy={it.y} r={Math.max(5, it.r)} fill={colour(it.c)} stroke="var(--surface)" strokeWidth="2" opacity={p} />
-  if (it.k === 't') return <Text t={it} fade={p} nudge={nudge} />
+  if (it.k === 't') return <Text t={it} fade={p} nudge={nudge} fk={fk} />
   return null
 })
 
 /* `bare`: just the finished drawing, no title, controls or hover (a thumbnail). */
-export default function BankCanvas({ slide, autoplay = true, onDone, caption = true, quiz = false, hover = null, bare = false }) {
+export default function BankCanvas({ slide, autoplay = true, onDone, caption = true, quiz = false, hover = null, bare = false, areas = null, speed = 1 }) {
   const reduce = useReducedMotion()
-  const prep = useMemo(() => prepare(slide, FIXES[slide.id]), [slide])
+  // In a reading-support font the frame is sized from the real glyph widths.
+  const fontKey = useHeadFont()
+  const prep = useMemo(() => prepare(slide, FIXES[slide.id], fontKey !== 'default'), [slide, fontKey])
   const svgRef = useRef(null)
   const [nudge, setNudge] = useState({})
   const [ms, setMs] = useState(0)
   const [playing, setPlaying] = useState(autoplay && !reduce)
   const [tip, setTip] = useState(null)
   const figRef = useRef(null)
+  const tipRef = useRef(null)
   const last = useRef(0)
   const raf = useRef(0)
   const doneRef = useRef(false)
@@ -248,7 +255,7 @@ export default function BankCanvas({ slide, autoplay = true, onDone, caption = t
     if (!playing) return undefined
     last.current = performance.now()
     const tick = (now) => {
-      const dt = now - last.current
+      const dt = (now - last.current) * speed
       last.current = now
       setMs((m) => {
         const n = m + dt
@@ -266,7 +273,7 @@ export default function BankCanvas({ slide, autoplay = true, onDone, caption = t
     }
     raf.current = requestAnimationFrame(tick)
     return () => cancelAnimationFrame(raf.current)
-  }, [playing, prep, onDone])
+  }, [playing, prep, onDone, speed])
 
   // Labels that land on a curve, an axis or each other are moved the shortest
   // distance that clears them. Measured from the real rendered text.
@@ -297,11 +304,39 @@ export default function BankCanvas({ slide, autoplay = true, onDone, caption = t
     const r = figRef.current.getBoundingClientRect()
     return { x: e.clientX - r.left, y: e.clientY - r.top, w: r.width }
   }
+  // The tip sits beside the pointer, flips to the other side near the right
+  // edge, and is kept inside the drawing: it must never cover the caption or
+  // the scrubber below it. Placed before paint, from its real size.
+  useLayoutEffect(() => {
+    const el = tipRef.current
+    if (!tip || !el || !figRef.current || !svgRef.current) return
+    const f = figRef.current.getBoundingClientRect()
+    const s = svgRef.current.getBoundingClientRect()
+    const w = el.offsetWidth
+    const h = el.offsetHeight
+    const gap = 18
+    const pad = 8
+    const maxX = Math.max(pad, f.width - w - pad)
+    const minY = s.top - f.top + pad
+    const maxY = Math.max(minY, s.bottom - f.top - h - pad)
+    const left = tip.x + gap > maxX ? tip.x - gap - w : tip.x + gap
+    el.style.left = `${Math.min(Math.max(left, pad), maxX)}px`
+    el.style.top = `${Math.min(Math.max(tip.y - h / 2, minY), maxY)}px`
+  }, [tip])
   const showTip = (it) => (e) => {
     const moves = hover?.[it.base] || MOVES[it.base]
     if (!it.base || !moves) return
     setTip({ id: it.i, label: it.label, moves, colour: it.c, ...point(e) })
   }
+  // Shaded or lettered areas that have a definition (data/diagram-areas.js).
+  const areaShapes = useMemo(
+    () =>
+      (bare ? [] : areas || AREAS[slide.id] || [])
+        .map((a, n) => ({ ...a, n, pts: a.poly || prep.byIndex[a.fill]?.p }))
+        .filter((a) => a.pts && a.pts.length >= 3),
+    [bare, slide.id, prep, areas],
+  )
+  const showArea = (a) => (e) => setTip({ id: `a${a.n}`, area: a.n, label: a.name, text: a.note, colour: 'ink', ...point(e) })
   const grid = Math.max(28, vw / 22)
 
   return (
@@ -315,15 +350,44 @@ export default function BankCanvas({ slide, autoplay = true, onDone, caption = t
         <rect x={vx} y={vy} width={vw} height={vh} fill={`url(#bk-grid-${slide.id})`} />
 
         {states.map(({ it, p, pts, ghost }) => (
-          <Item key={it.i} it={it} p={p} pts={pts} ghost={ghost} hovered={tip?.id === it.i} nudge={nudge[it.i]} />
+          <Item key={it.i} it={it} p={p} pts={pts} ghost={ghost} hovered={tip?.id === it.i} nudge={nudge[it.i]} fk={fontKey} />
         ))}
 
-        {/* Fat invisible strokes: hover or tap any curve that has something that shifts it. */}
+        {/* Areas that have a definition. Under the curve bands, so a curve wins where they meet. Only once the drawing is finished, so nothing is defined before it is drawn. */}
+        {areaShapes.length > 0 &&
+          ms >= prep.titleAt - 1 &&
+          areaShapes.map((a) => (
+            <polygon
+              key={`a${a.n}`}
+              points={a.pts.map(([x, y]) => `${x.toFixed(1)},${y.toFixed(1)}`).join(' ')}
+              className={`dr-area ${tip?.area === a.n ? 'is-on' : ''}`}
+              onPointerEnter={showArea(a)}
+              onPointerMove={(e) => setTip((t) => (t && t.area === a.n ? { ...t, ...point(e) } : t))}
+              onPointerLeave={(e) => {
+                if (e.pointerType !== 'touch') setTip((t) => (t && t.area === a.n ? null : t))
+              }}
+              onClick={showArea(a)}
+            />
+          ))}
+
+        {/* Invisible strokes over each curve that has something that shifts it. Their width is set in CSS in real screen pixels (a thin band along the curve, wider for a finger), and the tip goes away the moment the pointer leaves that curve. */}
         {!bare &&
           prep.items
           .filter((it) => it.k === 's' && it.base && (hover?.[it.base] || MOVES[it.base]) && polyLen(it.p) > 40)
           .map((it) => (
-            <path key={`h${it.i}`} d={poly(it.p)} fill="none" stroke="transparent" strokeWidth="30" strokeLinecap="round" className="dr-hit" onPointerEnter={showTip(it)} onPointerMove={(e) => setTip((t) => (t ? { ...t, ...point(e) } : t))} onClick={showTip(it)} />
+            <path
+              key={`h${it.i}`}
+              d={poly(it.p)}
+              fill="none"
+              stroke="transparent"
+              className="dr-hit"
+              onPointerEnter={showTip(it)}
+              onPointerMove={(e) => setTip((t) => (t && t.id === it.i ? { ...t, ...point(e) } : t))}
+              onPointerLeave={(e) => {
+                if (e.pointerType !== 'touch') setTip((t) => (t && t.id === it.i ? null : t))
+              }}
+              onClick={showTip(it)}
+            />
           ))}
 
         {pen && (
@@ -336,20 +400,27 @@ export default function BankCanvas({ slide, autoplay = true, onDone, caption = t
       </svg>
 
       {!bare && tip && (
-        <div className="dr-tip" style={{ left: Math.min(Math.max(tip.x + 16, 8), Math.max(tip.w - 280, 8)), top: Math.max(tip.y - 20, 8), '--c': colour(tip.colour) }} role="status">
-          <p className="dr-tip-head">What shifts {tip.label}</p>
-          <ul>
-            {tip.moves.map((m) => (
-              <li key={m}>{m}</li>
-            ))}
-          </ul>
+        <div ref={tipRef} className="dr-tip" style={{ '--c': colour(tip.colour) }} role="status">
+          <div className="dr-tip-bar">
+            <span className="srv-led" aria-hidden="true" />
+            <p className="dr-tip-head">{tip.area !== undefined ? tip.label : `What shifts ${tip.label}`}</p>
+          </div>
+          {tip.area !== undefined ? (
+            tip.text && <p className="dr-tip-text">{tip.text}</p>
+          ) : (
+            <ul>
+              {tip.moves.map((m) => (
+                <li key={m}>{m.split(':')[0]}</li>
+              ))}
+            </ul>
+          )}
         </div>
       )}
 
       {!bare && (
       <figcaption className="dr-caption">
         {/* the title is written last, once axes, curves and equilibrium are down */}
-        {caption && slide.title && ms >= prep.titleAt - 1 && (!quiz || !prep.hasShift || playing || atEnd) && <p className="dr-caption-text dr-caption-in">{slide.title}</p>}
+        {caption && slide.title && ms >= prep.titleAt - 1 && (!quiz || !prep.hasShift || playing || atEnd) && <p className="dr-caption-text dr-caption-in">{slide.caption || slide.title}</p>}
         {quiz ? (
           prep.hasShift && (
             <div className="dr-controls">

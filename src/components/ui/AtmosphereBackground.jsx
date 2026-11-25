@@ -1,5 +1,6 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { getAudioState, onAudioFrame, subscribeAudioState } from '@/lib/audioReactive'
+import { useFocusSignal } from '@/lib/focusMode'
 import './atmosphere.css'
 
 /*
@@ -23,12 +24,27 @@ import './atmosphere.css'
   and one cell is selected where they cross. It snaps to cells and chases the
   pointer with a stepped delay.
 
+  Focus mode (src/lib/focusMode.js) is a state on top of all of that. While a
+  screen is focused work - reading notes, a question, a diagram - the lively
+  effects would only compete with the page, so the backdrop goes quiet: a ring
+  of the grid's own lit dots sweeps out from where you last pressed, and behind
+  it the packets, lights and modes fall away to a faint resting grid. Leaving
+  focus runs the same sweep the other way, closing in on the pointer. A backdrop
+  that mounts already focused starts quiet with no sweep; a session that begins
+  a moment after the page loads (a reload, a deep link) still sweeps, from where
+  the pointer last was. Reduced
+  motion swaps the sweep for an instant switch.
+
   Everything is gradients, masks, transforms and opacity (see atmosphere.css),
   so it stays on the GPU. Reduced motion keeps only the static grid.
   High-contrast hides the whole layer (.atmosphere in index.css).
 */
 
 const CELL = 14 // px, must match --bg-cell in atmosphere.css
+
+// Radius the focus ring grows to: the screen diagonal plus a margin, so it can
+// reach any corner from wherever it starts.
+const fieldRadius = () => `${Math.ceil(Math.hypot(window.innerWidth, window.innerHeight)) + 180}px`
 
 // Equalizer geometry. A bar every second grid column (so there is a gap between
 // bars), as tall as 45% of the screen at most, and offset from the bottom by the
@@ -125,6 +141,128 @@ export default function AtmosphereBackground({ defaultMode = 'packets' }) {
   const geoRef = useRef(geo)
   const barRefs = useRef([])
   const topRefs = useRef([])
+
+  // ---- focus mode ---------------------------------------------------------
+  // `focus` is the state; `sweeping` is true while the ring is travelling;
+  // `settled` means the sweep is done (or there never was one), so the lively
+  // modes can be switched off for good instead of running under a veil.
+  const focus = useFocusSignal()
+  const [settled, setSettled] = useState(focus)
+  const [sweeping, setSweeping] = useState(false)
+  const lastPt = useRef({ x: window.innerWidth / 2, y: window.innerHeight * 0.4 })
+
+  // Where you last pressed or moved: the ring starts there.
+  useEffect(() => {
+    const rec = (e) => {
+      lastPt.current = { x: e.clientX, y: e.clientY }
+    }
+    window.addEventListener('pointerdown', rec, { passive: true, capture: true })
+    window.addEventListener('pointermove', rec, { passive: true })
+    return () => {
+      window.removeEventListener('pointerdown', rec, { capture: true })
+      window.removeEventListener('pointermove', rec)
+    }
+  }, [])
+
+  // The ring starts at the pointer and must be able to reach any corner from
+  // there, so it always grows to a little more than the screen diagonal. The
+  // same radius is used leaving focus, when the centre may have moved.
+  //
+  // While focused, `--fr` follows `--fR`, so changing `--fR` would itself start
+  // a 2.6s transition: resizing the window (or a phone's address bar sliding
+  // away) would replay the whole ring. So it is written with transitions off and
+  // the style flushed before they come back, and it only ever jumps, unseen. A
+  // resize in the middle of a sweep waits for that sweep to end, since turning
+  // transitions off would cut it short.
+  const sweepRef = useRef(false) // a --fr transition is running right now
+  const fitRef = useRef(null)
+  const fitPending = useRef(false)
+  useLayoutEffect(() => {
+    const root = rootRef.current
+    if (!root) return undefined
+    const fit = () => {
+      const next = fieldRadius()
+      if (root.style.getPropertyValue('--fR') === next) return
+      root.style.transition = 'none'
+      root.style.setProperty('--fR', next)
+      getComputedStyle(root).getPropertyValue('--fr') // flush, so the jump is the "before" state
+      root.style.removeProperty('transition')
+    }
+    fitRef.current = fit
+    fit()
+    const onResize = () => {
+      if (sweepRef.current) fitPending.current = true
+      else fit()
+    }
+    window.addEventListener('resize', onResize)
+    return () => window.removeEventListener('resize', onResize)
+  }, [])
+  // The centre is set in the same commit that flips the class, so the browser
+  // reads both in one style pass and the sweep starts from the right place. A
+  // sweep already under way keeps its centre: --fx and --fy are not animated, so
+  // moving them now would make the ring jump across the screen.
+  useLayoutEffect(() => {
+    const root = rootRef.current
+    if (!root) return
+    if (!sweepRef.current) {
+      root.style.setProperty('--fx', `${Math.round(lastPt.current.x)}px`)
+      root.style.setProperty('--fy', `${Math.round(lastPt.current.y)}px`)
+    }
+    // A resize that arrived during the last sweep is caught up with here, as
+    // the new sweep starts (its target is the new radius, so nothing jumps).
+    if (fitPending.current) {
+      fitPending.current = false
+      root.style.setProperty('--fR', fieldRadius())
+    }
+  }, [focus])
+
+  // The sweep is a CSS transition of --fr (atmosphere.css), so its start and
+  // end are events: they say when to show the ring and when the modes can stop.
+  useEffect(() => {
+    const root = rootRef.current
+    if (!root) return undefined
+    const isRing = (e) => e.target === root && e.propertyName === '--fr'
+    const onRun = (e) => {
+      if (!isRing(e)) return
+      sweepRef.current = true
+      setSweeping(true)
+    }
+    // Only a sweep that ran to the end settles the modes. A cancelled one has
+    // been replaced (focus came back mid-exit): by the time its cancel arrives
+    // data-focus is already set again, and settling then would switch the
+    // modes off while the new ring has barely left the pointer.
+    const onEnd = (e) => {
+      if (!isRing(e)) return
+      sweepRef.current = false
+      setSweeping(false)
+      if (e.type !== 'transitionend') return
+      if (root.hasAttribute('data-focus')) setSettled(true)
+      // A resize that came in during the sweep is applied now that it is over.
+      if (fitPending.current) {
+        fitPending.current = false
+        fitRef.current?.()
+      }
+    }
+    root.addEventListener('transitionrun', onRun)
+    root.addEventListener('transitionend', onEnd)
+    root.addEventListener('transitioncancel', onEnd)
+    return () => {
+      root.removeEventListener('transitionrun', onRun)
+      root.removeEventListener('transitionend', onEnd)
+      root.removeEventListener('transitioncancel', onEnd)
+    }
+  }, [])
+
+  // Leaving focus brings the modes back at once; entering waits for the sweep.
+  // Where no sweep runs (reduced motion, no @property) settle after a moment.
+  useEffect(() => {
+    if (!focus) {
+      setSettled(false)
+      return undefined
+    }
+    const t = setTimeout(() => setSettled(true), 3100)
+    return () => clearTimeout(t)
+  }, [focus])
 
   // Keep the bar count and heights in step with the window.
   useEffect(() => {
@@ -291,12 +429,16 @@ export default function AtmosphereBackground({ defaultMode = 'packets' }) {
     }
   }, [])
 
-  const on = (m) => `bg-mode m-${m}${mode === m ? ' on' : ''}`
+  // Once focus has settled no mode is on: each fades out and is paused, so the
+  // quiet state costs nothing.
+  const on = (m) => `bg-mode m-${m}${mode === m && !settled ? ' on' : ''}`
 
   return (
     <div
       ref={rootRef}
       className="atmosphere fixed inset-0 z-0 overflow-hidden bg-page"
+      data-focus={focus ? '' : undefined}
+      data-sweeping={sweeping ? '' : undefined}
       data-mode={mode}
       aria-hidden="true"
     >
@@ -377,6 +519,12 @@ export default function AtmosphereBackground({ defaultMode = 'packets' }) {
       {/* A calm zone behind the content column: dims the grid and effects where
           text sits so body copy stays readable, and leaves the edges busy. */}
       <div className="bg-calm absolute inset-0" />
+
+      {/* Focus mode: a quiet field that grows from the pointer (a faint grid on
+          the page colour, hiding the effects below it) and the ring of lit dots
+          at its edge. Both are driven by one value, --fr. Empty unless focused. */}
+      <div className="bg-quiet absolute inset-0" />
+      <div className="bg-wave absolute inset-0" />
 
       {/* Equalizer: dot-built bars along the bottom edge, mirrored more faintly
           from the top. Hidden unless audio sync is on (CSS), driven from the

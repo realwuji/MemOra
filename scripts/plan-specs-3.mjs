@@ -52,6 +52,10 @@ const EXT = 'Externalities'
 
 const education = D(SSP, 'Education and training', { t: 'Education and training', d: [188] })
 const infrastructure = D(SSP, 'Infrastructure', { t: 'Infrastructure', d: [188] })
+// The same chains with another diagram, or none, for the plans where the supply-side diagram does not fit
+const infrastructureMultiplier = D(SSP, 'Infrastructure', { t: 'Infrastructure', d: [187] })
+const infrastructurePlain = D(SSP, 'Infrastructure', { t: 'Infrastructure' })
+const educationPlain = D(SSP, 'Education and training', { t: 'Education and training' })
 const taxReform = D(SSP, 'Tax and benefit reform', { t: 'Tax and benefit reform' })
 const privatisation = D(SSP, 'Privatisation and deregulation', { t: 'Privatisation and deregulation' })
 const rd = D(SSP, 'Subsidies, R&D and affordable housing', { t: 'Subsidies, R&D and affordable housing' })
@@ -111,13 +115,13 @@ export const SPECS_3 = {
   },
   117: {
     cols: ['Benefits of more infrastructure spending', 'Limits'],
-    left: [infrastructure, D(CIR, 'What makes the multiplier large', { t: 'The multiplier amplifies the spending', d: [182] })],
+    left: [infrastructureMultiplier, D(CIR, 'What makes the multiplier large', { t: 'The multiplier amplifies the spending', d: [181] })],
     right: [infraLimits, S(PET, 'Crowding out and crowding in', { t: 'Crowding out and crowding in' }), D(ND, 'Why a high national debt matters', { t: 'The cost to the national debt' })],
     judge: 'Infrastructure raises AD at once and LRAS over time, so it helps growth in the short and long run, but it takes time to plan and build, costs money and adds to the debt.',
   },
   118: {
     cols: ['How better transport links raise growth', 'Limits'],
-    left: [D(FIG, 'Infrastructure', { t: 'Infrastructure', d: [188] }), infrastructure],
+    left: [D(FIG, 'Infrastructure', { t: 'Infrastructure' }), infrastructureMultiplier],
     right: [E(FIG, 'Infrastructure', { t: 'Why infrastructure may not raise growth' }), infraLimits],
     judge: 'Better links cut transport costs, widen markets and attract investment, which raises growth, but the benefit depends on the other barriers to trade and on the cost of building and maintaining them.',
   },
@@ -163,7 +167,7 @@ export const SPECS_3 = {
   },
   126: {
     cols: ['How investment in technology raises profit', 'Limits'],
-    left: [D(AS, 'Technology and innovation', { t: 'Technology and innovation', d: [188] }), D(CSI, 'The determinants of investment', { t: 'The determinants of investment' })],
+    left: [D(AS, 'Technology and innovation', { t: 'Technology and innovation' }), D(CSI, 'The determinants of investment', { t: 'The determinants of investment' })],
     right: [E(AS, 'Technology and innovation', { t: 'Why technology may not raise profit' }), D(RCP, 'Is labour a fixed or a variable cost?', { t: 'Is labour a fixed or variable cost?' })],
     judge: 'New technology lowers costs and raises productivity, which raises profit if demand holds, but it takes time to pay back and may cost jobs; its effect depends on the price and on how fast rivals copy it.',
   },
@@ -255,7 +259,7 @@ export const SPECS_3 = {
   },
   142: {
     cols: ['Effects of investment in dams on rice farmers\' profit', 'Limits'],
-    left: [infrastructure, D(SUP, 'Weather, shocks and expectations', { t: 'Weather and shocks: dams reduce the risk', d: [21] })],
+    left: [infrastructurePlain, D(SUP, 'Weather, shocks and expectations', { t: 'Weather and shocks: dams reduce the risk', d: [21] })],
     right: [infraLimits],
   },
   143: {
@@ -272,7 +276,7 @@ export const SPECS_3 = {
   },
   145: {
     cols: ['Policies to raise the employment rate', 'Limits'],
-    left: [D(SSP, 'Young people not in education, employment or training', { t: 'Young people not in education, employment or training' }), education, taxReform, D(SSP, 'Are childcare subsidies enough to bring parents', { t: 'Childcare subsidies' })],
+    left: [D(SSP, 'Young people not in education, employment or training', { t: 'Young people not in education, employment or training' }), educationPlain, taxReform, D(SSP, 'Are childcare subsidies enough to bring parents', { t: 'Childcare subsidies' })],
     right: [educationLimits, taxLimits, D(EMP, 'Structural unemployment', { t: 'Structural unemployment takes time to fix' })],
     judge: 'Policies that raise skills, make work pay and help parents back into work raise the employment rate, but they are slow and costly, and they work only if there are jobs for those who gain skills.',
   },
@@ -512,7 +516,7 @@ export const SPECS_3 = {
   },
   200: {
     cols: ['Policies to reduce labour immobility', 'Limits'],
-    left: [D(TMF, 'Immobility of labour and capital', { t: 'Immobility of labour and capital' }), education, D(WD, 'Labour mobility', { t: 'Labour mobility' })],
+    left: [D(TMF, 'Immobility of labour and capital', { t: 'Immobility of labour and capital' }), educationPlain, D(WD, 'Labour mobility', { t: 'Labour mobility' })],
     right: [E(TMF, 'Immobility of labour and capital', { t: 'Why immobility is hard to fix' }), educationLimits],
     judge: 'Retraining and help with moving reduce occupational and geographical immobility, but they are slow and costly, and housing costs and family ties keep many workers where they are.',
   },

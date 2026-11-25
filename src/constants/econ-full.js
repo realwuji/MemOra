@@ -1,6 +1,6 @@
 /*
   Full Edexcel A-level Economics A (9EC0) content pack, replacing the
-  placeholder Economics entry in library-extra.js (which shipped with a flat
+  placeholder Economics entry in pack-economics.js (which shipped with a flat
   7-topic list and only 6 flashcards / 4 MCQs / 3 exam questions total).
 
   Topic strings must match the chapter outline (ECON_GROUPS) exactly, or the

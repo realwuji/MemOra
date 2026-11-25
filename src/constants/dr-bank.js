@@ -13,12 +13,27 @@ import SCENARIOS from '../data/dr-scenarios.json'
   questions ask for a family; the reveal plays the exact slide.
 */
 
+/*
+  Each slide gets the curated wording on the way in (data/diagram-copy.js):
+    title      the short name, for lists and headings
+    caption    the full sentence(s), shown under the drawing
+    heldTitle  the teacher's original title, kept for reference
+    hidden     left out of the bank and of diagram revision (still here, because
+               essay plans look diagrams up by number)
+*/
+const tidy = (t) => String(t || '').replace(/\s+/g, ' ').replace(/\s*;\s*$/, '').trim()
+const withCopy = (s, COPY, hidden) => {
+  const c = COPY[s.id]
+  return { ...s, heldTitle: s.title, title: c?.title || tidy(s.title), caption: c?.caption || `${tidy(s.title)}.`, hidden: hidden.has(s.id) }
+}
+
 let cache = null
 let pending = null
 export const loadBank = () => {
   if (cache) return Promise.resolve(cache)
-  pending ||= import('../data/diagram-bank.json').then((m) => {
-    cache = Object.fromEntries(m.default.map((s) => [s.id, s]))
+  pending ||= Promise.all([import('../data/diagram-bank.json'), import('../data/diagram-copy.js')]).then(([m, c]) => {
+    const hidden = new Set(c.HIDDEN)
+    cache = Object.fromEntries(m.default.map((s) => [s.id, withCopy(s, c.COPY, hidden)]))
     return cache
   })
   return pending
@@ -42,11 +57,12 @@ const RANGES = [
   ['Supply and demand', 8, 26],
   ['Elasticity', 27, 34],
   ['Price controls', 35, 52],
-  ['Surplus and revenue', 37, 45],
+  ['Consumer and producer surplus', 37, 38],
+  ['Elasticity', 39, 45],
   ['Tax and subsidy', 53, 59],
   ['Externalities', 61, 75],
   ['Labour market', 77, 88],
-  ['Revenue curves', 90, 101],
+  ['AR and MR curves', 90, 101],
   ['Costs', 102, 122],
   ['Perfect competition', 123, 134],
   ['Monopoly', 135, 148],
@@ -73,6 +89,16 @@ export const familyOf = (id) => {
   return hit || 'Other'
 }
 export const FAMILIES = [...new Set(RANGES.map((r) => r[0]))]
+
+/*
+  Micro or macro. The course splits that way (Themes 1 and 3 are micro, Themes 2
+  and 4 are macro), and a student who has finished one half does not want to
+  wade through the other, in the bank or in revision.
+*/
+export const SCOPES = ['All', 'Micro', 'Macro']
+const MACRO = new Set(['AD / AS (Keynesian AS)', 'AD / AS (neo-classical LRAS)', 'Money and bonds', 'Exchange rate', 'Economic cycle', 'Phillips and Laffer', 'Inequality', 'Trade'])
+export const scopeOf = (family) => (MACRO.has(family) ? 'Macro' : 'Micro')
+export const inScope = (scope, family) => scope === 'All' || scopeOf(family) === scope
 
 // Either AD/AS model is a correct answer; the Keynesian AS curve (which is called
 // AS, never LRAS) is the stronger one, so it is listed and shown first.
@@ -181,6 +207,24 @@ const MULTI = [
 
 const clean = (t) => t.replace(/\s+/g, ' ').replace(/\s*[;]\s*$/, '').trim()
 
+// The teacher's captions lean on the chapter they sit in. "Equilibrium of firm
+// that has sales-maximisation goal" is a monopoly diagram, but the caption
+// never says so, and a student cannot name the diagram family without knowing
+// the market the firm is in. Every other bank question states its market ("a
+// monopolist's variable costs rise", "in a perfectly competitive market"), so
+// a market-structure slide whose caption does not name its market has it
+// stated up front, the way an exam question would.
+const MARKETS = {
+  'Perfect competition': [/perfect|competitive|price[- ]taker/i, 'a perfectly competitive firm'],
+  Monopoly: [/monopol/i, 'a monopoly'],
+  'Monopolistic competition': [/monopolistic/i, 'a firm in monopolistic competition'],
+  Oligopoly: [/oligopol|kinked|collu|cartel/i, 'an oligopoly'],
+}
+const marketLead = (family, caption) => {
+  const m = MARKETS[family]
+  return m && !m[0].test(caption) ? m[1] : null
+}
+
 // Built lazily so the bank titles are available.
 export function buildDeck(bank) {
   const deck = []
@@ -192,12 +236,15 @@ export function buildDeck(bank) {
     s.contexts.forEach((context, i) => deck.push({ id: `${s.id}-${i}`, context, slides: [slide], topic: familyOf(slide), eval: s.eval, what: s.what }))
   })
   MULTI.forEach(([id, context, slides]) => deck.push({ id, context, slides, topic: 'More than one diagram' }))
-  // Every other diagram gets a question built from its own caption, so the whole bank is practised.
+  // Every other diagram gets a question built from its own short title (the caption
+  // is two sentences that already explain the answer), so the whole bank is practised.
   Object.values(bank).forEach((s) => {
-    if (covered.has(s.id)) return
-    const t = clean(s.title)
+    if (covered.has(s.id) || s.hidden) return
+    const t = clean(s.title).replace(/[.!]+$/, '')
     if (!t) return
-    deck.push({ id: `slide-${s.id}`, context: `Draw a diagram to show: ${t.charAt(0).toLowerCase()}${t.slice(1)}.`, slides: [s.id], topic: familyOf(s.id) })
+    const family = familyOf(s.id)
+    const lead = marketLead(family, `${t} ${s.caption}`)
+    deck.push({ id: `slide-${s.id}`, context: lead ? `Draw this diagram for ${lead}: ${t}.` : `Draw this diagram: ${t}.`, slides: [s.id], topic: family })
   })
   return deck
 }

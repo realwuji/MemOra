@@ -9,7 +9,8 @@ import { fadeInUp, staggerContainer } from '@/lib/motion'
 import { useApp } from '@/context/AppProvider'
 import { attemptStats, mistakes, weakestTopics, daysAgo } from '@/lib/sessions'
 import { groupMistakes, findSiblingQuestion } from '@/lib/mistakes'
-import { getPackByName } from '@/constants/library'
+import { getPackByName } from '@/constants/packs'
+import usePack from '@/hooks/usePack'
 import { slugify } from '@/lib/slug'
 import Chip from '@/components/ui/Chip'
 
@@ -85,7 +86,10 @@ function MistakeRow({ m }) {
 // one, which today is always, since no content pack tags misconceptions.
 function MisconceptionRow({ group }) {
   const primarySubject = group.subjects[0]
-  const pack = getPackByName(primarySubject)
+  // findSiblingQuestion returns at once for a group with no misconception, so
+  // the subject's content is only fetched for one that has (today no content
+  // carries misconception tags, so it never is).
+  const { pack } = usePack(group.misconception ? getPackByName(primarySubject) : null)
   // A tagged sibling item exists somewhere in the pack testing the same
   // misconception - there's no stable per-item id to deep-link to it
   // directly yet (a separate content-schema gap, see lib/attempts.js), so

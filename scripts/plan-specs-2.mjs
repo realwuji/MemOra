@@ -37,6 +37,7 @@ const regulationLimits = E(GIM, 'Regulation', { t: 'Why regulation may not work'
 const info = D(GIM, 'Information provision', { t: 'Information provision' })
 const infoLimits = E(GIM, 'Information provision', { t: 'Why information may not change behaviour' })
 const subsidy = D(GIM, 'Subsidy', { t: 'A subsidy', d: [58] })
+const subsidyPlain = D(GIM, 'Subsidy', { t: 'A subsidy' })
 const subsidyLimits = E(GIM, 'Subsidy', { t: 'Why a subsidy may not work' })
 const unintended = D(GF, 'Unintended consequences', { t: 'Unintended consequences' })
 const enforcement = D(GF, 'Administrative and enforcement costs', { t: 'Administrative and enforcement costs' })
@@ -143,7 +144,7 @@ export const SPECS_2 = {
   },
   69: {
     cols: ['Two reasons for the rise in inflation', ''],
-    left: [D(INF, 'Demand-pull inflation', { t: 'Demand-pull inflation', d: [182] }), D(INF, 'Cost-push inflation', { t: 'Cost-push inflation', d: [185] })],
+    left: [D(INF, 'Demand-pull inflation', { t: 'Demand-pull inflation', d: [182] }), D(INF, 'Cost-push inflation', { t: 'Cost-push inflation', d: [169] })],
     right: [],
   },
   70: {
@@ -160,7 +161,7 @@ export const SPECS_2 = {
   },
   72: {
     cols: ['Two reasons for the rise in inflation', 'Evaluation'],
-    left: [D(INF, 'Demand-pull inflation', { t: 'Demand-pull inflation', d: [182] }), D(INF, 'Cost-push inflation', { t: 'Cost-push inflation', d: [185] })],
+    left: [D(INF, 'Demand-pull inflation', { t: 'Demand-pull inflation', d: [182] }), D(INF, 'Cost-push inflation', { t: 'Cost-push inflation', d: [169] })],
     right: [S(INF, 'The causes of inflation in 2022', { t: 'The causes of inflation in 2022' })],
   },
   73: {
@@ -183,7 +184,7 @@ export const SPECS_2 = {
   },
   76: {
     cols: ['Methods to increase tax revenue', 'Limits'],
-    left: [S(FP, 'Types of taxation', { t: 'Types of taxation' }), D(FP, 'The Laffer curve', { t: 'The Laffer curve', d: [209] }), D(PET, 'Direct against indirect taxation', { t: 'Direct against indirect taxation' })],
+    left: [S(FP, 'Types of taxation', { t: 'Types of taxation' }), D(FP, 'The Laffer curve', { t: 'The Laffer curve', d: [208] }), D(PET, 'Direct against indirect taxation', { t: 'Direct against indirect taxation' })],
     right: [E(FP, 'The Laffer curve', { t: 'Why higher rates may not raise revenue' }), E(PET, 'Direct against indirect taxation', { t: 'Why indirect taxes can be regressive' })],
     judge: 'Raising rates or widening the base raises revenue, but beyond a point higher rates reduce effort and increase avoidance, so revenue may fall, and indirect taxes fall hardest on the poor.',
   },
@@ -229,7 +230,7 @@ export const SPECS_2 = {
   },
   84: {
     cols: ['Policy options for over-fishing', 'Limits'],
-    left: [permits, regulation('Quotas and regulation'), tax('A tax on catches'), subsidy],
+    left: [permits, regulation('Quotas and regulation'), tax('A tax on catches'), subsidyPlain],
     right: [permitsLimits, regulationLimits, enforcement],
     judge: 'Tradable permits and quotas cap the catch directly; a tax uses the price mechanism. All depend on monitoring boats at sea, which is costly, so enforcement decides success.',
   },
@@ -313,7 +314,7 @@ export const SPECS_2 = {
   },
   98: {
     cols: ['Effects of higher government spending', 'Limits'],
-    left: [D(FP, 'Discretionary fiscal policy', { t: 'Discretionary fiscal policy', d: [180] }), D(CIR, 'What makes the multiplier large', { t: 'What makes the multiplier large', d: [182] }), D(FP, 'Does the type of spending change what happens', { t: 'Does the type of spending change the effect?' })],
+    left: [D(FP, 'Discretionary fiscal policy', { t: 'Discretionary fiscal policy', d: [180] }), D(CIR, 'What makes the multiplier large', { t: 'What makes the multiplier large', d: [181] }), D(FP, 'Does the type of spending change what happens', { t: 'Does the type of spending change the effect?' })],
     right: [E(CIR, 'Why the multiplier may be smaller', { t: 'Why the multiplier may be smaller' }), S(PET, 'Crowding out and crowding in', { t: 'Crowding out and crowding in' }), D(ND, 'Why a high national debt matters', { t: 'The cost to the national debt' })],
     judge: 'Higher government spending raises AD, output and jobs through the multiplier, and more if it is spent on infrastructure that lifts supply. The effect is smaller if the economy is near full capacity, and it adds to the debt.',
   },
@@ -325,7 +326,7 @@ export const SPECS_2 = {
   },
   100: {
     cols: ['How cutting tax rates could raise growth', 'Limits'],
-    left: [D(FP, 'The Laffer curve', { t: 'The Laffer curve', d: [209] }), S(FP, 'Fiscal policy on the supply side', { t: 'Fiscal policy on the supply side' }), D(SSP, 'Tax and benefit reform', { t: 'Tax and benefit reform' })],
+    left: [D(FP, 'The Laffer curve', { t: 'The Laffer curve', d: [208] }), S(FP, 'Fiscal policy on the supply side', { t: 'Fiscal policy on the supply side' }), D(SSP, 'Tax and benefit reform', { t: 'Tax and benefit reform' })],
     right: [E(FP, 'The Laffer curve', { t: 'Why lower rates may not raise revenue' }), E(SSP, 'Tax and benefit reform', { t: 'Why tax cuts may not raise growth' }), D(ND, 'Why a high national debt matters', { t: 'The cost to the national debt' })],
     judge: 'Lower tax rates raise incentives and disposable income, so they can lift growth, but the effect is uncertain and slow, it reduces revenue unless the economy is above the revenue-maximising rate, and it can widen inequality.',
   },

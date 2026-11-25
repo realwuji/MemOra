@@ -34,11 +34,25 @@ import { flushSync } from 'react-dom'
       the duration (except the toggle's own). Without it, colours would still
       be easing towards their new values inside the revealed area.
 
+  Cost, and why the class goes on where it does. Any change to <html> (a class,
+  an inline custom property, the theme attribute) makes the browser recalculate
+  the style of EVERY element on the page: 35 to 70ms on a 450 to 1100 element
+  page, and it freezes the page while it runs. A switch used to do that three
+  times (class on, theme change, class off), so nothing moved for a long time
+  after the click. The class and the pointer position now go on in the same
+  callback as the theme itself, so the browser does one recalculation for all of
+  them, and the old snapshot is already taken by then so nothing is lost. Only
+  the clean-up at the end is a second one, and by then the page is still.
+
   With reduced motion requested, or a browser without the API, the theme just
   changes instantly.
 */
 
-const DURATION_MS = 880
+// Total time for the wave to cross the page. It was 880ms; the freeze before it
+// starts and the wave itself together read as slow, so the whole thing is a
+// little over a third quicker. The easing curves are unchanged, so it is the
+// same wave, faster.
+const DURATION_MS = 620
 // One easing for the front and the fade, so their relationship never drifts.
 const FRONT_EASING = 'cubic-bezier(0.4, 0, 0.15, 1)'
 const POINTS = 120 // vertices around the ripple: enough that it reads as smooth
@@ -57,11 +71,36 @@ function ripplePolygon(x, y, radius, phase) {
   return `polygon(${pts.join(', ')})`
 }
 
+let latest = 0 // the newest switch, so an older one finishing does not undo it
+
+/*
+  The theme changes at once, with no wave: used by the Settings picker and as
+  the fallback when the wave is not available. Colour transitions are switched
+  off for the swap (same class as the wave, same single style pass), otherwise
+  some 200 elements spend 150 to 400ms easing towards their new colours on top
+  of the recalculation, which reads as the whole page lagging behind the click.
+  The class stays for two frames, long enough for the new theme to be painted
+  and for any transition that would have started to have been skipped.
+*/
+export function swapTheme(apply) {
+  const root = document.documentElement
+  const mine = ++latest
+  root.classList.add('theme-switching')
+  flushSync(apply)
+  const done = () => {
+    if (mine === latest) root.classList.remove('theme-switching')
+  }
+  requestAnimationFrame(() => requestAnimationFrame(done))
+  // A hidden tab never runs animation frames; the timer makes sure the class
+  // cannot be left on.
+  setTimeout(done, 250)
+}
+
 export function revealTheme(apply, originEl) {
   const root = document.documentElement
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
   if (reduced || typeof document.startViewTransition !== 'function' || !originEl) {
-    apply()
+    swapTheme(apply)
     return
   }
 
@@ -72,11 +111,14 @@ export function revealTheme(apply, originEl) {
   const corner = Math.hypot(Math.max(x, window.innerWidth - x), Math.max(y, window.innerHeight - y))
   const phase = Math.random() * Math.PI * 2
 
-  // The mask's fade is centred on the button (server.css reads these).
-  root.style.setProperty('--srv-x', `${x}px`)
-  root.style.setProperty('--srv-y', `${y}px`)
-  root.classList.add('theme-switching')
+  // The browser has already taken its picture of the old page when this runs.
+  // The mask's fade is centred on the button (server.css reads --srv-x/y), and
+  // transitions are switched off, in the same style pass as the new theme.
+  const mine = ++latest
   const transition = document.startViewTransition(() => {
+    root.style.setProperty('--srv-x', `${x}px`)
+    root.style.setProperty('--srv-y', `${y}px`)
+    root.classList.add('theme-switching')
     flushSync(apply)
   })
 
@@ -101,14 +143,18 @@ export function revealTheme(apply, originEl) {
       // diagonal (9.9px) so the final frame is fully opaque.
       const grow = (name, to, ms, easing) =>
         root.animate({ [name]: ['0px', `${to}px`] }, { duration: ms, easing, fill: 'forwards', ...target })
-      grow('--srv-b', 5, 760, 'cubic-bezier(0.2, 0.6, 0.3, 1)')
-      grow('--srv-c', 7, 820, 'cubic-bezier(0.3, 0.5, 0.2, 1)')
-      grow('--srv-d', 9, 860, 'cubic-bezier(0.25, 0.4, 0.2, 1)')
+      // (each lattice runs for a slightly different share of DURATION_MS)
+      grow('--srv-b', 5, Math.round(DURATION_MS * 0.864), 'cubic-bezier(0.2, 0.6, 0.3, 1)')
+      grow('--srv-c', 7, Math.round(DURATION_MS * 0.932), 'cubic-bezier(0.3, 0.5, 0.2, 1)')
+      grow('--srv-d', 9, Math.round(DURATION_MS * 0.977), 'cubic-bezier(0.25, 0.4, 0.2, 1)')
       grow('--srv-a', 11, DURATION_MS, 'cubic-bezier(0.35, 0, 0.2, 1)')
     })
     .catch(() => {})
 
   transition.finished.finally(() => {
+    // A newer switch started before this one finished (a fast double click):
+    // leave the class on, the newer one removes it.
+    if (mine !== latest) return
     root.classList.remove('theme-switching')
     root.style.removeProperty('--srv-x')
     root.style.removeProperty('--srv-y')

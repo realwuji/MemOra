@@ -36,7 +36,19 @@ export default function Chip({
     ? 'cursor-not-allowed border-line bg-surface text-muted opacity-40'
     : selected
       ? 'border-brand bg-brand text-on-brand'
-      : 'border-line bg-surface text-fg hover:border-brand hover:bg-brand-soft'
+      : 'btn-charge border-line bg-surface text-fg'
+
+  // an unselected chip carries the same charged hover as a button (selected ones are already filled)
+  const charged = !disabled && !selected
+  const inner = charged ? (
+    <>
+      <span className="btn-charge-current" aria-hidden="true" />
+      <span className="btn-charge-cover" aria-hidden="true" />
+      <span className="btn-charge-label inline-flex items-center gap-1.5">{children}</span>
+    </>
+  ) : (
+    children
+  )
 
   const cls = `${base} ${state} ${className}`
 
@@ -44,14 +56,14 @@ export default function Chip({
     const Component = as || Link
     return (
       <Component to={to} className={cls} {...rest}>
-        {children}
+        {inner}
       </Component>
     )
   }
 
   return (
     <button type="button" disabled={disabled} className={cls} {...rest}>
-      {children}
+      {inner}
     </button>
   )
 }

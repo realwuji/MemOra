@@ -643,9 +643,6 @@
 .notes-content p:hover {
   color: var(--fg);
 }
-.notes-content p:not(.exam-tip):hover {
-  box-shadow: -14px 0 0 -12px var(--brand);
-}
 .notes-content li:hover {
   color: var(--fg);
   transform: translateX(5px);

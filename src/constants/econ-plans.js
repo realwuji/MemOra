@@ -1,5 +1,6 @@
 import QUESTIONS from '../data/plan-questions'
 import { BUILT_PLANS } from './econ-plans-built'
+import { areaOf } from './econ-plans-meta'
 
 /*
   Essay plans, built ONLY from the Economics notes.
@@ -38,7 +39,6 @@ const GLOBALISATION_CAUSES = {
         'Distant production becomes viable, so the cost of supplying traded goods falls',
         'Trade and capital flows grow faster than GDP: globalisation',
       ],
-      dia([20], { S: ['Cheaper shipping and communication lower the cost of supplying goods that cross borders'] }),
     ),
     c(
       'Trade liberalisation and the growth of TNCs',
@@ -48,7 +48,7 @@ const GLOBALISATION_CAUSES = {
         'TNCs organise production across many countries to cut costs, find new markets and gain scale',
         'More trade, FDI and global supply chains',
       ],
-      dia([223]),
+      dia([225]),
     ),
     c(
       'Political change and deregulation of finance',
@@ -68,7 +68,6 @@ const GLOBALISATION_CAUSES = {
         'Tariffs on goods such as steel, countries leaving trading blocs (the UK) and trade wars cut trade',
         'DEGLOBALISATION: trade grows more slowly or falls',
       ],
-      dia([222]),
     ),
     c(
       'Transport and communication gains are uneven and can reverse',
@@ -101,7 +100,7 @@ const PLANS = {
           'AD shifts right from AD1 to AD2, and the multiplier amplifies it',
           'Real GDP and employment rise; trade surpluses for Germany and Switzerland; the current account improves',
         ],
-        dia([180], { AD: ['Higher exports (X) as the economy sells more high-value goods and services abroad', 'The multiplier then amplifies the initial rise in X'] }),
+        dia([181], { AD: ['Higher exports (X) as the economy sells more high-value goods and services abroad', 'The multiplier then amplifies the initial rise in X'] }),
       ),
       c(
         'Access to raw materials',
@@ -111,7 +110,7 @@ const PLANS = {
           'SRAS shifts right',
           'Higher output and a lower price level; more and better inputs, lower prices and more choice for consumers',
         ],
-        dia([188], { AS: ['Cheaper imported raw materials lower firms\' costs of production'] }),
+        dia([171], { AS: ['Cheaper imported raw materials lower firms\' costs of production'] }),
       ),
     ],
     right: [
@@ -152,7 +151,7 @@ const PLANS = {
           'MNC investment and cheaper capital imports improve infrastructure and productive capacity (China builds infrastructure in sub-Saharan Africa)',
           'LRAS shifts right: higher output and a lower price level',
         ],
-        dia([180, 176], { AD: ['Higher exports as the country sells more abroad'], LRAS: ['Better infrastructure and capital from MNC investment raise productive capacity'] }),
+        dia([181, 176], { AD: ['Higher exports as the country sells more abroad'], LRAS: ['Better infrastructure and capital from MNC investment raise productive capacity'] }),
       ),
       c(
         'Human capital and tax revenue',
@@ -173,7 +172,6 @@ const PLANS = {
           'They must export more to buy the same imports: more extraction and more negative externalities',
           'Primary prices are volatile (inelastic supply and demand), which harms farmers with no other income',
         ],
-        dia([63], { MPC: ['Extraction costs the firm pays: labour, equipment, energy'], MSC: ['External costs of extraction: damaged land, pollution, resource depletion'] }),
       ),
       c(
         'Exploitation by MNCs and brain drain',
@@ -262,7 +260,6 @@ const PLANS = {
           'Losers (low-skill manufacturing workers, old industrial regions) are concentrated and slow to adjust',
           'Structural unemployment and widening inequality',
         ],
-        dia([185], { AS: ['A shock to world supply (a factory fire, a shipping disruption, a conflict raising oil prices) raises costs of production everywhere'] }),
       ),
       c(
         'Environment and tax competition',
@@ -334,7 +331,7 @@ const PLANS = {
           'World output rises and trade lets Kenya consume beyond its production possibility curve',
           'Higher consumption and living standards',
         ],
-        dia([218]),
+        dia([219]),
       ),
       c(
         'Exports, economies of scale and technology transfer',
@@ -343,7 +340,7 @@ const PLANS = {
           'Exports raise AD and the multiplier amplifies it; FDI and imported capital bring technology',
           'Higher output and productivity: economic growth',
         ],
-        dia([180], { AD: ['Higher exports as Kenyan firms sell to larger world markets'] }),
+        dia([181], { AD: ['Higher exports as Kenyan firms sell to larger world markets'] }),
       ),
     ],
     right: [
@@ -541,28 +538,9 @@ const PLANS = {
 
 /* ------------------------------------------------------------ the bank */
 
-// Which part of the notes a question draws on, for the filter and the empty state.
-const AREAS = [
-  ['Trade and globalisation', /globalis|protection|trading bloc|integration|tariff|absolute advantage|competitiveness|exchange rate|sterling|currency|current account|net trade|exports/i],
-  ['Inflation, money and banks', /inflation|interest rate|CPI|MPC|quantitative|deflation|banks|financial|forward markets|microfinance/i],
-  ['Fiscal policy and growth', /fiscal|deficit|austerity|government expenditure|tax rates|tax revenue|supply-side|productivity|growth|GDP|multiplier|infrastructure|consumption|savings|investment|house prices|real wages|recession|unemployment|Phillips|trade-offs|macroeconomic objectives|conflicts/i],
-  ['Market failure and intervention', /intervention|externalit|market failure|public good|merit|tax on|maximum price|carbon|plastic|nuclear|over-fishing|fishing|emissions|unintended|free market|state-funded|private costs|social optimum|asymmetric|electronic waste|energy/i],
-  ['Firms, markets and competition', /monopol|oligopol|collusi|contestab|concentration|price discrimination|merger|PED|YED|PES|elastic|competition|profit|price and non|economies of scale|market share|integration within|retailers|business|firms|Starbucks|coffee|rational|demand for|supply of|prices|price of|vet insurance|streaming/i],
-  ['Labour, inequality and development', /labour|wage|inequality|poverty|aid|development|Fairtrade|debt relief|cocoa|nationalisation|migration|immigration|Rwanda|Kenya|Ghana|Angola|Nigeria|Mozambique|Indonesia|Ivory/i],
-]
-export const areaOf = (q) => AREAS.find(([, re]) => re.test(q))?.[0] || 'Other'
-export const PLAN_AREAS = [...AREAS.map((a) => a[0]), 'Other']
-
-export const MARK_SPLIT = {
-  5: { kaa: 5, evaluation: 0 },
-  8: { kaa: 6, evaluation: 2 },
-  10: { kaa: 6, evaluation: 4 },
-  12: { kaa: 8, evaluation: 4 },
-  15: { kaa: 9, evaluation: 6 },
-  25: { kaa: 16, evaluation: 9 },
-}
-// About 1.2 minutes a mark, as the exam allows.
-export const minutesFor = (marks) => Math.round(marks * 1.2)
+// The area table, mark split and timing live in econ-plans-meta.js (light), and
+// are re-exported here so existing importers keep working.
+export { areaOf, PLAN_AREAS, MARK_SPLIT, minutesFor } from './econ-plans-meta'
 
 export const PLAN_BANK = QUESTIONS.map((q) => ({
   ...q,

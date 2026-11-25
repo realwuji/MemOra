@@ -26,6 +26,21 @@ export const THEME_TOGGLE = {
   toBlack: 'Switch to the black theme',
 }
 
+// The panel under a chapter that offers the next one in the course.
+export const STUDY_NEXT = {
+  eyebrow: 'Up next',
+  cta: 'Finish and continue',
+  again: 'Continue',
+}
+
+// Shown when a subject's study material (a separate download, see
+// constants/packs.js) could not be fetched.
+export const PACK_LOAD_ERROR = {
+  title: "Couldn't load the study material",
+  hint: 'Check your connection, then try again.',
+  retry: 'Try again',
+}
+
 /* --------------------------------------------------------- LANDING */
 
 export const LANDING = {
@@ -174,6 +189,8 @@ export const STUDY_TECHNIQUES = [
   { id: 'diagram-revision', icon: 'target', label: 'Diagram revision', desc: 'Which diagram? Watch it shift' },
   // Every diagram in the bank to browse and replay (see DiagramBank.jsx).
   { id: 'diagram-bank', icon: 'search', label: 'Diagram bank', desc: 'Every diagram, drawn step by step' },
+  // Maths only (see techniqueHasContent): every real question of the Edexcel pack, by paper and sitting.
+  { id: 'past-papers', icon: 'paper', label: 'Past papers', desc: 'Every real question, by paper' },
 ]
 
 /* ------------------------------------------------ MARKETING (how it works) */

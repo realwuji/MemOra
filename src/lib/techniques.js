@@ -1,5 +1,6 @@
 import { STUDY_TECHNIQUES } from '@/constants/content'
 import { slugify } from '@/lib/slug'
+import { countsOf } from '@/constants/pack-lookup'
 
 /*
   The bits of "which technique, on which chapter, opens which route" that
@@ -23,28 +24,43 @@ export const normaliseMode = (id) => (id === 'mock-exam' || id === 'mock' ? 'exa
 
 // A technique is offered only if the subject's pack actually has content
 // for it, so nobody lands on an empty "no MCQs yet" dead end.
+// Works on a light pack (its precomputed counts) as well as a full one, so a
+// launcher can answer this without downloading the content.
 export function techniqueHasContent(pack, techniqueId) {
   if (!pack) return true
+  const counts = countsOf(pack)
   switch (normaliseMode(techniqueId)) {
     case 'mcq':
-      return pack.mcq?.length > 0
+      return counts.mcq > 0
     case 'exam-questions':
     case 'mock':
-      return pack.examQuestions?.length > 0
+      return counts.examQuestions > 0
     case 'notes':
-      return Object.keys(pack.notes || {}).length > 0
+      return counts.notes > 0
     case 'essay-plans':
-      return pack.essayBank?.length > 0
+      return counts.essayBank > 0
     case 'diagram-revision':
     case 'diagram-bank':
-      return Boolean(pack.diagramRevision)
+      return counts.diagramRevision
     case 'application':
-      return Object.keys(pack.applications || {}).length + Object.keys(pack.realCases || {}).length > 0
+      return counts.applicationKeys > 0
+    case 'past-papers':
+      return Boolean(counts.pastPapers)
     case 'flashcards':
     default:
-      return pack.flashcards?.length > 0
+      return counts.flashcards > 0
   }
 }
+
+// The four specialist methods exist for only some subjects (Economics today).
+// For a subject with none of that content the launcher leaves them out, rather
+// than showing a greyed "Not for Maths yet" tile for each. The four core
+// methods are always listed, so an empty one still says so.
+// Maths has no multiple choice (its practice is the exam questions and past papers), so MCQ
+// is left out of its launcher the same way.
+const SPECIALIST_TECHNIQUES = new Set(['essay-plans', 'application', 'diagram-revision', 'diagram-bank', 'past-papers', 'mcq'])
+export const techniquesFor = (pack) =>
+  ALL_TECHNIQUES.filter((t) => !SPECIALIST_TECHNIQUES.has(t.id) || techniqueHasContent(pack, t.id))
 
 export const techniqueLabel = (id) => ALL_TECHNIQUES.find((t) => t.id === normaliseMode(id))?.label || 'Study'
 
@@ -55,7 +71,8 @@ export const techniqueLabel = (id) => ALL_TECHNIQUES.find((t) => t.id === normal
 */
 export function studyPathFor(subjectName, topic, mode) {
   const slug = slugify(subjectName)
-  const id = normaliseMode(mode)
+  // The recommender suggests MCQ for a chapter just started; Maths has none, so it opens flashcards.
+  const id = slug === 'maths' && normaliseMode(mode) === 'mcq' ? 'flashcards' : normaliseMode(mode)
   if (!topic) return `/study/${slug}/${id}`
   const params = new URLSearchParams({ chapter: topic })
   return `/study/${slug}/${id}?${params.toString()}`

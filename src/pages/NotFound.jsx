@@ -7,7 +7,7 @@ import Breadcrumbs from '@/components/ui/Breadcrumbs'
 import { fadeInUp, staggerContainer } from '@/lib/motion'
 import { useApp } from '@/context/AppProvider'
 import { subjectColor } from '@/constants/content'
-import { getPackByName } from '@/constants/library'
+import { getPackByName } from '@/constants/packs'
 import { slugify } from '@/lib/slug'
 
 /*

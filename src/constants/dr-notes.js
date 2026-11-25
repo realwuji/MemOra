@@ -13,13 +13,13 @@
 export const BANK_SECTIONS = [
   { family: 'PPF', title: 'Production possibility frontier', theme: 'Theme 1', chapters: ['Production Possibility Frontiers'] },
   { family: 'Supply and demand', title: 'Demand, supply and equilibrium', theme: 'Theme 1', chapters: ['Demand', 'Supply and Elasticity of Supply', 'Price Determination and the Price Mechanism'] },
-  { family: 'Elasticity', title: 'Elasticity', theme: 'Theme 1', chapters: ['Price, Income and Cross Elasticities of Demand', 'Supply and Elasticity of Supply'] },
-  { family: 'Surplus and revenue', title: 'Surplus and total revenue', theme: 'Theme 1', chapters: ['Consumer and Producer Surplus', 'Price, Income and Cross Elasticities of Demand'] },
+  { family: 'Elasticity', title: 'Elasticity and total revenue', theme: 'Theme 1', chapters: ['Price, Income and Cross Elasticities of Demand', 'Supply and Elasticity of Supply'] },
+  { family: 'Consumer and producer surplus', title: 'Consumer and producer surplus', theme: 'Theme 1', chapters: ['Consumer and Producer Surplus'] },
   { family: 'Price controls', title: 'Price controls', theme: 'Theme 1', chapters: ['Government Intervention in Markets'] },
   { family: 'Tax and subsidy', title: 'Tax and subsidy', theme: 'Theme 1', chapters: ['Government Intervention in Markets'] },
   { family: 'Externalities', title: 'Externalities and market failure', theme: 'Theme 1', chapters: ['Externalities', 'Public Goods and Information Gaps'] },
   { family: 'Labour market', title: 'Labour markets', theme: 'Theme 3', chapters: ['Wage Determination', 'Labour Market Issues', 'Monopsony'] },
-  { family: 'Revenue curves', title: 'Revenue curves', theme: 'Theme 3', chapters: ['Revenue, Costs and Profit'] },
+  { family: 'AR and MR curves', title: 'AR and MR curves', theme: 'Theme 3', chapters: ['Revenue, Costs and Profit'] },
   { family: 'Costs', title: 'Costs and economies of scale', theme: 'Theme 3', chapters: ['Revenue, Costs and Profit', 'Economies and Diseconomies of Scale'] },
   { family: 'Perfect competition', title: 'Perfect competition', theme: 'Theme 3', chapters: ['Perfect Competition'] },
   { family: 'Monopoly', title: 'Monopoly', theme: 'Theme 3', chapters: ['Monopoly', 'Efficiency'] },
@@ -34,6 +34,15 @@ export const BANK_SECTIONS = [
   { family: 'Inequality', title: 'Inequality', theme: 'Theme 4', chapters: ['Poverty and Inequality'] },
   { family: 'Trade', title: 'International trade', theme: 'Theme 4', chapters: ['International Trade', 'Protectionism and Trade Restrictions'] },
 ]
+
+// The four themes of the course, which the topics are grouped under.
+export const THEME_NAMES = {
+  'Theme 1': 'Introduction to markets and market failure',
+  'Theme 2': 'The UK economy: performance and policies',
+  'Theme 3': 'Business behaviour and the labour market',
+  'Theme 4': 'A global perspective',
+}
+export const themeOfFamily = (family) => BANK_SECTIONS.find((s) => s.family === family)?.theme || null
 
 // [first diagram, last diagram, notes chapter, section heading]
 export const SLIDE_NOTES = [
@@ -122,6 +131,14 @@ export const SLIDE_NOTES = [
   [222, 225, 'Protectionism and Trade Restrictions', 'The tariff diagram'],
   [226, 226, 'Protectionism and Trade Restrictions', 'More forms of protection'],
 ]
+
+// The notes chapter (and section heading) that explains a diagram, from the
+// table above alone, so a screen that has not loaded the notes can still link to
+// them. `null` when the diagram has no section.
+export function chapterFor(id) {
+  const hit = SLIDE_NOTES.find(([a, b]) => id >= a && id <= b)
+  return hit ? { chapter: hit[2], heading: hit[3] } : null
+}
 
 const DIAGRAM_MARKER = /<div\s+data-diagram="[^"]*"\s*><\/div>/gi
 const text = (h) => String(h || '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim()

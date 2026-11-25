@@ -1,0 +1,318 @@
+{
+ "summary": "For H446 OCR does not use the label \"Exam Reference Language\". The official definition is the \"AS and A Level Computer Science, Pseudocode Guide\" (H046/H446), cover date August 2015, at ocr.org.uk/Images/260952-pseudocode-guide.pdf. I read it in full, first-party, and rendered the key pages to check layout. The same text is reproduced as the \"Pseudocode\" part of appendix 5d of the specification. That is first-party in the current AS spec (H046 v2.0, February 2026) and in a third-party-hosted copy of the A Level spec (H446 v2.6, June 2023). The phrase \"Exam Reference Language\" appears in none of the OCR documents I read, so it is probably J277 (GCSE) terminology. I did not read any J277 document to confirm that.\n\nThe language is small. It covers assignment with =; implicit declaration and a `global` keyword; casting with int/str/float; print and input; if/elseif/else/endif and switch/case/default/endswitch; for/next, while/endwhile and do/until; 0-based arrays (1D and 2D); function/procedure with byVal/byRef; `.length` and `.subString`; file reading and writing; `//` comments; and OOP (public/private, class/endclass, inherits, super, `new`, `new className(...)`).\n\nStrictness: candidates are NOT required to write in this syntax. Any style is acceptable if a competent programmer could infer the meaning. OCR's Clarification Guide adds that candidates must be able to follow the guide's code but need not write in its syntax, and that their code need not be syntactically correct but must use appropriate structures. Papers say \"pseudocode or program code\". Mark-scheme and examiner-report points on identifiers, assumed methods and Python-style shortcuts are listed below.\n\nThe following are NOT in the guide: constants, random numbers, `self`/`this`, `step` in for loops, string methods other than `.length` and `.subString`, naming or case rules, and `true`/`null` literals. These are listed in notFound, not filled from memory.\n\nVerification limits: the official A Level spec PDF (170844) exceeds the WebFetch 10 MB limit, so the A Level spec was read only via a third-party copy (v2.6, June 2023). Whether a newer A Level version (a third-party site claims v3.0, August 2026) changed section 5d is unverified. The shared 5d text in the first-party AS spec v2.0 (February 2026) matches the guide and v2.6 in keywords and layout, which suggests stability.\n\nSyntax is given as keyword skeletons plus the exact tokens, not as verbatim listings of OCR's examples, to keep quoting minimal. OCR's own listings are at the cited pages. The full extracted text of the guide is saved at C:\\Users\\mudas\\AppData\\Local\\Temp\\claude\\6ac164d059f7ef91\\23b81785-aad5-4cc6-a3d5-e5e450bbaacb\\scratchpad\\pseudo.txt.",
+ "sources": [
+  {
+   "title": "AS and A Level Computer Science, Pseudocode Guide (H046/H446), OCR - FIRST-PARTY, primary source for the language definition",
+   "url": "https://www.ocr.org.uk/Images/260952-pseudocode-guide.pdf",
+   "version": "Cover date August 2015; copyright line 2016 OCR; PDF metadata created 10 Oct 2016; 14 PDF pages (13 numbered)"
+  },
+  {
+   "title": "Cambridge OCR AS Level Computer Science H046 Specification, appendix 5d (printed pp.19-23 pseudocode; p.26 JavaScript) - FIRST-PARTY, current",
+   "url": "https://www.ocr.org.uk/Images/170845-specification-accredited-as-level-gce-computer-science-h046.pdf",
+   "version": "Version 2.0 (February 2026)"
+  },
+  {
+   "title": "OCR A Level Computer Science H446 Specification, appendix 5d (printed pp.31-37), copy hosted on harlingtonschool.org - THIRD-PARTY-HOSTED COPY of an OCR PDF, used as secondary",
+   "url": "https://www.harlingtonschool.org/wp-content/uploads/2023/07/170844-specification-accredited-a-level-gce-computer-science-h446.pdf",
+   "version": "Version 2.6 (June 2023), as printed on its cover"
+  },
+  {
+   "title": "OCR A Level Computer Science H446 Specification (official URL) - COULD NOT BE READ: exceeds the WebFetch 10 MB limit",
+   "url": "https://www.ocr.org.uk/Images/170844-specification-accredited-a-level-gce-computer-science-h446.pdf",
+   "version": "Current version UNVERIFIED"
+  },
+  {
+   "title": "A Level Computer Science Subject content clarification (Clarification Guide) - FIRST-PARTY",
+   "url": "https://www.ocr.org.uk/Images/383613-subject-content-clarification-guide.pdf",
+   "version": "Version 2, (c) OCR 2020"
+  },
+  {
+   "title": "H446/02 Summer 2022 Examiners' report - FIRST-PARTY",
+   "url": "https://www.ocr.org.uk/Images/688025-examiners-report-algorithms-and-programming.pdf",
+   "version": "Version 1, Summer 2022"
+  },
+  {
+   "title": "H446/02 Mark Scheme June 2023 - FIRST-PARTY",
+   "url": "https://www.ocr.org.uk/Images/703954-mark-scheme-algorithms-and-programming.pdf",
+   "version": "June 2023"
+  },
+  {
+   "title": "H446/02 Question paper, Friday 24 June 2022 (Paper D) - FIRST-PARTY",
+   "url": "https://www.ocr.org.uk/Images/676743-question-paper-algorithms-and-programming.pdf",
+   "version": "June 2022"
+  },
+  {
+   "title": "H446/02 Question paper June 2017 - FIRST-PARTY",
+   "url": "https://www.ocr.org.uk/Images/471507-h446-02-question-paper-algorithms-and-programming.pdf",
+   "version": "June 2017"
+  },
+  {
+   "title": "H446/02 Sample Assessment Materials (SAM) and mark scheme - FIRST-PARTY (predates the August 2015 guide)",
+   "url": "https://www.ocr.org.uk/Images/170853-unit-h446-2-algorithms-and-programming-sample-assessment-materials.pdf",
+   "version": "(c) OCR 2014"
+  },
+  {
+   "title": "OCR qualification page, Computer Science H046/H446 (checked: no mention of pseudocode or Exam Reference Language; links to specs only)",
+   "url": "https://www.ocr.org.uk/qualifications/as-and-a-level/computer-science-h046-h446-from-2015/"
+  },
+  {
+   "title": "Cognito specification page (THIRD-PARTY, only evidence for a v3.0 A Level spec; unverified against OCR)",
+   "url": "https://cognito.org/specifications/alevel/computer-science/ocr",
+   "version": "Claims OCR v3.0, last reviewed 2026-08-05"
+  }
+ ],
+ "facts": [
+  {
+   "topic": "Which document defines the pseudocode, and its name",
+   "content": "The document is titled 'AS and A Level Computer Science, Pseudocode Guide' and covers both H046 and H446. It is a landscape A4 PDF with 14 PDF pages: p.1 cover, p.2 copyright, p.3 contents, pp.4-12 content, p.13 small print, p.14 contact. The cover says 'August 2015'. The page 2 copyright line says 'Copyright (c) 2016 OCR'. The PDF metadata creation date is 10 Oct 2016 (metadata, not printed text). The guide has no version number. Its small print (p.13) says it is a support resource and not a required teaching method. The same content is reproduced as the 'Pseudocode' subsection of appendix 5d of the specification, 5d being titled 'Languages and Boolean logic guide for use in external assessments'.",
+   "source": "Pseudocode Guide pp.1-3, 13; A Level spec v2.6 printed p.31; AS spec v2.0 printed p.19",
+   "confidence": "paraphrased from document"
+  },
+  {
+   "topic": "Is it called 'Exam Reference Language'?",
+   "content": "No. The H446 documents call it 'pseudocode', 'the OCR pseudocode guide' (Clarification Guide) or 'Pseudocode' (spec appendix 5d). I searched the extracted text of the guide, the A Level spec v2.6, the AS spec v2.0, the Clarification Guide, the 2017 and 2022 papers, the SAM, the 2022 examiners' report and the 2023 mark scheme for 'reference language', and none contains it. A third-party search summary says the term is J277 (GCSE) terminology. I did not read a J277 document to verify that.",
+   "source": "Text search of all documents listed in sources",
+   "confidence": "paraphrased from document"
+  },
+  {
+   "topic": "Scope statement in the guide",
+   "content": "The guide says it shows the format pseudocode will appear in the examined components, and that it is provided so teachers can give learners familiarity before the exam. Spec 5d adds that its tables show the languages and logic used in external assessments and indicate their limits and scope, and that centres are free to go beyond these parameters.",
+   "source": "Pseudocode Guide p.4 (Introduction); A Level spec v2.6 printed p.31; AS spec v2.0 printed p.19",
+   "confidence": "paraphrased from document"
+  },
+  {
+   "topic": "How closely candidates must follow it: the guide's own rule",
+   "content": "Learners are not expected to memorise the syntax. When asked to write pseudocode, a learner may use any style provided a competent programmer could reasonably infer its meaning. The only verbatim quote used here, from the guide's Introduction: 'may provide answers in any style of pseudocode they choose'. The guide's Introduction, A Level spec 5d and AS spec 5d carry the same sentence.",
+   "source": "Pseudocode Guide p.4 (Introduction); A Level spec v2.6 printed p.31; AS spec v2.0 printed p.19",
+   "confidence": "quoted from document"
+  },
+  {
+   "topic": "How closely candidates must follow it: Clarification Guide",
+   "content": "For 1.2.3(c) 'Writing and following algorithms', the Clarification Guide says candidates must be able to write algorithms in pseudocode and/or program code. They must be able to FOLLOW code as shown in the OCR pseudocode guide but are NOT expected to write code in that syntax. Their code is not expected to be syntactically correct but must use appropriate code structures. For 1.2.4(e) it says candidates must understand object-oriented code 'as specified in the pseudocode guide'.",
+   "source": "Subject content clarification v2 (2020) printed p.7",
+   "confidence": "paraphrased from document"
+  },
+  {
+   "topic": "How closely candidates must follow it: exam question wording",
+   "content": "Past H446/02 papers let candidates choose between pseudocode and program code. June 2022 examples: Q1(b)(iii) 'Write your answer using pseudocode or program code'; Q6(c) 'pseudocode statement or program code'; Q8(b)(ii) 'using either pseudocode or program code'; Q8(b)(iii) and (v) 'pseudocode or program code'. Some questions give skeleton code to complete, such as the pseudocode method pop() and the while loop in Q8(b)(iv). The June 2017 paper asks 'Write, using pseudocode' for a procedure, a constructor and a class.",
+   "source": "June 2022 paper pp.4-5, 22, 28-30; June 2017 paper pp.24-25 and earlier",
+   "confidence": "paraphrased from document"
+  },
+  {
+   "topic": "How closely candidates must follow it: examiner guidance",
+   "content": "The Summer 2022 report says candidates are expected to write algorithms fluently in either pseudocode or program code, and to trace algorithms (p.5). It encourages clear indentation in pseudocode and says no specific language or syntax is expected, but the logic of the solution must be clear (p.35). For a 2D array declaration (Q6(c)), many unusual syntaxes were seen and credit was given if it was clear the structure was two-dimensional (p.28).",
+   "source": "H446/02 Summer 2022 Examiners' report pp.5, 28, 35",
+   "confidence": "paraphrased from document"
+  },
+  {
+   "topic": "Marking limits seen in OCR marking documents",
+   "content": "(1) Identifiers must be single words. In the Summer 2022 report, 'temp Value' written for tempValue got no marks (p.17). The June 2023 mark scheme says to penalise excessive spaces within identifier names if obvious (Q4(a)(i), PDF p.15). (2) The June 2023 mark scheme for Q3(e) says to ignore the case of identifiers in pseudocode (PDF p.14). (3) Inbuilt methods must be written in the guide's object.method style: 'length.arrayLength' instead of arrayLength.length lost marks (report p.17). (4) Methods not provided in the scenario, for example .full(), .empty(), .length() and .remove() on the stack object, must not be assumed to exist (report p.37). (5) Python-style swaps or list append were judged unsuitable where the scenario specified an array-and-pointer implementation (report pp.17, 34).",
+   "source": "H446/02 Summer 2022 Examiners' report pp.17, 34, 37; H446/02 Mark Scheme June 2023 PDF pp.14-15",
+   "confidence": "paraphrased from document"
+  },
+  {
+   "topic": "Assignment and variables",
+   "content": "Variables are assigned with the = operator, in the form `identifier=value`, for example a number or a double-quoted string. A variable is declared the first time a value is assigned, and takes the data type of that value. No separate declaration statement or type keyword is defined. Variables declared inside a function or procedure are local to that subroutine.",
+   "source": "Pseudocode Guide p.4; A Level spec v2.6 printed p.32; AS spec v2.0 printed p.19",
+   "confidence": "paraphrased from document"
+  },
+  {
+   "topic": "Global variables",
+   "content": "A variable in the main program can be made global with the keyword `global`, in the form `global identifier = value` (OCR's example gives userid the value 123).",
+   "source": "Pseudocode Guide p.4; spec 5d (A Level printed p.32, AS printed p.19)",
+   "confidence": "paraphrased from document"
+  },
+  {
+   "topic": "Constants",
+   "content": "The guide defines no constant keyword or constant syntax.",
+   "source": "Pseudocode Guide pp.4-12 (searched)",
+   "confidence": "NOT FOUND"
+  },
+  {
+   "topic": "Naming conventions and case",
+   "content": "The guide states no naming or case rule. Observations from its examples: statement keywords are lowercase (if, then, elseif, else, endif, for, to, next, while, endwhile, do, until, switch, case, default, endswitch, function, endfunction, procedure, endprocedure, return, global, class, endclass, inherits, public, private, new, super). Operator words are UPPERCASE (AND, OR, NOT, MOD, DIV). Identifiers are camelCase (someText, myFile, givenName, startingPosition) and class names are capitalised (Pet, Dog). The only boolean literal shown is lowercase `false`, in `flag==false`. These are example habits, not stated rules. Marking guidance is that identifier case is ignored (June 2023 mark scheme Q3(e)).",
+   "source": "Pseudocode Guide pp.4-12 (observation); H446/02 Mark Scheme June 2023 PDF p.14",
+   "confidence": "paraphrased from document"
+  },
+  {
+   "topic": "Comparison operators",
+   "content": "The six comparison operators are `==` (equal to), `!=` (not equal to), `<`, `<=`, `>` and `>=`. `==` is also used for strings, as in `entry==\"a\"`, and the example loop conditions use `!=` and `==` on strings.",
+   "source": "Pseudocode Guide p.6 (table), pp.5, 6; spec 5d (A Level printed p.33, AS printed p.20)",
+   "confidence": "paraphrased from document"
+  },
+  {
+   "topic": "Arithmetic operators, including integer division and modulus",
+   "content": "The arithmetic operators are `+` (addition), `-` (subtraction), `*` (multiplication), `/` (division), `MOD` (modulus), `DIV` (quotient) and `^` (exponentiation). OCR's worked values: 6+5 gives 11; 6-5 gives 1; 12*2 gives 24; 12/2 gives 6; 12 MOD 5 gives 2 (written 12MOD5); 17 DIV 5 gives 3 (written 17DIV5); 3^4 gives 81. Integer division is therefore the word DIV and modulus is the word MOD, both upper case. The guide does not say what `/` returns when the division is inexact.",
+   "source": "Pseudocode Guide p.6 (Arithmetic Operators table); spec 5d (A Level printed p.33, AS printed p.20)",
+   "confidence": "paraphrased from document"
+  },
+  {
+   "topic": "Boolean / logical operators",
+   "content": "The logical operators are the words `AND`, `OR` and `NOT`. OCR's examples show them in a loop condition (while with AND) and in `NOT myFile.endOfFile()`. No XOR operator is defined in the pseudocode. XOR appears only in the separate Boolean Algebra notation section of 5d, as an accepted learner notation.",
+   "source": "Pseudocode Guide p.6, p.10; A Level spec v2.6 printed pp.33, 35, 41-42",
+   "confidence": "paraphrased from document"
+  },
+  {
+   "topic": "String operators",
+   "content": "No string-operator section exists. The only string concatenation shown is `+`, inside OCR's greeting() procedure example (print of the text \"hello\" plus the name parameter). The guide does not formally define `+` for strings.",
+   "source": "Pseudocode Guide p.8 (Subroutines example)",
+   "confidence": "paraphrased from document"
+  },
+  {
+   "topic": "Output",
+   "content": "Output is `print(string)`, for example `print(\"hello\")`. Parentheses are used throughout the guide. The June 2023 mark scheme's example answer writes `print endResult` without brackets, showing exam marking does not require exact bracket syntax.",
+   "source": "Pseudocode Guide p.5; H446/02 Mark Scheme June 2023 PDF p.17 (Q6 example)",
+   "confidence": "paraphrased from document"
+  },
+  {
+   "topic": "Input",
+   "content": "Input is `variable=input(prompt to user)`, with a string prompt as the argument, for example `name=input(\"Please enter your name\")`. The guide does not say what type input() returns.",
+   "source": "Pseudocode Guide p.5; spec 5d (A Level printed p.32, AS printed p.19)",
+   "confidence": "paraphrased from document"
+  },
+  {
+   "topic": "Selection: if / elseif / else",
+   "content": "Layout: `if <condition> then` / indented statements / `elseif <condition> then` / indented statements / `else` / indented statements / `endif`. The guide says 'Selection will be carried out with if/else and switch/case'. Keywords are lowercase, `then` follows the condition, and the closing keyword is `endif`. The `elseif` and `else` branches are optional in the sense that OCR's example shows all three.",
+   "source": "Pseudocode Guide p.6; spec 5d (A Level printed p.33, AS printed p.21)",
+   "confidence": "paraphrased from document"
+  },
+  {
+   "topic": "Selection: switch / case",
+   "content": "Layout: `switch <variable>:` / indented `case <value>:` followed by its indented statements, repeated for each case / `default:` followed by its statements / `endswitch`. A colon follows the switch expression, each case value and `default`. No `break` keyword is shown. OCR's printed example has a stray '1' after `case \"B\":`, which is a typographical glitch present in the guide, A Level spec and AS spec.",
+   "source": "Pseudocode Guide p.7; spec 5d (A Level printed p.33, AS printed p.21)",
+   "confidence": "paraphrased from document"
+  },
+  {
+   "topic": "Iteration: count controlled",
+   "content": "Layout: `for i=0 to 7` / indented body / `next i`. The guide says this prints 'Hello' 8 times, 0-7 inclusive, so the end value is inclusive. The loop is closed by `next` followed by the loop variable. No `step` keyword is defined.",
+   "source": "Pseudocode Guide p.5; spec 5d (A Level printed p.32, AS printed p.20)",
+   "confidence": "paraphrased from document"
+  },
+  {
+   "topic": "Iteration: condition controlled",
+   "content": "Pre-test loop: `while <condition>` / indented body / `endwhile`. Post-test loop: `do` / indented body / `until <condition>`. There is no `enddo`. OCR's `until` condition uses `==` on a string. The Clarification Guide labels the same ideas generically as 'while, repeat until' and 'FOR', but the guide's keywords are while/endwhile and do/until.",
+   "source": "Pseudocode Guide p.5; Subject content clarification v2 printed p.19",
+   "confidence": "paraphrased from document"
+  },
+  {
+   "topic": "Arrays",
+   "content": "Arrays are 0 based and declared with the keyword `array`. 1D declaration: `array names[5]`, with elements `names[0]` to `names[4]` (five elements) and element read as `print(names[3])`. 2D example: `Array board[8,8]` with element assignment `board[0,0]=\"rook\"`, so the indices go in one pair of brackets separated by a comma. The 2D example capitalises 'Array', which is inconsistent with the lowercase keyword in the text. No 3D example is shown, although spec 1.4.2(a) says arrays of up to 3 dimensions.",
+   "source": "Pseudocode Guide p.9; spec 5d (A Level printed p.35, AS printed p.22); A Level spec v2.6 sec 1.4.2(a) printed p.9",
+   "confidence": "paraphrased from document"
+  },
+  {
+   "topic": "Subprograms: functions and procedures",
+   "content": "Function: `function name(params)` / indented body containing `return <value>` / `endfunction`, called as an expression, for example `y=triple(7)`. Procedure: `procedure name(params)` / indented body / `endprocedure`, called as a statement, for example `greeting(\"Hamish\")`. Parameters are plain identifiers separated by commas.",
+   "source": "Pseudocode Guide p.8; spec 5d (A Level printed p.34, AS printed p.22)",
+   "confidence": "paraphrased from document"
+  },
+  {
+   "topic": "Parameter passing: byVal and byRef",
+   "content": "Unless stated, values passed to subroutines can be assumed to be passed by value. If it is relevant to the question, `byVal` and `byRef` will be used, written after each parameter name with a colon: `procedure foobar(x:byVal, y:byRef)`. In OCR's example x is by value and y by reference. Actual papers print it as `function useWords(numberOfWords : byVal)` (June 2022 p.4), with spaces around the colon.",
+   "source": "Pseudocode Guide p.8; June 2022 paper pp.4, 24",
+   "confidence": "paraphrased from document"
+  },
+  {
+   "topic": "String handling",
+   "content": "Only two string operations are defined. Length: `stringname.length`. Substring: `stringname.subString(startingPosition, numberOfCharacters)`. OCR adds: 'NB The string will start with the 0th character.' In the example, someText is \"Computer Science\"; `someText.length` displays 16, and `someText.substring(3,3)` displays 'put'. Capitalisation is inconsistent: the definition says subString and the example says substring.",
+   "source": "Pseudocode Guide p.7; spec 5d (A Level printed p.34, AS printed p.21)",
+   "confidence": "paraphrased from document"
+  },
+  {
+   "topic": "Type casting",
+   "content": "Variables can be typecast using the functions `int`, `str` and `float`. OCR's examples: str(3) returns \"3\"; int(\"3\") returns 3; float(\"3.14\") returns 3.14. The guide's text omits commas ('int str and float functions').",
+   "source": "Pseudocode Guide p.4; spec 5d (A Level printed p.32, AS printed p.19)",
+   "confidence": "paraphrased from document"
+  },
+  {
+   "topic": "File handling",
+   "content": "Read: `myFile = openRead(\"sample.txt\")`, then `x = myFile.readLine()` returns a line, then `myFile.close()`. End of file: `myFile.endOfFile()` is used in a loop, `while NOT myFile.endOfFile()` with `print(myFile.readLine())` in the body and `endwhile`, then `myFile.close()`. Write: `myFile = openWrite(\"sample.txt\")`, `myFile.writeLine(\"Hello World\")`, `myFile.close()`. OCR states that writing overwrites any previous contents. No append mode and no other file methods are defined. The June 2017 paper uses these names in a function question (openRead and readLine, with the close call left for candidates to complete).",
+   "source": "Pseudocode Guide p.10; spec 5d (A Level printed p.35, AS printed p.23); June 2017 paper p.13",
+   "confidence": "paraphrased from document"
+  },
+  {
+   "topic": "Random numbers",
+   "content": "The guide defines no random-number function or syntax.",
+   "source": "Pseudocode Guide pp.4-12 (searched)",
+   "confidence": "NOT FOUND"
+  },
+  {
+   "topic": "Comments",
+   "content": "Comments are denoted by `//` and may follow a statement on the same line, as in `print(\"Hello World\") //This is a comment`. Past papers ask candidates to annotate pseudocode with comments (SAM; June 2017).",
+   "source": "Pseudocode Guide p.10; spec 5d (A Level printed p.35, AS printed p.23); June 2017 paper p.14",
+   "confidence": "paraphrased from document"
+  },
+  {
+   "topic": "OOP: classes, attributes, methods and access",
+   "content": "Object-oriented code matches the rest of the pseudocode, plus extensions. Methods and attributes are assumed public unless stated. When access level matters it is always explicit, with the keywords `public` and `private`. Attribute: `private attempts = 3`. Methods are written with `public`/`private` prefixes: `public procedure setAttempts(number)` ... `endprocedure`, and `private function getAttempts()` ... `endfunction` in the guide. Methods are always instance methods; static methods are not expected. Methods are called as `object.method`, for example `player.setAttempts(5)` and `print(player.getAttempts())`.",
+   "source": "Pseudocode Guide p.11; A Level spec v2.6 printed p.36",
+   "confidence": "paraphrased from document"
+  },
+  {
+   "topic": "OOP: constructors, inheritance, super, new",
+   "content": "A class is written `class Name` ... `endclass`. The constructor is a procedure named `new`, for example `public procedure new(givenName)` ... `endprocedure`. Inheritance uses the keyword `inherits`, as in `class Dog inherits Pet`. A superclass method is called with `super.methodName(parameters)`, and the superclass constructor with `super.new(...)` (the guide's example is `super.new(givenName)`). An instance is created with `objectName = new className(parameters)`, for example `myDog = new Dog(\"Fido\",\"Scottish Terrier\")`.",
+   "source": "Pseudocode Guide p.12; A Level spec v2.6 printed pp.36-37",
+   "confidence": "paraphrased from document"
+  },
+  {
+   "topic": "OOP: self / this",
+   "content": "No self or this keyword is defined. In OCR's examples an attribute is referred to by its bare name inside the class's own methods (name=givenName, attempts=number, return attempts).",
+   "source": "Pseudocode Guide pp.11-12",
+   "confidence": "NOT FOUND"
+  },
+  {
+   "topic": "Differences between the 2015 guide and the A Level spec v2.6 (secondary)",
+   "content": "Spec v2.6 shows `public function getAttempts()` where the 2015 guide shows `private function getAttempts()`. The spec's own Summary of updates records version 2.3, October 2019, section 5d: 'Error corrected in coding example on page 36', and that page holds this example. That this is the same change is my inference, not stated by OCR. The instance example is spaced differently: `new Dog(\"Fido\", \"Scottish Terrier\")`. In v2.6 the Constructors and Inheritance material is printed twice, partly on p.36 and fully on p.37. All keywords and layouts otherwise match.",
+   "source": "A Level spec v2.6 printed pp.36-37 and p.45 (Summary of updates); Pseudocode Guide pp.11-12",
+   "confidence": "secondary source"
+  },
+  {
+   "topic": "AS spec v2.0 (Feb 2026) vs the guide",
+   "content": "The first-party AS spec v2.0 reproduces the same pseudocode sections: variables, casting, output, input, iteration, logical, comparison and arithmetic operators, selection, string handling, subroutines, arrays, files and comments. It omits the Object-Oriented section, which is therefore only in the A Level spec and the guide. Its introduction says 'examined units' instead of 'examined components'. Its Summary of updates (versions 1.1 to 2.0) lists no pseudocode changes; version 2.0 is only a rebrand to 'Cambridge OCR'.",
+   "source": "AS spec H046 v2.0 printed pp.19-23, 30",
+   "confidence": "paraphrased from document"
+  },
+  {
+   "topic": "JavaScript in 5d (relationship to the pseudocode)",
+   "content": "Spec 5d says learners are expected to be able to follow and write basic JavaScript, are not expected to memorise exact syntax, and questions in the exam will not penalise minor inaccuracies in syntax. Learners are expected to know the JavaScript equivalents of the structures in the pseudocode section, except input and output. They are not expected to use JavaScript for OOP or file handling, and by value / by reference is not asked in JavaScript questions.",
+   "source": "AS spec v2.0 printed p.26; A Level spec v2.6 printed p.39",
+   "confidence": "paraphrased from document"
+  },
+  {
+   "topic": "Notation seen in exam papers that is not in the guide",
+   "content": "Observed in OCR past papers, so a spec-precise feature should not assume these are part of the guide. The SAM (2014, which predates the August 2015 guide) writes a function header as `function S(A[0..N-1], value, low, high)` and declares `private array pole[10]` in a class. The June 2022 paper gives a class design with `private stackArray : Array of integer` and `function pop()` (p.28). The June 2017 paper uses `theOrders[1,count] == null` with null shown in a data structure question. Papers may state extra notation within the question.",
+   "source": "SAM (2014) Q Fig.2 and Section B stack question; June 2022 paper p.28; June 2017 paper (linked-list/array question, around p.7)",
+   "confidence": "paraphrased from document"
+  },
+  {
+   "topic": "Which programming language Component 02 requires",
+   "content": "No specific programming language is named for Component 02. The spec says learners 'will benefit from being able to program in a procedure/imperative language and object oriented language' (sec 2.2). The Clarification Guide gives Python or VB.NET as examples of a procedural language for 1.2.4. Appendix 5e lists acceptable languages for the Programming PROJECT only (Python, C family, Java, Visual Basic, PHP, Delphi). That list is for component 03, not the written paper. Note: spec 2b and 3a say 'appendix 5d' for that list, but the list is in 5e, an internal spec inconsistency.",
+   "source": "A Level spec v2.6 printed pp.5, 12, 16, 43; Subject content clarification v2 printed p.7",
+   "confidence": "secondary source"
+  },
+  {
+   "topic": "Spec content that ties to the pseudocode",
+   "content": "1.2.4(e) says object-oriented languages are covered 'see appendix 5d for pseudocode style'. 2.2.1(d) is 'Modularity, functions and procedures, parameter passing by value and by reference'. 2.2.1(a) is 'Programming constructs: sequence, iteration, branching'. Component 02 (H446/02) is 140 marks and 2 hours 30 minutes, with Section A of shorter and longer questions and Section B a scenario with higher-tariff questions.",
+   "source": "A Level spec v2.6 printed pp.4, 7, 12, 16",
+   "confidence": "secondary source"
+  }
+ ],
+ "notFound": [
+  "Constants: no constant keyword or syntax in the guide or spec 5d.",
+  "Naming conventions and case rules: nothing stated; only habits visible in examples. Identifier case is ignored in marking (June 2023 mark scheme Q3(e)) and identifiers must be single words (Summer 2022 examiners' report p.17).",
+  "Random numbers: no random-number function or syntax anywhere in the guide or spec 5d.",
+  "self / this: no such keyword in the guide; attributes are referred to by bare name.",
+  "A for-loop step keyword: not defined.",
+  "String methods beyond .length and .subString, such as upper/lower case, ASCII/character conversion, left/right, split, search or replace: not defined.",
+  "A formal string operator definition: only `+` for concatenation is implied by one example.",
+  "What `/` returns for inexact division, and what input() returns: not stated.",
+  "true / null literals: the guide shows only `false` in one example; true and null appear in past papers but not in the guide.",
+  "Switch/case 'break' behaviour or fall-through rules: not stated.",
+  "File append mode and any file method other than openRead, readLine, close, endOfFile, openWrite, writeLine: not defined.",
+  "3-dimensional array pseudocode example: not shown, although the spec content allows arrays of up to 3 dimensions.",
+  "Any document titled 'Exam Reference Language' for H446: none found; the H446 term is pseudocode / Pseudocode Guide.",
+  "The current official A Level spec text: the official PDF exceeds the 10 MB WebFetch limit and I could not read it. A Level facts come from the third-party-hosted v2.6 (June 2023) copy, cross-checked against the first-party AS spec v2.0 (Feb 2026).",
+  "Whether an A Level v3.0 exists or changed section 5d: only a third-party site (Cognito) claims v3.0; unverified.",
+  "A newer OCR version of the Pseudocode Guide: none found; the August 2015 guide is the only one located, and its OCR link is the one returned by search."
+ ]
+}

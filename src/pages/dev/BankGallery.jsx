@@ -19,7 +19,7 @@ export default function BankGallery() {
             <p className="mb-1 text-xs font-bold text-muted">
               #{s.id} · {familyOf(s.id)} · {s.title.slice(0, 70)}
             </p>
-            <BankCanvas slide={s} autoplay={params.get('play') === '1'} />
+            <BankCanvas slide={s} autoplay={params.get('play') === '1'} areas={window.__areas?.[s.id]} />
           </div>
         ))}
       </div>

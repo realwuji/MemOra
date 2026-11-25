@@ -1,0 +1,287 @@
+{
+ "summary": "Component 02 (H446/02, 'Algorithms and programming') is a 140-mark, 2 h 30 min written paper worth 40% of the A Level, with no calculators. The paper has Section A (algorithms, computational methods, programming techniques, problem solving; some shorter questions) and Section B (one scenario set at the start, mostly higher-tariff problem-solving and programming questions). Question types are short answer, longer answer and some higher-tariff extended-response questions, marked by levels of response. AO weightings for this component, as a percentage of the whole A Level, are AO1 15, AO2 18, AO3 7 (total 40; rounded). Content assessed is spec section 2c (2.1 Elements of computational thinking, 2.2 Problem solving and programming, 2.3 Algorithms), building on Component 01.\n\nCode answers: spec appendix 5d (printed pp.32-43, 'Languages and Boolean logic guide for use in external assessments') gives the pseudocode format that appears in exams. Learners need not memorise it and may use any pseudocode style whose meaning a competent programmer could reasonably infer. The spec names no required programming language for Component 02. Live papers say 'pseudocode or program code'. The spec says exam questions will not penalise minor syntax inaccuracies in JavaScript.\n\nNot in the spec, so NOT FOUND: any pre-release or skeleton material; any mention of flowcharts; the phrase 'Exam Reference Language'; a mark split between Section A and B; a list of exam command words with definitions. The spec does not define command words for the exam (it mentions them only for the NEA). The only OCR definitions I found are a generic 2016 OCR blog table, and they are not H446-specific.\n\nBasis and caveats:\n- Source version is H446 Specification Version 3.0 (April 2026), read in full text.\n- WebFetch could not process the 18.6 MB spec PDF (10 MB cap). I therefore downloaded it, and OCR past papers, mark schemes and examiners' reports, into the session scratchpad and read the text locally. No project files were edited.\n- Printed page numbers are cited (PDF page = printed page + 6 for the spec).\n- Because of copyright limits I give one short verbatim quote (the JavaScript syntax sentence). Everything else is a close paraphrase with section and page references, so the exact wording should be re-read at the cited page before being reused in-app.\n- Facts from past papers, mark schemes and examiner reports are labelled 'secondary source'.",
+ "sources": [
+  {
+   "title": "OCR (Cambridge OCR) Level 3 Advanced GCE in Computer Science H446 - Specification (accredited, first assessment 2017)",
+   "url": "https://www.ocr.org.uk/images/170844-specification-accredited-a-level-gce-computer-science-h446.pdf",
+   "version": "Version 3.0, April 2026 (QN 601/4911/5). Printed page numbers cited; PDF page = printed + 6"
+  },
+  {
+   "title": "OCR AS and A Level Computer Science H046/H446 - Specification at a glance",
+   "url": "https://www.ocr.org.uk/qualifications/as-and-a-level/computer-science-h046-h446-from-2015/specification-at-a-glance/",
+   "version": "web page, read 2026-11-22"
+  },
+  {
+   "title": "OCR AS and A Level Computer Science H046/H446 - Assessment (past papers, SAMs list)",
+   "url": "https://www.ocr.org.uk/qualifications/as-and-a-level/computer-science-h046-h446-from-2015/assessment/",
+   "version": "web page, read 2026-11-22"
+  },
+  {
+   "title": "H446/02 Algorithms and programming - Question paper, June 2025",
+   "url": "https://www.ocr.org.uk/Images/752248-question-paper-algorithms-and-programming.pdf",
+   "version": "June 2025 series (paper dated 18 June 2025)"
+  },
+  {
+   "title": "H446/02 Algorithms and programming - Mark scheme, June 2025",
+   "url": "https://www.ocr.org.uk/Images/752416-mark-scheme-algorithms-and-programming.pdf",
+   "version": "June 2025"
+  },
+  {
+   "title": "H446/02 Algorithms and programming - Examiners' report, Summer 2025",
+   "url": "https://www.ocr.org.uk/Images/752069-examiners-report-algorithms-and-programming.pdf",
+   "version": "Summer 2025"
+  },
+  {
+   "title": "H446/02 Algorithms and programming - Question paper, June 2024",
+   "url": "https://www.ocr.org.uk/Images/726572-question-paper-algorithms-and-programming.pdf",
+   "version": "June 2024 series (paper dated 18 June 2024)"
+  },
+  {
+   "title": "H446/02 Algorithms and programming - Mark scheme, June 2024",
+   "url": "https://www.ocr.org.uk/Images/726742-mark-scheme-algorithms-and-programming.pdf",
+   "version": "June 2024"
+  },
+  {
+   "title": "H446/02 Algorithms and programming - Sample assessment materials (question paper)",
+   "url": "https://www.ocr.org.uk/Images/170853-unit-h446-2-algorithms-and-programming-sample-assessment-materials.pdf",
+   "version": "SAM (2014/2015 original; marked 140 marks, 2 h 30 min)"
+  },
+  {
+   "title": "H446/02 Algorithms and programming - Examiners' report, Summer 2022",
+   "url": "https://www.ocr.org.uk/Images/688025-examiners-report-algorithms-and-programming.pdf",
+   "version": "Summer 2022"
+  },
+  {
+   "title": "AS and A Level Computer Science H046/H446 - Pseudocode Guide",
+   "url": "https://www.ocr.org.uk/Images/260952-pseudocode-guide.pdf",
+   "version": "August 2015 (separate OCR document; same introductory statement as spec 5d)"
+  },
+  {
+   "title": "OCR blog: How important are command words? (generic OCR, not H446-specific)",
+   "url": "https://www.ocr.org.uk/blog/how-important-are-command-words/",
+   "version": "blog post dated 28 November 2016"
+  },
+  {
+   "title": "OCR - Advance Information for Summer 2022, A Level Computer Science H446",
+   "url": "https://www.ocr.org.uk/images/H446%20A%20Level%20Computer%20Science%20Advance%20Information_Jun2022.pdf",
+   "version": "Summer 2022 only (one-off notice)"
+  }
+ ],
+ "facts": [
+  {
+   "topic": "Specification version and status",
+   "content": "The accredited spec read is 'Cambridge OCR Level 3 Advanced GCE in Computer Science H446', Version 3.0 (April 2026), for first assessment in 2017. Ofqual accreditation number QN 601/4911/5. The Summary of updates records no change to Component 02 assessment requirements: v3.0 changes are branding, a Teach Cambridge checklist mention and AI guidance for the NEA. An earlier Oct 2019 amendment corrected an error in a coding example in the pseudocode guide.",
+   "source": "Spec p.1 (section 1a: accreditation number); front cover and Summary of updates p.46",
+   "confidence": "paraphrased from document"
+  },
+  {
+   "topic": "Component title and code",
+   "content": "Title is 'Algorithms and programming', component code H446/02. It is shown as '02*' in the overview, where * marks synoptic assessment. It is an externally assessed written paper, one of two externally assessed components (01 and 02) alongside the NEA component (03 or 04). Entry-code table lists it as external assessment under entry options H446 A, B and C.",
+   "source": "Spec 2a p.4; 3a p.16; 4a p.27",
+   "confidence": "paraphrased from document"
+  },
+  {
+   "topic": "Duration",
+   "content": "2 hours 30 minutes. The spec states both examinations (01 and 02) are of 2 hours 30 minutes. Live paper front covers state 'Time allowed: 2 hours 30 minutes'.",
+   "source": "Spec 2a p.4; 3a p.16. Live papers: June 2024 and June 2025 front covers",
+   "confidence": "paraphrased from document"
+  },
+  {
+   "topic": "Total marks",
+   "content": "140 marks. Live papers state 'The total mark for this paper is 140'.",
+   "source": "Spec 2a p.4. Live papers: June 2025 QP (INFORMATION box); June 2024 QP; SAM QP",
+   "confidence": "paraphrased from document"
+  },
+  {
+   "topic": "Weighting of the qualification",
+   "content": "Component 02 is 40% of the total A Level; Component 01 is 40%; the Programming project (03/04) is 20% (70 marks, NEA). The qualification is described as linear with terminal assessment. Total qualification time and total guided learning time are both 360 hours.",
+   "source": "Spec 2a p.4; 3a p.16; 3c p.17",
+   "confidence": "paraphrased from document"
+  },
+  {
+   "topic": "Paper format",
+   "content": "Written paper. Candidates answer all questions (Section A and Section B). In live papers answers are written in the space provided in the question booklet (an extra lined page is at the back). No on-screen or computer-based coding takes place in the exam.",
+   "source": "Spec 2a p.4 ('written paper'); 3a p.16. Live-paper instructions: June 2025 QP p.1",
+   "confidence": "paraphrased from document"
+  },
+  {
+   "topic": "Sections of the paper: Section A",
+   "content": "Learners answer all questions in Section A. Section A questions may cover writing algorithms and computational methods, programming and programming techniques, and problem solving. These questions may contain some shorter-answer questions.",
+   "source": "Spec 3a p.16",
+   "confidence": "paraphrased from document"
+  },
+  {
+   "topic": "Sections of the paper: Section B",
+   "content": "Learners answer all questions in Section B. Section B has a scenario set at the start of the section containing information used for the questions that follow. The questions are largely of a higher tariff, with problem-solving algorithms and programming again forming the basis.",
+   "source": "Spec 3a p.16",
+   "confidence": "paraphrased from document"
+  },
+  {
+   "topic": "Marks per section (live-paper evidence only)",
+   "content": "The spec does not give a mark split between sections. By summing the printed marks, June 2025 has Section A (Q1-7) = 100 and Section B (Q8, a single OOP linked-list scenario) = 40. June 2024 has Section A (Q1-8) = 100 and Section B (Q9, a single OOP game scenario) = 40. The examiners' reports confirm 7 and 8 Section A questions respectively. The split is derived by me from the papers, not an OCR statement.",
+   "source": "June 2025 QP (Section A p.2, Section B Q8); June 2024 QP (Section B Q9, p.22); June 2025 ER p.6; June 2024 ER Section A overview",
+   "confidence": "secondary source"
+  },
+  {
+   "topic": "Question types (spec)",
+   "content": "A mix of short answer, longer answer and some higher-tariff questions that test the quality of written responses via a level of response mark scheme. Extended responses are flagged by an asterisk in the papers and marked with levels-of-response mark schemes. Extended-response marks are integrated into the marking criteria and test the ability to construct and develop a sustained line of reasoning.",
+   "source": "Spec 3a p.16; 2b p.5; 3h p.18",
+   "confidence": "paraphrased from document"
+  },
+  {
+   "topic": "Question types (observed in live papers)",
+   "content": "June 2025: asterisked extended responses are Q2* (Compare linear vs binary search, 9 marks), Q4* (Discuss pipelining, 9 marks) and Q8(g)* (compare two linked-list approaches, 12 marks). Level-of-response mark schemes use three mark bands (for example 9-12, 5-8, 1-4 for a 12-mark question) with descriptors tagged AO1 Knowledge, AO2 Application and AO3 Evaluation. Other question styles seen: describe/explain, trace or complete tables, complete a function, write a function/method/main program in 'pseudocode or program code', spot errors in given pseudocode, and scenario questions.",
+   "source": "June 2025 QP Q2*, Q4*, Q6, Q8; June 2025 MS Q2*, Q4*, Q8(g)*, pp.28-29; June 2024 QP",
+   "confidence": "secondary source"
+  },
+  {
+   "topic": "Specification content assessed: overall",
+   "content": "Component 02 incorporates and builds on Component 01 knowledge. In addition learners should understand what computational thinking is and its benefits across a wide variety of problems, understand solving problems by computational methods, be able to use algorithms to describe problems, and be able to analyse a problem by identifying its component parts. The spec says Component 02 relates principally to the problem-solving skills needed to apply Component 01 knowledge, and that all of the Algorithms and programming content is covered over the life of the specification.",
+   "source": "Spec 2c p.11; 2b p.5; 3a p.16",
+   "confidence": "paraphrased from document"
+  },
+  {
+   "topic": "Content 2.1 Elements of computational thinking (2.1.1-2.1.5)",
+   "content": "2.1.1 Thinking abstractly: (a) nature of abstraction; (b) need for abstraction; (c) differences between an abstraction and reality; (d) devise an abstract model for a variety of situations. 2.1.2 Thinking ahead: (a) identify inputs and outputs for a situation; (b) determine preconditions for devising a solution; (c) nature, benefits and drawbacks of caching; (d) need for reusable program components. 2.1.3 Thinking procedurally: (a) identify components of a problem; (b) components of a solution; (c) determine the order of steps; (d) identify sub-procedures. 2.1.4 Thinking logically: (a) identify points where a decision is taken; (b) determine the logical conditions affecting the outcome; (c) how decisions affect flow through a program. 2.1.5 Thinking concurrently: (a) determine parts of a problem tackled at the same time; (b) outline benefits and trade-offs of concurrent processing in a situation. Wording compressed from the spec's learning-outcome lists.",
+   "source": "Spec 2c p.11 (PDF p.17)",
+   "confidence": "paraphrased from document"
+  },
+  {
+   "topic": "Content 2.2.1 Programming techniques",
+   "content": "(a) programming constructs: sequence, iteration, branching; (b) recursion, how it can be used and how it compares to an iterative approach; (c) global and local variables; (d) modularity, functions and procedures, parameter passing by value and by reference; (e) use of an IDE to develop/debug a program; (f) use of object oriented techniques. The section heading adds that learners will benefit from being able to program in a procedural/imperative language and an object oriented language. Note (e) is the only spec reference to an IDE.",
+   "source": "Spec 2c p.12 (PDF p.18)",
+   "confidence": "paraphrased from document"
+  },
+  {
+   "topic": "Content 2.2.2 Computational methods",
+   "content": "(a) features that make a problem solvable by computational methods; (b) problem recognition; (c) problem decomposition; (d) use of divide and conquer; (e) use of abstraction; (f) learners should apply their knowledge of backtracking, data mining, heuristics, performance modelling, pipelining and visualisation to solve problems.",
+   "source": "Spec 2c p.12 (PDF p.18)",
+   "confidence": "paraphrased from document"
+  },
+  {
+   "topic": "Content 2.3.1 Algorithms",
+   "content": "(a) analysis and design of algorithms for a situation; (b) suitability of different algorithms for a task and data set in terms of execution time and space; (c) measures and methods to determine efficiency, Big O notation (constant, linear, polynomial, exponential and logarithmic complexity); (d) comparison of the complexity of algorithms; (e) algorithms for the main data structures: stacks, queues, trees, linked lists, depth-first (post-order) and breadth-first traversal of trees; (f) standard algorithms: bubble sort, insertion sort, merge sort, quick sort, Dijkstra's shortest path algorithm, A* algorithm, binary search and linear search.",
+   "source": "Spec 2c p.12 (PDF p.18)",
+   "confidence": "paraphrased from document"
+  },
+  {
+   "topic": "Mathematical skills relevant to Component 02",
+   "content": "The spec requires a minimum of 10% mathematical skills across the AS/A Level. The list of topics counted as Level 2 or higher maths is: Boolean algebra, comparison of complexity of algorithms, and number representation and bases. These are applied in a Level 3 context and assessed in the written papers.",
+   "source": "Spec 5c p.32; 2b p.5",
+   "confidence": "paraphrased from document"
+  },
+  {
+   "topic": "Assessment objectives: definitions",
+   "content": "AO1: demonstrate knowledge and understanding of the principles and concepts of computer science, including abstraction, logic, algorithms and data representation. AO2: apply that knowledge and understanding, including to analyse problems in computational terms. AO3: design, program and evaluate computer systems that solve problems, making reasoned judgements about these and presenting conclusions.",
+   "source": "Spec 3b p.17 (PDF p.23)",
+   "confidence": "paraphrased from document"
+  },
+  {
+   "topic": "Assessment objective weightings for H446/02",
+   "content": "Percent of the whole A Level (values rounded to nearest whole %): AO1 15, AO2 18, AO3 7, total 40. For comparison, H446/01 is AO1 21 / AO2 9 / AO3 10 = 40, and H446/03 or 04 is AO1 0 / AO2 3 / AO3 17 = 20. Whole qualification is AO1 35 / AO2 30 / AO3 35 = 100. The spec gives only percentages of the whole A Level. Within the paper itself, 15, 18 and 7 out of 40 work out to about 37.5%, 45% and 17.5% (my arithmetic on rounded figures, so approximate).",
+   "source": "Spec 3b p.17, table 'AO weightings in A Level in Computer Science' (verified against page image)",
+   "confidence": "paraphrased from document"
+  },
+  {
+   "topic": "How answers involving code are given: spec statement",
+   "content": "Appendix 5d ('Languages and Boolean logic guide for use in external assessments') gives the format pseudocode will take in the examined components, so teachers can give learners familiarity. Learners are not expected to memorise its syntax. When asked, they may answer in any style of pseudocode they choose, provided a competent programmer could reasonably infer its meaning. The spec says centres are free to go beyond the stated parameters. The same statement appears in the separate OCR 'Pseudocode Guide' (August 2015).",
+   "source": "Spec 5d p.32 (PDF p.38); Pseudocode Guide Aug 2015, introduction",
+   "confidence": "paraphrased from document"
+  },
+  {
+   "topic": "Pseudocode guide contents (what the exam pseudocode looks like)",
+   "content": "Spec 5d pp.33-38 covers: variables assigned with = (global keyword for globals); casting with int, str, float; print() and input(); for ... next and while ... endwhile and do ... until; AND/OR/NOT; comparison operators == != < <= > >=; arithmetic + - * / MOD DIV ^; selection with if/elseif/else/endif and switch/case; string handling (.length, .subString(start, count), 0-based); function/procedure ... endfunction/endprocedure, with byVal/byRef used only where relevant (values assumed passed by value otherwise); 0-based arrays declared with the keyword array (including 2D); file handling with openRead/readLine/endOfFile/close and openWrite/writeLine; comments with //; object-oriented extensions (public/private, instance methods called object.method, constructors named new, inherits, super, objectName = new className(...)). Other languages and notations in 5d: HTML (pp.38-39), CSS (p.39), JavaScript (p.40), Little Man Computer instruction set (p.40), SQL (p.41), Boolean algebra notation (pp.41-43). The spec does not say which of these appear in Component 01 versus 02.",
+   "source": "Spec 5d pp.33-43 (PDF pp.39-49)",
+   "confidence": "paraphrased from document"
+  },
+  {
+   "topic": "Programming language for exam answers",
+   "content": "The spec names no required programming language for exam answers in Component 02. Live papers instruct candidates to answer 'using pseudocode or program code' (for example write the function/method/main program) and one question says 'either program code or pseudocode'. The examiners' report says candidates should write algorithms fluently in either pseudocode or program code, and trace and debug them. Python answers are accepted where logic is clear (mark schemes accept Python-style self/instantiation where clearly Python). The languages OCR accepts for the NEA (Python, C family, Java, Visual Basic, PHP, Delphi) are in 5e and apply to the Programming project only.",
+   "source": "Spec 3a p.16; 5e p.44. Live: June 2025 QP Q3(c)(d), Q8; June 2024 QP Q1, Q9; June 2025 ER p.5; June 2025 MS Q8(c)(ii), Q8(d); June 2024 MS Q9(c)(i)",
+   "confidence": "secondary source"
+  },
+  {
+   "topic": "Examiner guidance on pseudocode clarity",
+   "content": "June 2025 examiners' report: pseudocode responses must be clear; where a programming language is used, candidates should follow common conventions and add comments if the meaning might be unclear; candidates need not use the OCR pseudocode, but it gives a clear and unambiguous way to answer. Summer 2022 report: candidates are encouraged to use clear indentation; no specific language or syntax is expected, but the logic of the solution must be clear.",
+   "source": "June 2025 ER p.32 (Q8(b)(i)); Summer 2022 ER p.35 (Exemplar 3)",
+   "confidence": "secondary source"
+  },
+  {
+   "topic": "Syntax errors in marking: spec statement",
+   "content": "Spec, JavaScript section: \"Questions in the exam will not penalise learners for minor inaccuracies in syntax.\" It adds that learners need not memorise exact syntax details. Separately, the pseudocode statement (any pseudocode style, if its meaning can reasonably be inferred) is in 5d p.32.",
+   "source": "Spec 5d p.40 (JavaScript); p.32 (pseudocode)",
+   "confidence": "quoted from document"
+  },
+  {
+   "topic": "Syntax in marking: observed mark-scheme practice (not stated in spec)",
+   "content": "No blanket syntax rule appears in the June 2025 or 2024 mark-scheme general instructions. Practice is question-specific. June 2025 Q8(c)(ii) (completing given code): exact answers only; malformed operators such as =! instead of != are not accepted, but <> is accepted for !=. June 2025 Q3(d): loop constructs must be validly formed (for or while); if Python is used it must be clear the loop runs 10 times. June 2024 Q9(c)(i): minor changes to identifiers are allowed if the purpose is clear, and a Python self parameter is allowed if the response is clearly Python.",
+   "source": "June 2025 MS Q8(c)(ii) p.25, Q3(d) p.14; June 2024 MS Q9(c)(i) p.20",
+   "confidence": "secondary source"
+  },
+  {
+   "topic": "Calculators and other materials (spec)",
+   "content": "Both written papers are shown as 'no calculators allowed'. Learners may not use a scientific or graphical calculator for either component; calculators are subject to the JCQ Instructions for Conducting Examinations. The spec states no other permitted or prohibited materials for Component 02.",
+   "source": "Spec 2a p.4; 4c p.28",
+   "confidence": "paraphrased from document"
+  },
+  {
+   "topic": "Calculators and other materials (live paper front covers)",
+   "content": "June 2024 and June 2025 front covers: 'You can use: a ruler (cm/mm), an HB pencil' (pencil only for graphs and diagrams); 'Do not use: a calculator'. The SAM front cover lists only 'Do not use: a calculator'.",
+   "source": "June 2025 QP p.1; June 2024 QP p.1; SAM QP p.1",
+   "confidence": "secondary source"
+  },
+  {
+   "topic": "IDE (relevance to a coding feature)",
+   "content": "The spec's only reference to an IDE is outcome 2.2.1(e): use of an IDE to develop/debug a program. June 2025 Q6(a) asked candidates to identify and describe three IDE features used to debug (6 marks); the mark scheme credits features such as breakpoints, stepping, variable watch and error diagnostics, and does not credit pretty printing.",
+   "source": "Spec 2c p.12; June 2025 QP Q6(a); June 2025 MS Q6(a) p.19",
+   "confidence": "secondary source"
+  },
+  {
+   "topic": "Command words: use in the spec",
+   "content": "The spec mentions 'command words' only for the Programming project (NEA): learners should focus on the command words in the assessment criteria, which indicate the depth of coverage required. It gives no definitions of command words for Component 02. The spec has no command-word glossary.",
+   "source": "Spec 4d (Programming project, context choice), printed p.19",
+   "confidence": "paraphrased from document"
+  },
+  {
+   "topic": "Command words: only OCR-published definitions found (generic, not H446-specific)",
+   "content": "An OCR blog (28 Nov 2016) lists 'suggested definitions' for common command words used in OCR sample assessment materials across qualifications (examples from a GCSE 9-1 and an A Level). Paraphrased: Assess = weigh up whether a statement is true; Calculate = mathematically work out a value; Compare = describe similarities and differences; Describe = set out the characteristics; Discuss = bring forward the important points or set out both sides, for and against; Evaluate = give a verdict after evidence that both agrees and disagrees; Examine = look in close detail and establish key facts and issues; Explain = set out causes and/or influencing factors; Suggest = offer an opinion for a course of action; To what extent do you agree = how far you agree based on the evidence. The blog says these are suggestions for discussion, and that the marks available and the rest of the question wording matter as much as the command word. Not part of the H446 spec.",
+   "source": "https://www.ocr.org.uk/blog/how-important-are-command-words/ (blog, 28 Nov 2016)",
+   "confidence": "secondary source"
+  },
+  {
+   "topic": "Command words observed in recent H446/02 papers",
+   "content": "Word-count of question stems in June 2024 and June 2025 papers: Describe, Explain, Identify, State, Give, Show, Write, Complete, Compare, Discuss (plus Tick, Rewrite in 2024). Extended (asterisk) questions in June 2025 use Compare and Discuss. These are observations of usage, not OCR definitions.",
+   "source": "June 2025 QP; June 2024 QP (text search of question stems)",
+   "confidence": "secondary source"
+  },
+  {
+   "topic": "Pre-release / skeleton material",
+   "content": "NOT FOUND. A text search of the spec, the SAM, and the June 2024 and June 2025 papers found no 'pre-release', 'skeleton' or 'anthology' material. The spec says the Section B scenario is set at the start of the section within the paper. A one-off OCR 'Advance Information for Summer 2022' notice exists for all exam components; it is not pre-release material, applies to that series only and could not be taken into the exam.",
+   "source": "Spec 3a p.16; text search of spec and papers; Advance Information Summer 2022 p.1",
+   "confidence": "NOT FOUND"
+  },
+  {
+   "topic": "Flowcharts",
+   "content": "NOT FOUND. The word 'flowchart' does not appear anywhere in the H446 specification text. The spec does not say flowcharts are used or required for Component 02 answers. The only diagram-notation appendix is 5f (entity relationship diagram symbols), p.45.",
+   "source": "Text search of spec v3.0",
+   "confidence": "NOT FOUND"
+  },
+  {
+   "topic": "Exam Reference Language",
+   "content": "NOT FOUND. The phrase 'Exam Reference Language' does not appear in the H446 spec. The H446 equivalent is the 'Pseudocode' guide in section 5d (and the separate August 2015 Pseudocode Guide), and the June 2025 examiners' report calls it 'the OCR pseudocode'. Third-party search results associate the term 'Exam Reference Language' with OCR GCSE Computer Science, not H446.",
+   "source": "Text search of spec v3.0; June 2025 ER p.32",
+   "confidence": "NOT FOUND"
+  }
+ ],
+ "notFound": [
+  "Any pre-release, skeleton or anthology material for H446/02 (not in the spec, SAM, or June 2024/2025 papers; only a one-off Summer 2022 Advance Information notice exists)",
+  "Any mention of flowcharts in the H446 specification",
+  "The phrase 'Exam Reference Language' in the H446 specification (the H446 term is 'pseudocode', spec section 5d)",
+  "A mark split between Section A and Section B in the specification (only derivable from past papers: June 2024 and June 2025 both Section A 100 and Section B 40)",
+  "A list of exam command words with OCR definitions in the specification (command words are mentioned only for the NEA); the only OCR definitions found are in a generic 2016 OCR blog, not H446-specific",
+  "A spec statement on how syntax errors are treated for programming languages other than JavaScript or pseudocode (spec 5d only states leniency for pseudocode style and minor JavaScript syntax inaccuracies); other handling is only visible case by case in mark schemes",
+  "Statement of which 5d languages and notations (HTML, CSS, JavaScript, SQL, LMC, Boolean algebra) are examined specifically in Component 02 as opposed to Component 01",
+  "A verified Section A / Section B mark split for the original SAM paper (not confirmed)",
+  "Teach Cambridge material (secure assessment materials are only on Teach Cambridge; not accessible)"
+ ]
+}

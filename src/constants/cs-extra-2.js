@@ -1,12 +1,12 @@
 /*
   Second additional-content pass for OCR H446 Computer Science, layered on
-  top of the base pack (library-extra.js) and the first expansion pass
+  top of the base pack (pack-computer-science.js) and the first expansion pass
   (cs-extra.js). Topic strings must match the chapter outline in
-  library-extra.js's `groups` field exactly, or the chapter picker will
+  pack-computer-science.js's `groups` field exactly, or the chapter picker will
   silently filter these items out.
 
   This pass was written after auditing combined per-topic totals across
-  library.js + library-extra.js + cs-extra.js: MCQs were dramatically
+  pack-computer-science.js + cs-extra.js: MCQs were dramatically
   under-filled everywhere (every one of the 20 topics sat below an 8-MCQ
   floor before this file), so the bulk of this file tops MCQs up to at
   least 8 per topic, 12+ for topics with the most exam weight/nuance.

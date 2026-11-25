@@ -77,6 +77,12 @@ If an addition does not fit this metaphor, ask whether it needs to exist.
 2. **`notes.css` loads later than `server.css`** (it ships with the notes
    chunk). If a note style is not taking effect from `server.css`, put it in
    `notes.css` instead of fighting specificity. The callouts already live there.
+3. **Tailwind owns every `bg-<token>` class name.** `bg-ring`, `bg-brand`,
+   `bg-surface` and the rest are generated from the colour tokens, so a hand-written
+   class with one of those names silently gets a background colour as well. A
+   focus-mode layer called `.bg-ring` rendered as a solid grey disc for exactly this
+   reason. Before naming a new `bg-*` class, check `index.css` for a token of that
+   name, or pick a word that is not a colour (`.bg-wave`, `.bg-quiet`).
 
 ---
 
@@ -312,6 +318,94 @@ boxes small square corners and hairline strokes.
 - Keep colour meaningful (see section 4). Do not recolour a diagram to "match".
 - Diagrams intentionally draw slightly outside the viewBox in places (the Laffer
   curve control point). Do not add `overflow: hidden` to the figure or SVG.
+- **The diagram bank sizes its frame and wraps its text in the font the person
+  chose.** The default face is estimated (0.6 em per character, tuned on it). In
+  OpenDyslexic or Atkinson Hyperlegible the real glyphs are measured instead
+  (`textWidth` in `bankEngine.js`, switched by `useHeadFont`), because OpenDyslexic is
+  about half as wide again and its space is a third of an em. The measured frame is
+  never smaller than the estimate, so the default look does not move. A label that a
+  collision nudge would push further out of the frame than it already is stays put.
+  Check all three fonts when you change anything in the bank's sizing.
+
+### Hover tips on diagrams
+
+The diagram bank (`BankCanvas.jsx`) shows what shifts a curve when you hover it.
+That tip is a small rack panel like any other, not a floating bubble:
+
+- Hairline border, tight corner (0.4rem), a **solid** surface and no blur (it sits
+  over a diagram that is being drawn). The shadow is a short, low one.
+- A console strip on top (`.dr-tip-bar`): an `srv-led` in the **colour of the curve
+  the tip is about** (the one meaningful use of colour here) and a mono
+  `// WHAT SHIFTS MR` label, written like the `// WHAT THIS DIAGRAM SHOWS` caption.
+- In the high-contrast theme its edge is a solid line (`var(--line)`), because the
+  hairline is only 16% of white there and the tip floats over a drawing.
+- It appears only while the pointer is on that curve, and leaves the moment it is
+  not. The hover area is a thin band set in **real screen pixels**
+  (`vector-effect: non-scaling-stroke`, 14px, 30px for a finger), because the SVG is
+  scaled and a width in drawing units is a different size on every slide.
+- It is placed from its measured size, beside the pointer, flipped near the right
+  edge and clamped **inside the drawing**, so it can never cover the caption or the
+  scrubber below it.
+
+### Diagram bank and diagram revision
+
+One bank of Economics slides feeds two screens. Both split the course the same way
+and both send you back to the notes.
+
+- **Micro and Macro.** `SCOPES` in `dr-bank.js` is `All`, `Micro`, `Macro`, set by the
+  `DiagramScope` segmented control (`useDiagramScope`). It is held for the visit only,
+  so coming back to the bank or to revision always starts on All and a half you chose
+  yesterday never hides the rest. Every family belongs to one half (`scopeOf`). The
+  study header has a **Change method** button on these screens, which have no chapters.
+- **Colour is a meaning, in `bankEngine.js` (`ROLE`).** A curve is coloured by what it
+  is, whatever colour the slide used: demand and AR blue, supply and MC red, AC and
+  LRAS green, MR purple, TR amber, AVC cyan. Private and social curves are told apart:
+  MPB blue against MSB green, MPC red against MSC amber. A curve the engine cannot read
+  the name of is fixed in `diagram-fixes.js` (`recolour`, `rename`, `notCurve`), never
+  left white. Revenue diagrams for a firm call its demand curve AR.
+- **Bank.** The header is a title, one sentence and three mono readouts (diagrams,
+  topics, themes). Then a toolbar that stays in view, as one rack panel butted under
+  the study bar, and the **showcase** (`DiagramShowcase`): a random diagram (in the
+  chosen half of the course, matching the search) that draws itself, holds for about
+  three seconds, then hands over to the next. It waits while the pointer is on the
+  drawing so a curve's "what shifts" tip can be read, shows the next three small under
+  it (any can be picked), and does not auto-advance for reduced motion (Next still
+  works). The LEDs, the rack edges and the hover edge are Economics' own colour
+  (`--subject`). The toolbar holds: the All / Micro / Macro switch,
+  a search box (name, topic or number) and **Jump to** (`TopicJump`): a button naming
+  the topic you are reading that opens a small searchable list of topics under their
+  theme (type, Enter goes to the first match). Below it, the four themes of the course
+  as **rack panels** (console title bar, a numbered theme heading with a load-meter row),
+  each holding its topics (numbered 1.1, 1.2...) as card grids. There is no side index.
+  A card (`DiagramCard`) is a viewfinder frame (hairline corner marks) with its `#number`
+  as a mono tag; it sits finished and draws itself at the real pace only while it is
+  pointed at or focused, and
+  never more than three cards draw at once (the oldest is finished when a fourth
+  starts), so sweeping across the grid stays cheap. Opening a diagram writes `?d=<id>`,
+  so Back, a refresh and a shared link all work, and going back to the list scrolls to
+  the card you left (`jumpTo`, instant, because the site smooth-scrolls). Previous,
+  Next and a "Switch diagram" picker (`DiagramPicker`, with its own search) change the
+  diagram without going back to the list.
+- **Revision.** Practise only: browsing every diagram is the bank's job. It uses the
+  same scope control. Under every answer a "Read the topic" panel names the chapter and section that
+  explains the diagram and links to it (`NotesLink`, from `chapterFor` in `dr-notes.js`).
+- **Copy is curated, never edited in place.** `diagram-bank.json` is the teacher's
+  conversion and stays as it is. What a person reads comes from overlays:
+  `diagram-copy.js` (title, caption, and `HIDDEN`), `diagram-areas.js` (what each shaded
+  or lettered area is) and `diagram-fixes.js` (`drop`, `recolour`, `labels`, `fills`,
+  `texts`, `noShift`). Titles are short, captions are one or two plain sentences, and
+  neither uses a dash or a semicolon as punctuation.
+- **Hidden is not deleted.** A market-specific copy of a generic diagram (coffee supply,
+  cookie demand) is hidden from the bank and revision, but its slide stays in the data
+  because essay plans refer to slides by id.
+- **Every defined area says what it is.** Hovering (or tapping) a shaded area shows
+  its name and one sentence, and the same list sits under the diagram. An area the
+  teacher never defined is left out: no definition is better than a guessed one.
+- **Colour tells things apart.** Two things that mean different things are never the
+  same colour (elastic and inelastic ends of a demand curve, lost and gained revenue).
+  Colour is never the only cue: areas also carry a letter and a hover name.
+- **Nothing draws outside its axes.** A curve is clipped where it meets the axis; a
+  fill never crosses another fill.
 
 ### Giant footer wordmark
 
@@ -374,6 +468,60 @@ No glow circle. The pointer addresses the grid: its row and column light up and 
 cell is selected where they cross. It snaps to cells and eases between them (190ms).
 It stays hidden until the first pointer move so it never sits behind the hero text.
 
+**Over reading text the pointer is the plain arrow.** The page used to set no cursor,
+so the browser drew its own I-beam over every paragraph: a tall, bright bar from the
+operating system sitting on hairline panels. `html { cursor: default }` in
+`server.css` stops that for everything at once (the cursor is inherited, and the
+browser only picks an I-beam when it is `auto`). Links keep the hand, buttons their
+own cursor, and text fields keep the text cursor because there it tells you where you
+are typing. Do not set `cursor: text` on reading text.
+
+### Focus mode
+
+The backdrop is busy on purpose, which suits a dashboard and fights a page you are
+reading. While a screen is **focused work** (a running study session: notes, a
+question, a diagram) the whole backdrop goes quiet. The screen says so with
+`useFocusMode(running)` (`src/lib/focusMode.js`); the backdrop listens. It is a count,
+not a flag, so two focused things never fight over the state.
+
+What you see, and why it is built the way it is:
+
+- **A sweep, not a fade.** A ring made of the grid's **own lit dots** expands from
+  where you last pressed. Behind it the packets, lights and modes have gone quiet and
+  only a faint resting grid is left; ahead of it the backdrop is still running, so you
+  watch the change travel. A cross-fade has no direction and nobody notices it.
+- **Leaving focus is the same wave the other way**: the quiet field closes in on the
+  pointer and the lively backdrop comes back from the edges.
+- **It is one value.** `--fr` is the radius of a circle centred on `--fx`, `--fy`
+  (registered with `@property`, so it can be transitioned). Two full-screen layers read
+  it: `.bg-quiet` (the page colour at 90% with a faint grid, shown inside the circle)
+  and `.bg-wave` (the lit dots, in a band that hugs the edge). Both have the page
+  grid as their background, same tile and origin, so the lit dots are the grid's
+  own dots (see the alignment trick).
+- **Pace matters.** The ring sets off at once and moves at a steady speed (about 900px
+  in three quarters of a second, the far corner by 1.6s), easing out only where it is
+  already off screen. A fast ease-out crossed the whole screen in a third of a second
+  and nobody saw it.
+- **Once it is done it costs nothing.** After the sweep no mode is `.on`, so each is
+  hidden and paused. The state is carried by `data-focus` and `data-sweeping`
+  attributes, not classes, because the audio code toggles a `reactive` class on the
+  same element by hand and a changing React `className` would wipe it.
+- **Reduced motion** has no ring and no sweep: the quiet state is switched on and off
+  at once (the app-wide reduced-motion rule makes every transition instant). High contrast
+  hides the whole backdrop, as before.
+- The radius is always the screen diagonal plus a margin, so the ring can reach any
+  corner from wherever you pressed, including when the centre moves on the way out.
+  Resizing the window rewrites it with transitions suspended for that one write, so a
+  resize (or a phone's address bar sliding away) never replays the ring.
+- Only a sweep that ran to its end settles the modes. A cancelled one has been replaced
+  (focus came back mid-exit), and settling then would switch the modes off while the new
+  ring has barely left the pointer.
+
+This is the one place the backdrop animates a **mask** rather than transform and
+opacity. The reasons it is acceptable are the same as for the theme switch (section
+9): it runs once, for about two seconds, on two layers, and never while idle. If you
+add another mask animation, hold it to that bar.
+
 ### Blinks must be irregular
 
 Real status lights do not blink in a pattern. Keep it that way:
@@ -411,6 +559,17 @@ These exist because each one was a real problem in this project.
 - Make theme-level motion **continuous**. Use smooth easing from the first frame.
 - Pause what is not visible (inactive background modes are paused and hidden).
 - Provide a reduced-motion version of every animation.
+- **A looping animation must be compositor-only, or it costs the whole page.** One
+  infinite animation that the compositor cannot run (a `box-shadow` or `background-position`
+  keyframe) makes the browser produce a main-thread frame and a style recalculation on
+  every screen refresh for as long as it is on screen, even when nothing else moves.
+  The header toggle's LED did exactly that: pausing only it took an idle page from
+  180ms of main-thread work a second to 44. A glow that has to blink is its own layer
+  (a pseudo-element with a static `box-shadow`) whose `opacity` is what animates. Before
+  adding an infinite animation, check its keyframes only touch `transform`, `opacity`
+  or `filter`.
+- Keep any animated **mask** to a one-off, never an idle loop (the theme switch and
+  focus mode are the two exceptions, and both are bounded; see sections 7 and 9).
 
 **Do not**
 
@@ -462,6 +621,21 @@ How it is built (read this before changing it):
 - It must **end fully opaque**: the dense lattice radius must finish above 9.9px
   (half the 14px tile's diagonal) and the fade must finish past the farthest corner.
 - Everything eases continuously. Do not add `steps()` or start delays.
+- **Cost: touch `<html>` as few times as possible.** Any change to `<html>` (a class,
+  an inline custom property, an attribute) makes the browser recalculate the style of
+  every element, 35 to 70ms on a 450 to 1100 element page, and the page is frozen while
+  it does. So the `theme-switching` class and `--srv-x/--srv-y` go on **inside** the
+  view-transition callback, in the same style pass as the new theme (one recalculation),
+  not before it. Adding them before the callback made the switch do the work twice and
+  nothing moved for twice as long after the click. Only the clean-up at the end is a
+  second pass, when the page is already still.
+- **Every theme change goes through `themeTransition.js`.** The header toggle uses
+  `revealTheme` (the wave). Settings > Appearance uses `swapTheme`: no wave, but the same
+  single pass with colour transitions off, so the page changes at once instead of about
+  200 elements easing their colours for 150 to 400ms after the click. Do not call
+  `setTheme` directly from a control.
+- The wave takes 620ms (`DURATION_MS`; it was 880). The four lattices run for fixed
+  shares of that, so changing the one constant keeps their relationship.
 
 It depends on the View Transitions API and falls back to an instant switch with
 reduced motion or no support. The browser refuses view transitions in a hidden
@@ -599,6 +773,10 @@ Saved subjects outside the catalog are kept and can be removed from the picker.
 | Keep the rack strips and blinks irregular and asymmetric | Mirror them or put them on a regular beat |
 | Keep the lit-window and counter-window in step | Give a lit element its own pattern |
 | Leave diagram text in the reading font | Set whole diagrams in monospace |
+| Size a hover area in real pixels (`vector-effect: non-scaling-stroke`) | Size it in drawing units, which scale per slide |
+| Build a popover from the console strip, LED and hairline panel | Make a rounded, tinted, blurred floating card |
+| Mark a working screen with `useFocusMode` | Dim or hide the backdrop with page-local CSS |
+| Check a new `bg-*` class name against the colour tokens | Name a layer `.bg-ring` and let Tailwind paint it |
 | Put the callout label in its own header row | Put the label inline with the text |
 | Keep audio sync opt-in, local and unrecorded | Auto-start the microphone, or send audio anywhere |
 | Build equalizer bars from whole grid cells on the grid | Scale bars with `scaleY`, or let them drift off the dot grid |
@@ -646,3 +824,27 @@ A short history, so nobody undoes a fix by accident.
 - **Audio sync is opt-in capture** because the music source cannot be read directly.
 - **The hover glow on the giant footer wordmark was removed** because it was clipped
   into a visible rectangle.
+- **The diagram hover tip was rebuilt** from a rounded, blurred card with a coloured
+  top border into the console panel above. It also used to stay up until the pointer
+  left the whole diagram (it was only cleared on leaving the figure, never the curve),
+  and it had no bottom limit, so at the foot of a curve it spilled over the caption.
+- **The browser's I-beam was removed from reading text** (`html { cursor: default }`).
+- **The Lorenz slides drew small** because the diagram bank's width estimate counted
+  every space in the teacher's padded tick row ("0      20      40") as a full letter,
+  doubling the frame. A run of three or more spaces now counts as half width.
+- **The theme switch was made quicker without changing how it looks.** It froze the page
+  for two full style recalculations before the wave could start (class on, then theme),
+  and the wave itself took 880ms. The class now goes on in the same pass as the theme
+  (one recalculation) and the wave takes 620ms with the same curves.
+- **The header toggle's LED stopped keeping the main thread awake.** Its blink animated
+  `box-shadow`, so the page rendered a frame on every refresh forever. The glow is now a
+  pseudo-element that fades with `opacity`; the blink looks the same.
+- **The Settings theme picker now swaps at once** (`swapTheme`) instead of easing every
+  colour for a few hundred milliseconds.
+- **The diagram bank now measures real glyphs in the reading fonts.** Both the frame and
+  the word-wrap had assumed the default face, so OpenDyslexic (and, after the Lorenz
+  change, Hyperlegible) cut text off at the frame edge on a handful of slides. Checked
+  on all 214 slides in all three fonts: nothing is clipped.
+- **Focus mode was added** so the backdrop stops competing with what you are reading.
+  The first sweep crossed the screen in a third of a second and was invisible; it was
+  slowed to a pace you can follow.

@@ -64,7 +64,7 @@ React Router v7 - Supabase client (optional, unused in the demo).
 | Add nav/layout chrome                     | `src/components/layout/`                            |
 | Add dashboard chrome                      | `src/components/dashboard/`                         |
 | Add text/content (copy, option labels)    | `src/constants/content.js`                          |
-| Add study material (decks/quizzes/papers) | `src/constants/library.js`                          |
+| Add study material (decks/quizzes/papers) | `src/constants/pack-<subject>.js` (see below)       |
 | Add demo/mock data                        | `src/constants/mock.js`                             |
 | Read/change global app state              | `useApp()` from `@/context/AppProvider`            |
 | Add a custom hook                         | `src/hooks/`                                        |
@@ -110,6 +110,22 @@ React Router v7 - Supabase client (optional, unused in the demo).
 
 ## Adding a revision subject
 
-Add an entry to `REVISION` in `src/constants/library.js` with `id`, `name`,
-`topics`, `flashcards`, `mcq`, and `examQuestions`. The flashcard maker, study
-session, and progress page pick it up automatically.
+Each subject is its own module, `src/constants/pack-<id>.js`, whose default export
+is the assembled pack: `id`, `name`, `topics`, `groups` (the chapter outline),
+`flashcards`, `mcq` and `examQuestions`, plus `notes` and anything else it has.
+
+1. Create `src/constants/pack-<id>.js` (copy `pack-maths.js` as the shape; run the
+   export through `dedupeContent` from `pack-dedupe.js`).
+2. Add it to `REVISION` in `src/constants/library.js` and a loader to
+   `src/constants/pack-loaders.js`.
+3. Run `npm run dev` or `npm run build`: `scripts/generate-pack-manifest.mjs`
+   rewrites `src/constants/pack-manifest.js` (outline and counts) and fails if
+   step 2 was missed.
+
+The app reads subjects through `src/constants/packs.js`, never `library.js`:
+`getPackByName()` gives the light pack (outline and counts, available at once),
+and `loadPack()` / `usePack()` fetch a subject's full content, which is its own
+chunk. A page that only lists chapters or shows counts must not need the
+content; one that shows questions or notes must load it. Importing `library.js`
+from the app puts every subject (about 2.7MB) in the first download of the page.
+The flashcard maker, study session, and progress page pick it up automatically.

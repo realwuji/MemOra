@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { Suspense, lazy, useEffect, useState } from 'react'
 import { motion, useReducedMotion } from 'framer-motion'
 import Button from '@/components/ui/Button'
 import Icon from '@/components/ui/Icon'
@@ -11,6 +11,10 @@ import NotesBody from '@/components/ui/NotesBody'
 import DiagramRevision from '@/components/ui/DiagramRevision'
 import DiagramBank from '@/components/ui/DiagramBank'
 import ApplicationRunner from '@/components/ui/ApplicationRunner'
+
+// The past papers index is large and only Maths uses it, so it loads when that method opens.
+const PastPapers = lazy(() => import('@/components/ui/PastPapers'))
+const PastPaperChapter = lazy(() => import('@/components/ui/PastPaperChapter'))
 import Diagram from '@/components/diagrams'
 
 import { fadeInUp, popIn } from '@/lib/motion'
@@ -717,6 +721,16 @@ export default function RevisionRunner({
     case 'mcq':
       return <McqRunner items={pack.mcq} onAnswer={onAnswer} empty={empty} />
     case 'exam-questions':
+      // Maths questions are the real past paper pages (their own runner, with mark scheme and report).
+      if (pack.pastPapers) {
+        return pack.examQuestions?.length ? (
+          <Suspense fallback={null}>
+            <PastPaperChapter items={pack.examQuestions} chapterLabel={chapter || pack.name} />
+          </Suspense>
+        ) : (
+          <Empty label="exam questions" {...empty} />
+        )
+      }
       return <ExamRunner items={pack.examQuestions} onAnswer={onAnswer} empty={empty} subject={pack.name} />
     case 'essay-plans':
       // The planner keeps its own paper/topic filters and its own drafts,
@@ -730,6 +744,14 @@ export default function RevisionRunner({
       return pack.diagramRevision ? <DiagramRevision onAnswer={onAnswer} /> : <Empty label="diagrams" {...empty} />
     case 'diagram-bank':
       return pack.diagramRevision ? <DiagramBank notes={pack.notes} /> : <Empty label="diagrams" {...empty} />
+    case 'past-papers':
+      return pack.pastPapers ? (
+        <Suspense fallback={null}>
+          <PastPapers />
+        </Suspense>
+      ) : (
+        <Empty label="past papers" {...empty} />
+      )
     case 'application':
       // Has its own topic picker (only topics that have cases), so it takes
       // the whole pack rather than a chapter-scoped slice.

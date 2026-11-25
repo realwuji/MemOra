@@ -1,5 +1,6 @@
 import { useLayoutEffect } from 'react'
 import { useLocation } from 'react-router-dom'
+import jumpToTop from '@/lib/jumpToTop'
 
 /*
   React Router doesn't reset scroll position on navigation - without this,
@@ -22,11 +23,7 @@ export default function ScrollToTop() {
   const { pathname, search } = useLocation()
 
   useLayoutEffect(() => {
-    const root = document.documentElement
-    const previous = root.style.scrollBehavior
-    root.style.scrollBehavior = 'auto'
-    window.scrollTo(0, 0)
-    root.style.scrollBehavior = previous
+    jumpToTop()
   }, [pathname, search])
 
   return null

@@ -11,6 +11,10 @@
     bus     : packets running DOWN vertical lines, like traffic on a bus
     log     : terminal log lines scrolling up the margins
 
+  On top of all of that sits focus mode: while a screen is focused work the
+  whole backdrop goes quiet behind a ring that sweeps out from the pointer (see
+  "focus mode" below and src/lib/focusMode.js).
+
   The cursor does not get a glow circle. It "addresses" the grid: the row and
   column under the pointer light up and a single cell is selected where they
   cross, like a memory cell being read. It snaps to cells and chases the
@@ -380,6 +384,100 @@
   );
 }
 
+/* ----------------------------------------------------------- focus mode */
+/* While a screen is focused work (src/lib/focusMode.js) the backdrop goes quiet
+   instead of competing with the page. It is one value, --fr, the radius of a
+   circle centred on where you last pressed (--fx, --fy). Transitioning --fr
+   from 0 to the screen diagonal drives two layers that share it:
+
+     .bg-quiet  the page colour at 90% with a faint resting grid, shown only
+                INSIDE the circle. It hides the packets, lights and modes under
+                it, so everything behind the ring has gone quiet and everything
+                ahead of it is still running: you watch the change travel.
+     .bg-wave   the grid's own lit dots, in a band that hugs the circle's edge:
+                a crisp front, then a trail that fades back toward the centre.
+
+   Both are masks over full-screen layers whose backgrounds are the page grid
+   (same tile, same origin), so the lit dots in the ring are exactly the grid's
+   own dots and the faint grid lines up with the resting one. This is the one
+   place the backdrop animates a mask rather than transform and opacity: it runs
+   once, for about two and a half seconds (a second and a half leaving), on two
+   layers, never while idle, and it
+   is the same technique as the theme switch (server.css). Leaving focus is the
+   same transition the other way: the quiet field closes in on the pointer.
+
+   --fr is registered so it can be transitioned. Without @property support it
+   simply jumps, which is still a correct (if plain) quiet state. */
+@property --fr {
+  syntax: '<length>';
+  inherits: true;
+  initial-value: 0px;
+}
+.atmosphere {
+  --fr: 0px;
+  /* Leaving focus: close in on the pointer. */
+  transition: --fr 1.5s cubic-bezier(0.55, 0, 0.35, 1);
+}
+.atmosphere[data-focus] {
+  /* --fR (set from JS) is the screen diagonal plus a margin. */
+  --fr: var(--fR, 2600px);
+  /* Entering focus: it sets off at once, travels at a steady, readable pace
+     (about 900px in three quarters of a second, the far corner by 1.6s) and
+     eases out only at the end, where the ring is already off screen. A faster
+     curve crossed the whole screen in a third of a second and was not seen. */
+  transition: --fr 2.6s cubic-bezier(0.3, 0.3, 0.3, 1);
+}
+.bg-quiet,
+.bg-wave {
+  pointer-events: none;
+}
+.bg-quiet {
+  background-color: color-mix(in srgb, var(--page) 90%, transparent);
+  background-image: radial-gradient(
+    circle,
+    color-mix(in srgb, var(--fg) 9%, transparent) 0,
+    color-mix(in srgb, var(--fg) 9%, transparent) 0.9px,
+    transparent 1.5px
+  );
+  background-size: var(--bg-cell) var(--bg-cell);
+  -webkit-mask-image: radial-gradient(circle at var(--fx, 50%) var(--fy, 40%), #000 calc(var(--fr) - 8px), transparent var(--fr));
+  mask-image: radial-gradient(circle at var(--fx, 50%) var(--fy, 40%), #000 calc(var(--fr) - 8px), transparent var(--fr));
+}
+.bg-wave {
+  opacity: 0;
+  transition: opacity 0.25s ease;
+  background-image: var(--bg-lit);
+  background-size: var(--bg-cell) var(--bg-cell);
+  /* Transparent at the trailing edge, full at the front, then a hard cut. */
+  -webkit-mask-image: radial-gradient(
+    circle at var(--fx, 50%) var(--fy, 40%),
+    transparent calc(var(--fr) - 150px),
+    #000 calc(var(--fr) - 10px),
+    #000 calc(var(--fr) - 2px),
+    transparent calc(var(--fr) + 3px)
+  );
+  mask-image: radial-gradient(
+    circle at var(--fx, 50%) var(--fy, 40%),
+    transparent calc(var(--fr) - 150px),
+    #000 calc(var(--fr) - 10px),
+    #000 calc(var(--fr) - 2px),
+    transparent calc(var(--fr) + 3px)
+  );
+}
+/* The ring only exists while it travels (otherwise, at radius 0, its band
+   would leave a bright speck where you pressed). */
+.atmosphere[data-sweeping] .bg-wave {
+  opacity: 1;
+}
+/* The pointer stays, quieter: it is still how the grid answers you. */
+.atmosphere[data-focus] .bg-ptr.on {
+  opacity: 0.4;
+}
+/* With music sync on, the effects are what you asked for: let more through. */
+.atmosphere.reactive .bg-quiet {
+  background-color: color-mix(in srgb, var(--page) 55%, transparent);
+}
+
 /* ---------------------------------------------------- cursor: addressing */
 /* Three lit windows that follow the pointer, each with a counter-moving bright
    grid inside (see the trick at the top). JS snaps them to the cell under the
@@ -537,5 +635,27 @@
   .bg-rack > .led,
   .bg-log > i {
     animation: none;
+  }
+}
+
+/* Focus mode under reduced motion: no ring and no sweep, the quiet state is
+   simply switched on and off. (It is an instant swap, not a fade: the app-wide
+   reduced-motion rule in index.css makes every transition instant, and that
+   is the intended behaviour.) */
+@media (prefers-reduced-motion: reduce) {
+  .atmosphere,
+  .atmosphere[data-focus] {
+    transition: none;
+  }
+  .bg-wave {
+    display: none;
+  }
+  .bg-quiet {
+    -webkit-mask-image: none;
+    mask-image: none;
+    opacity: 0;
+  }
+  .atmosphere[data-focus] .bg-quiet {
+    opacity: 1;
   }
 }
