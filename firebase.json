@@ -8,7 +8,8 @@
     "rewrites": [
       { "source": "/start/**", "destination": "/start/index.html" },
       { "source": "/study/**", "destination": "/study/index.html" },
-      { "source": "/mock/**", "destination": "/mock/index.html" }
+      { "source": "/mock/**", "destination": "/mock/index.html" },
+      { "source": "/teachers", "destination": "/index.html" }
     ],
     "headers": [
       {
