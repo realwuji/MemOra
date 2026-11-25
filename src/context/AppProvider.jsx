@@ -201,6 +201,9 @@ const DEFAULTS = {
   customAccent: null,
   a11y: A11Y_DEFAULT,
   recentTopic: null,
+  // Where the student last was, saved the moment they open a study screen (not when they finish),
+  // so Continue where you left off works even if the tab is closed mid-session.
+  lastVisit: null,
   decks: [],
   sessions: [],
   attempts: [],
@@ -514,6 +517,7 @@ export default function AppProvider({ children }) {
       theme: state.theme,
       a11y: state.a11y,
       recentTopic: state.recentTopic,
+      lastVisit: state.lastVisit,
       decks: state.decks,
       sessions: state.sessions,
       attempts: state.attempts,
@@ -601,6 +605,7 @@ export default function AppProvider({ children }) {
 
       // ---- misc ----
       setRecentTopic: (recentTopic) => patch({ recentTopic }),
+      setLastVisit: (lastVisit) => patch({ lastVisit }),
 
       // Curated subject picker (§4): tapping a "coming soon" subject or
       // submitting a "not listed" one never creates a course with nothing

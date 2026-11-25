@@ -216,7 +216,7 @@ function SectionLabel({ children, action }) {
 }
 
 export default function Dashboard() {
-  const { user, account, sessions, attempts, examDates, posts, friends, profileSetupDone } = useApp()
+  const { user, account, lastVisit, sessions, attempts, examDates, posts, friends, profileSetupDone } = useApp()
   const navigate = useNavigate()
   const isYear12 = user.yearGroup === 'Year 12' && PRIORITISED_COURSES.includes(user.courseType)
   const [now] = useState(() => Date.now())
@@ -255,7 +255,9 @@ export default function Dashboard() {
   // Only offer to resume a subject the student still studies - dropping a
   // subject shouldn't leave a dead card pointing at it.
   const resumeSession = (() => {
-    const s = lastResumable(sessions)
+    // whichever is newer: a finished session, or the last screen opened (saved straight away)
+    const finished = lastResumable(sessions)
+    const s = lastVisit && (!finished || (lastVisit.ts || 0) >= (finished.ts || 0)) ? lastVisit : finished
     return s && subjectNames.includes(s.subject) ? s : null
   })()
 

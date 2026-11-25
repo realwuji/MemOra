@@ -70,7 +70,7 @@ export default function StudySession() {
   const { subjectSlug, technique: techniqueParam } = useParams()
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
-  const { user, setRecentTopic, logSession, rateSession, logAttempt, sessions, attempts, examDates } = useApp()
+  const { user, setRecentTopic, setLastVisit, logSession, rateSession, logAttempt, sessions, attempts, examDates } = useApp()
   const isYear12 = user?.yearGroup === 'Year 12' && PRIORITISED_COURSES.includes(user?.courseType)
 
   const availableSubjects = user?.courseType === 'University' && user?.courseName
@@ -133,6 +133,14 @@ export default function StudySession() {
   useFocusMode(phase === 'running')
 
   const chapterLabel = chapter === ALL ? subjectLabel : chapter
+
+  // Saved the moment a chapter or method is opened, not when Finish is pressed, so Continue where
+  // you left off is right even if the tab is just closed.
+  useEffect(() => {
+    if (phase === 'chapter' && hasChapters) return
+    setLastVisit({ subject, technique, topic: chapter === ALL ? null : chapter, ts: Date.now() })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [subject, technique, chapter, phase === 'chapter'])
 
   // Chapter states and the recommender's shortlist, for the picker's
   // band pills and "Top pick" / "Needs you" tags.
