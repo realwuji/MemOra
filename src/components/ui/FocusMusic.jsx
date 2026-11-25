@@ -67,6 +67,8 @@ function load() {
   }
 }
 
+const META_KEY = 'memora.music.meta'
+
 // Title and cover for a Spotify link, from the public oEmbed endpoint.
 async function lookup(uri) {
   try {
@@ -128,7 +130,15 @@ export default function FocusMusic() {
   const [audio, setAudio] = useState(getAudioState)
   useEffect(() => subscribeAudioState(setAudio), [])
   useEffect(() => setMusicPlaying(playing), [playing])
-  const [titles, setTitles] = useState({}) // uri -> { title, thumb } from oEmbed
+  // uri -> { title, thumb } from oEmbed. Kept in this browser, so the cover is there the moment the
+  // page opens instead of after the first hover.
+  const [titles, setTitles] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem(META_KEY) || '{}') || {}
+    } catch {
+      return {}
+    }
+  })
   const [track, setTrack] = useState(null) // { title, artist } from the account
   const [embedFailed, setEmbedFailed] = useState(false)
   // Spotify's player is a whole web app in an iframe plus a third-party script.
@@ -228,13 +238,24 @@ export default function FocusMusic() {
 
   // Name and cover for whatever is loaded, for the pill and the header.
   useEffect(() => {
-    if (!armed || titles[state.uri]) return
+    if (titles[state.uri]?.thumb) return
     let cancelled = false
-    lookup(state.uri).then((m) => !cancelled && setTitles((t) => ({ ...t, [state.uri]: m })))
+    lookup(state.uri).then((m) => {
+      if (cancelled) return
+      setTitles((t) => {
+        const next = { ...t, [state.uri]: m }
+        try {
+          localStorage.setItem(META_KEY, JSON.stringify(next))
+        } catch {
+          /* private window: looked up again next visit */
+        }
+        return next
+      })
+    })
     return () => {
       cancelled = true
     }
-  }, [armed, state.uri, titles])
+  }, [state.uri, titles])
 
   // Account: finish a login round trip, list playlists, poll now-playing.
   useEffect(() => {

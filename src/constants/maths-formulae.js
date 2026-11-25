@@ -91,7 +91,7 @@ export const MATHS_FORMULAE = [
   {"topic":"Trigonometric Identities and Equations","front":"sin(-θ), cos(-θ) and tan(-θ)?","back":"-sin θ, cos θ and -tan θ"},
   {"topic":"Vectors (2D)","front":"Vector (a, b) in i and j form?","back":"a i + b j"},
   {"topic":"Vectors (2D)","front":"Magnitude of the vector a i + b j?","back":"|v| = √(a² + b²)"},
-  {"topic":"Vectors (2D)","front":"Angle θ between the vector a i + b j and the x-axis?","back":"tan θ = |b/a| gives the acute angle; use the signs of a and b to place it in the correct quadrant"},
+  {"topic":"Vectors (2D)","front":"Angle θ between the vector a i + b j and the x-axis?","back":"tan θ = |b/a| gives the acute angle. Use the signs of a and b to place it in the correct quadrant"},
   {"topic":"Vectors (2D)","front":"Unit vector in the direction of v?","back":"v / |v|"},
   {"topic":"Vectors (2D)","front":"Vector AB from position vectors a and b?","back":"AB = b - a"},
   {"topic":"Vectors (2D)","front":"Relationship between BA and AB?","back":"BA = -AB"},

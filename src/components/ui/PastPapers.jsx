@@ -1,10 +1,11 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import Button from '@/components/ui/Button'
 import Chip from '@/components/ui/Chip'
 import PaperSitting from '@/components/ui/PaperSitting'
 import PastPaperQuestion from '@/components/ui/PastPaperQuestion'
 import usePaperAttempts from '@/hooks/usePaperAttempts'
 import usePastPaperDone from '@/hooks/usePastPaperDone'
+import jumpToTop from '@/lib/jumpToTop'
 import { allowedSeconds, fmtClock } from '@/lib/paperTime'
 import { PAST_PAPER_QUESTIONS, PP_SETS } from '@/constants/maths-past-papers'
 
@@ -72,6 +73,11 @@ export default function PastPapers() {
   const [open, setOpen] = useState(null) // { mode: 'sit' | 'practice', set, paper }
   const { attempts, remove } = usePaperAttempts()
   const [done, toggle] = usePastPaperDone()
+
+  // opening a sitting (or coming back to the list) starts at the top, not wherever the card was
+  useEffect(() => {
+    jumpToTop()
+  }, [open])
 
   const sittings = useMemo(
     () => PP_SETS.filter((s) => PAST_PAPER_QUESTIONS.some((q) => q.paper === paper && q.set === s)),

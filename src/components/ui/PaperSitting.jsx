@@ -15,6 +15,8 @@ import { allowedSeconds, fmtClock } from '@/lib/paperTime'
 
   Time allowed is Edexcel's own rate, 1.2 minutes a mark (100 marks in 2 hours).
 */
+const DOCK_KEY = 'memora.pastpapers.maths.dock'
+
 export default function PaperSitting({ questions, set, paper, onExit }) {
   const max = useMemo(() => questions.reduce((t, q) => t + q.marks, 0), [questions])
   const allowed = allowedSeconds(max)
@@ -25,6 +27,81 @@ export default function PaperSitting({ questions, set, paper, onExit }) {
   const [saved, setSaved] = useState(false)
   const { save } = usePaperAttempts()
   const started = useRef(Date.now())
+  const cardRef = useRef(null)
+  const [docked, setDocked] = useState(false)
+  const dockRef = useRef(null)
+  // The pill is dragged anywhere, and on release it settles against whichever side edge is nearer,
+  // so it never rests in the middle of the questions. Stored as { side: 'left' | 'right', y }.
+  const EDGE = 12
+  const [spot, setSpot] = useState(() => {
+    try {
+      const v = JSON.parse(localStorage.getItem(DOCK_KEY) || 'null')
+      return v && (v.side === 'left' || v.side === 'right') && typeof v.y === 'number' ? v : null
+    } catch {
+      return null
+    }
+  })
+  const [live, setLive] = useState(null) // { x, y } while it is being dragged
+  const [vw, setVw] = useState(() => window.innerWidth)
+  const drag = useRef(null)
+  useEffect(() => {
+    const on = () => setVw(window.innerWidth)
+    window.addEventListener('resize', on)
+    return () => window.removeEventListener('resize', on)
+  }, [])
+  const size = () => ({ w: dockRef.current?.offsetWidth || 120, h: dockRef.current?.offsetHeight || 120 })
+  const clampY = (y) => Math.min(Math.max(72, y), window.innerHeight - size().h - 4)
+  const dragStart = (e) => {
+    if (e.target.closest('button')) return
+    const r = dockRef.current.getBoundingClientRect()
+    drag.current = { dx: e.clientX - r.left, dy: e.clientY - r.top }
+    setLive({ x: r.left, y: r.top })
+    e.currentTarget.setPointerCapture(e.pointerId)
+  }
+  const dragMove = (e) => {
+    if (!drag.current) return
+    const { w } = size()
+    setLive({ x: Math.min(Math.max(4, e.clientX - drag.current.dx), window.innerWidth - w - 4), y: clampY(e.clientY - drag.current.dy) })
+  }
+  const dragEnd = () => {
+    if (!drag.current) return
+    drag.current = null
+    setLive((cur) => {
+      if (!cur) return null
+      const { w } = size()
+      const next = { side: cur.x + w / 2 > window.innerWidth / 2 ? 'right' : 'left', y: cur.y }
+      setSpot(next)
+      try {
+        localStorage.setItem(DOCK_KEY, JSON.stringify(next))
+      } catch {
+        /* private window: the position lasts until the page closes */
+      }
+      return null
+    })
+  }
+  const dockStyle = live
+    ? { left: live.x, top: live.y, transition: 'none' }
+    : spot
+      ? { left: spot.side === 'right' ? vw - size().w - EDGE : EDGE, top: spot.y }
+      : undefined
+  const dragReset = () => {
+    setSpot(null)
+    try {
+      localStorage.removeItem(DOCK_KEY)
+    } catch {
+      /* nothing stored */
+    }
+  }
+
+  // once the timer card scrolls out of view, a small copy docks to the left edge (the pen hand is
+  // usually the right one, so the left stays clear of it)
+  useEffect(() => {
+    const el = cardRef.current
+    if (!el || typeof IntersectionObserver === 'undefined') return undefined
+    const io = new IntersectionObserver(([e]) => setDocked(!e.isIntersecting), { rootMargin: '-72px 0px 0px 0px' })
+    io.observe(el)
+    return () => io.disconnect()
+  }, [phase])
 
   // wall clock, so a throttled background tab does not lose time
   useEffect(() => {
@@ -54,7 +131,7 @@ export default function PaperSitting({ questions, set, paper, onExit }) {
 
   return (
     <div className="mx-auto max-w-3xl">
-      <div className="sticky top-2 z-40 mb-4 flex flex-wrap items-center gap-3 rounded-[var(--srv-r)] border border-line bg-surface px-4 py-3 shadow-lg">
+      <div ref={cardRef} className="card mb-4 flex flex-wrap items-center gap-3 px-4 py-3">
         {phase === 'sit' ? (
           <>
             <div className="mr-auto">
@@ -103,6 +180,40 @@ export default function PaperSitting({ questions, set, paper, onExit }) {
                 </Button>
               </>
             )}
+          </>
+        )}
+      </div>
+
+      <div
+        ref={dockRef}
+        className={`ps-dock ${docked ? 'is-on' : ''} ${(live ? live.x + 60 > window.innerWidth / 2 : spot?.side === 'right') ? 'is-right' : ''}`}
+        aria-hidden={!docked}
+        style={dockStyle}
+        onPointerDown={dragStart}
+        onPointerMove={dragMove}
+        onPointerUp={dragEnd}
+        onPointerCancel={dragEnd}
+        onDoubleClick={dragReset}
+        title="Drag to move. Double-click to put it back."
+      >
+        <span className="ps-dock-grip" aria-hidden="true" />
+        {phase === 'sit' ? (
+          <>
+            <span className={`ps-dock-time font-mono tabular-nums ${tone}`}>{fmtClock(left)}</span>
+            <span className="ps-dock-sub font-mono">{paused ? 'paused' : left < 0 ? 'over time' : 'left'}</span>
+            <button type="button" className="ps-dock-btn" tabIndex={docked ? 0 : -1} onClick={() => setPaused((p) => !p)}>
+              {paused ? 'Resume' : 'Pause'}
+            </button>
+            <button type="button" className="ps-dock-btn" tabIndex={docked ? 0 : -1} onClick={finish}>
+              Finish
+            </button>
+          </>
+        ) : (
+          <>
+            <span className="ps-dock-time font-mono tabular-nums text-fg">
+              {total}/{max}
+            </span>
+            <span className="ps-dock-sub font-mono">{max ? Math.round((total / max) * 100) : 0}%</span>
           </>
         )}
       </div>

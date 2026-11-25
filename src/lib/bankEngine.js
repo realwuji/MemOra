@@ -210,16 +210,16 @@ export function prepare(slide, fixes, measured = false) {
     const s = items[f.stroke]
     if (!s || s.k !== 's') return
     const [px, py] = pointAt(s.p, f.f ?? 0.5)
-    const t = { ...makeText(px + (f.dx ?? 10), py + (f.dy ?? -26), f.text, f.c), i: items.length + extra.length }
+    const t = { ...makeText(px + (f.dx ?? 10), py + (f.dy ?? -26), f.text, f.c), i: slide.items.length + extra.length }
     extra.push(t)
   })
   // `fills`: shaded areas drawn in place of ones the slide got wrong (two
   // revenue rectangles laid over each other). `texts`: the letters that name them.
   ;(fixes?.fills || []).forEach((f) => {
-    extra.push({ k: 'f', p: f.poly, c: f.c, o: f.o ?? 0.3, w: 1.3, sc: f.c, i: items.length + extra.length, synthetic: true })
+    extra.push({ k: 'f', p: f.poly, c: f.c, o: f.o ?? 0.3, w: 1.3, sc: f.c, i: slide.items.length + extra.length, synthetic: true })
   })
   ;(fixes?.texts || []).forEach((f) => {
-    extra.push({ ...makeText(f.x, f.y, f.text, f.c, true), i: items.length + extra.length })
+    extra.push({ ...makeText(f.x, f.y, f.text, f.c, true), i: slide.items.length + extra.length })
   })
   items.push(...extra)
 

@@ -70,7 +70,7 @@ for (const pack of REVISION) {
     if (typeof q.marks !== 'number' || q.marks < 1) {
       fail(`exam question has no valid marks: "${String(q.question).slice(0, 55)}"`)
     }
-    if (!Array.isArray(q.markScheme) || q.markScheme.length === 0) {
+    if (!q.num && (!Array.isArray(q.markScheme) || q.markScheme.length === 0)) {
       fail(`exam question has no mark scheme: "${String(q.question).slice(0, 55)}"`)
     }
   }
