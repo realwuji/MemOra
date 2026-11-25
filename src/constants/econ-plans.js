@@ -1,6 +1,8 @@
 import QUESTIONS from '../data/plan-questions'
 import { BUILT_PLANS } from './econ-plans-built'
 import { areaOf } from './econ-plans-meta'
+import { PLAN_DIAGRAMS } from './econ-plan-diagrams'
+import { PLAN_STEP_FIXES, GENERAL_STEP_FIXES } from './econ-plan-steps'
 
 /*
   Essay plans, built ONLY from the Economics notes.
@@ -542,8 +544,34 @@ const PLANS = {
 // are re-exported here so existing importers keep working.
 export { areaOf, PLAN_AREAS, MARK_SPLIT, minutesFor } from './econ-plans-meta'
 
+/*
+  The diagram under each chain is decided in econ-plan-diagrams.js (one entry per plan, per chain),
+  not in the plans themselves: every chain was checked against the whole bank, so a chain shows a
+  diagram only when that diagram draws exactly its mechanism. Where an entry exists it replaces
+  whatever the plan carried; a chain with an empty list has no diagram.
+*/
+// House style: no em dashes and no semicolons in copy. A semicolon starts a new sentence.
+const tidy = (t) =>
+  t
+    .replace(/\s*[\u2013\u2014]\s*/g, ' - ')
+    .replace(/;\s+([a-z])/g, (_, c) => `. ${c.toUpperCase()}`)
+    .replace(/;/g, ',')
+const withDiagrams = (id, plan) => {
+  if (!plan) return plan
+  const set = PLAN_DIAGRAMS[id]
+  const fixes = new Map(PLAN_STEP_FIXES[id] || [])
+  const side = (name) =>
+    (plan[name] || []).map((chain, i) => {
+      const steps = chain.steps.map((st) => tidy(fixes.get(st) ?? GENERAL_STEP_FIXES.get(st) ?? st))
+      const ids = set?.[name]?.[i]
+      const { d, ...rest } = chain
+      const keep = ids ? (ids.length ? { d: { ids } } : {}) : d ? { d } : {}
+      return { ...rest, title: tidy(rest.title), steps, ...keep }
+    })
+  return { ...plan, left: side('left'), right: side('right') }
+}
 export const PLAN_BANK = QUESTIONS.map((q) => ({
   ...q,
   area: areaOf(q.q),
-  plan: PLANS[Number(q.id.slice(1))] || BUILT_PLANS[Number(q.id.slice(1))] || null,
+  plan: withDiagrams(q.id, PLANS[Number(q.id.slice(1))] || BUILT_PLANS[Number(q.id.slice(1))] || null),
 }))

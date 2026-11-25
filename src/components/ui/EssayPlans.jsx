@@ -14,9 +14,7 @@ import './essay-plans.css'
   evaluation on the right), a bank diagram under the chains that need one,
   and a judgement.
 
-  A plan's diagrams are NOT shifted for you. They sit in their starting
-  position; "Do you know what shifts?" plays the shift, and hovering a curve
-  says what shifts it in this chain.
+  A chain's diagram is drawn as taught, axes first, then curves, then the shift, with no quiz on top.
 */
 
 function Chain({ n, chain, tone }) {
@@ -36,7 +34,7 @@ function Chain({ n, chain, tone }) {
       </ol>
       {chain.d && (
         <div className="ep-diagram">
-          <BankDiagram ids={chain.d.ids} quiz hover={chain.d.hover} />
+          <BankDiagram ids={chain.d.ids} />
         </div>
       )}
     </article>

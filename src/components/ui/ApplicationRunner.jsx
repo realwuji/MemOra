@@ -374,7 +374,7 @@ function RealCard({ c, n }) {
       {c.diagram?.length > 0 && (
         <div className="ar-diagram">
           <p className="ap-label">The diagram behind it</p>
-          <BankDiagram ids={c.diagram} quiz />
+          <BankDiagram ids={c.diagram} />
         </div>
       )}
 
@@ -444,7 +444,7 @@ function MemoriseReal({ c, stage, beats }) {
             <Links links={c.links} />
             {c.diagram?.length > 0 && (
               <div className="ar-diagram">
-                <BankDiagram ids={c.diagram} quiz />
+                <BankDiagram ids={c.diagram} />
               </div>
             )}
           </>
