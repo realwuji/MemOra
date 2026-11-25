@@ -44,7 +44,8 @@ export default function useMe(now = Date.now()) {
       id: deviceId(account),
       username: user.username || null,
       name: user.displayName || realName || 'You',
-      firstName: (realName || '').split(/\s+/)[0] || '',
+      // a teachers login is a group name (Maths teachers), so it is used whole
+      firstName: isTeacher(account?.email) ? realName || '' : (realName || '').split(/\s+/)[0] || '',
       mascot: user.mascot,
       photo: user.avatar || null,
       photoPos: user.avatarPos || null,
