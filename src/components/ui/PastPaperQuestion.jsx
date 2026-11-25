@@ -28,7 +28,7 @@ function Reveal({ open, src, alt, height }) {
   )
 }
 
-export default function PastPaperQuestion({ q, done, onToggleDone, showTopic = false, phase, score, onScore }) {
+export default function PastPaperQuestion({ q, result, onMark, showTopic = false, phase, score, onScore }) {
   // phase 'sit': timed paper, nothing but the question and the pad. 'mark': mark scheme open, with a mark box.
   const [msPick, setMs] = useState(null)
   const ms = msPick ?? phase === 'mark'
@@ -88,10 +88,27 @@ export default function PastPaperQuestion({ q, done, onToggleDone, showTopic = f
           </Chip>
         ) : null}
         {phase === 'mark' ? null : (
-          <Chip size="sm" selected={done} aria-pressed={done} onClick={() => onToggleDone(q.num)}>
-            {done && <Icon name="check" className="h-3.5 w-3.5" />}
-            {done ? 'Done' : 'Mark as done'}
-          </Chip>
+          <>
+            <Chip
+              size="sm"
+              selected={result === 'right'}
+              aria-pressed={result === 'right'}
+              onClick={() => onMark(q, 'right')}
+              className={result === 'right' ? '!border-[#1a7a4f] !bg-[#1a7a4f] !text-white' : ''}
+            >
+              {result === 'right' && <Icon name="check" className="h-3.5 w-3.5" />}
+              Got it right
+            </Chip>
+            <Chip
+              size="sm"
+              selected={result === 'wrong'}
+              aria-pressed={result === 'wrong'}
+              onClick={() => onMark(q, 'wrong')}
+              className={result === 'wrong' ? '!border-[#c0392b] !bg-[#c0392b] !text-white' : ''}
+            >
+              Got it wrong
+            </Chip>
+          </>
         )}
       </div>
       )}

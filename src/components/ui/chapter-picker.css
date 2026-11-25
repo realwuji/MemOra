@@ -172,6 +172,28 @@
 .cp-ring.is-doing .cp-ring-fill {
   stroke: var(--doing);
 }
+.cp-ring.is-right .cp-ring-fill {
+  stroke: #2e9e6b;
+}
+.cp-ring.is-wrong .cp-ring-fill {
+  stroke: #d64545;
+  filter: drop-shadow(0 0 5px color-mix(in srgb, #d64545 60%, transparent));
+}
+.cp-ring.is-right .cp-ring-mid {
+  color: #2e9e6b;
+}
+.cp-ring.is-wrong .cp-ring-mid {
+  color: #d64545;
+}
+.cp-card.is-wrong {
+  border-color: color-mix(in srgb, #d64545 55%, var(--line));
+}
+.cp-card.is-wrong .cp-card-status i {
+  background: #d64545;
+}
+.cp-card.is-right .cp-card-status i {
+  background: #2e9e6b;
+}
 .cp-ring-mid {
   position: absolute;
   inset: 0;

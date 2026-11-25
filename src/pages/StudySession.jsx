@@ -17,6 +17,7 @@ import { computeAllChapterStates } from '@/lib/attempts'
 import { computeNextBestAction, relevantTopics } from '@/lib/pace'
 import { useFocusMode } from '@/lib/focusMode'
 import jumpToTop from '@/lib/jumpToTop'
+import usePastPaperMarks from '@/hooks/usePastPaperMarks'
 
 function shuffle(arr) {
   const a = [...arr]
@@ -110,6 +111,9 @@ export default function StudySession() {
   const preselectedChapter = pack?.topics?.includes(searchParams.get('chapter'))
     ? searchParams.get('chapter')
     : null
+
+  // Maths past papers: how many questions of each chapter were marked right and wrong
+  const paperMarks = usePastPaperMarks(Boolean(pack?.counts?.pastPapers || pack?.pastPapers))
 
   // chapter | ready | running | done | done-N (difficulty rating saved)
   const [phase, setPhase] = useState(preselectedChapter ? 'ready' : hasChapters ? 'chapter' : 'ready')
@@ -300,6 +304,7 @@ export default function StudySession() {
             topics={pickerTopics}
             onPick={pickChapter}
             allKey={ALL}
+            marks={paperMarks}
           />
         )}
 

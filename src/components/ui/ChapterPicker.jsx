@@ -58,9 +58,14 @@ function Ring({ pct, status, size = 38, stroke = 4, children }) {
   )
 }
 
-function Card({ topic, n, status, examReady, onPick, index }) {
+function Card({ topic, n, status, examReady, onPick, index, marks }) {
   const reduce = useReducedMotion()
   const s = STATUS[status]
+  // Maths past papers: questions marked right or wrong fill the ring, green while right
+  // answers lead and red once wrong ones do
+  const marked = marks ? marks.right + marks.wrong : 0
+  const markPct = marks && marks.total ? Math.round((marked / marks.total) * 100) : 0
+  const wrongLeads = marks ? marks.wrong > marks.right : false
   const spot = (e) => {
     const b = e.currentTarget.getBoundingClientRect()
     e.currentTarget.style.setProperty('--mx', `${e.clientX - b.left}px`)
@@ -74,15 +79,15 @@ function Card({ topic, n, status, examReady, onPick, index }) {
       initial={reduce ? false : { opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.45, delay: Math.min(index * 0.025, 0.6), ease: [0.22, 1, 0.36, 1] }}
-      className={`cp-card is-${s.id}`}
-      aria-label={`${topic}. ${s.label}.`}
+      className={`cp-card is-${marked ? (wrongLeads ? 'wrong' : 'right') : s.id}`}
+      aria-label={`${topic}. ${marked ? `${marked} of ${marks.total} questions marked, ${marks.right} right and ${marks.wrong} wrong` : s.label}.`}
     >
       <span className="cp-card-n">{String(n).padStart(2, '0')}</span>
       <span className="cp-card-body">
         <span className="cp-card-title">{topic}</span>
         <span className="cp-card-status">
           <i aria-hidden="true" />
-          {s.label}
+          {marked ? `${marked} of ${marks.total} marked · ${marks.right} right, ${marks.wrong} wrong` : s.label}
           {examReady && (
             <em>
               <Icon name="star" filled className="h-3 w-3" />
@@ -91,8 +96,8 @@ function Card({ topic, n, status, examReady, onPick, index }) {
           )}
         </span>
       </span>
-      <Ring pct={s.pct} status={s.id}>
-        {s.id === 'done' ? <Icon name="check" className="h-4 w-4" /> : null}
+      <Ring pct={marked ? Math.max(4, markPct) : s.pct} status={marked ? (wrongLeads ? 'wrong' : 'right') : s.id}>
+        {marked ? <span className="text-[0.68rem] font-bold tabular-nums">{markPct}%</span> : s.id === 'done' ? <Icon name="check" className="h-4 w-4" /> : null}
       </Ring>
       <span className="cp-card-go" aria-hidden="true">
         {s.id === 'todo' ? 'Start' : s.id === 'doing' ? 'Continue' : 'Revise again'}
@@ -102,7 +107,7 @@ function Card({ topic, n, status, examReady, onPick, index }) {
   )
 }
 
-export default function ChapterPicker({ pack, technique, techniqueLabel, states, recs, topics, onPick, allKey = '__all__' }) {
+export default function ChapterPicker({ pack, technique, techniqueLabel, states, recs, topics, onPick, allKey = '__all__', marks }) {
   const [query, setQuery] = useState('')
   const [filter, setFilter] = useState('all')
   const reduce = useReducedMotion()
@@ -251,7 +256,7 @@ export default function ChapterPicker({ pack, technique, techniqueLabel, states,
                     {sub.label && <p className="cp-sub-label">{sub.label}</p>}
                     <div className="cp-grid">
                       {sub.topics.map((t) => (
-                        <Card key={t} topic={t} n={numbered.get(t) || 0} status={bandOf(t)} examReady={bandOf(t) === 'exam-ready'} onPick={onPick} index={cardIndex++} />
+                        <Card key={t} topic={t} n={numbered.get(t) || 0} status={bandOf(t)} examReady={bandOf(t) === 'exam-ready'} onPick={onPick} index={cardIndex++} marks={marks?.get(t)} />
                       ))}
                     </div>
                   </div>

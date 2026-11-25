@@ -72,7 +72,7 @@ export default function PastPapers() {
   const [paper, setPaper] = useState('Pure 1')
   const [open, setOpen] = useState(null) // { mode: 'sit' | 'practice', set, paper }
   const { attempts, remove } = usePaperAttempts()
-  const [done, toggle] = usePastPaperDone()
+  const [done, mark] = usePastPaperDone()
 
   // opening a sitting (or coming back to the list) starts at the top, not wherever the card was
   useEffect(() => {
@@ -108,7 +108,7 @@ export default function PastPapers() {
         </div>
         <ol className="flex flex-col gap-5">
           {qsOf(open.paper, open.set).map((q) => (
-            <PastPaperQuestion key={q.num} q={q} done={done.has(q.num)} onToggleDone={toggle} />
+            <PastPaperQuestion key={q.num} q={q} result={done.get(q.num)} onMark={mark} />
           ))}
         </ol>
       </div>

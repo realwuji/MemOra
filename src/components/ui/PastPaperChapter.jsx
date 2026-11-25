@@ -19,7 +19,7 @@ const SIZES = [
 export default function PastPaperChapter({ items, chapterLabel }) {
   const [size, setSize] = useState('All')
   const [hideDone, setHideDone] = useState(false)
-  const [done, toggle] = usePastPaperDone()
+  const [done, mark] = usePastPaperDone()
 
   const ordered = useMemo(() => [...items].sort((a, b) => a.marks - b.marks || b.num - a.num), [items])
   const test = SIZES.find((s) => s.id === size).test
@@ -56,7 +56,7 @@ export default function PastPaperChapter({ items, chapterLabel }) {
 
       <ol className="mt-5 flex flex-col gap-5">
         {shown.map((q) => (
-          <PastPaperQuestion key={q.num} q={q} done={done.has(q.num)} onToggleDone={toggle} showTopic={showTopic} />
+          <PastPaperQuestion key={q.num} q={q} result={done.get(q.num)} onMark={mark} showTopic={showTopic} />
         ))}
       </ol>
       {shown.length === 0 && <p className="mt-8 text-center text-sm text-muted">Nothing here. Try another length or chapter.</p>}
