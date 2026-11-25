@@ -36,7 +36,7 @@ export function MascotFace({ mascot, className = 'h-16 w-16', label }) {
 export function LookSwatch({ look, className = '' }) {
   if (!look) return null
   const theme = normaliseTheme(look.theme)
-  const themeBg = { dark: '#181510', cream: '#fffaef', 'high-contrast': '#000' }[theme] || '#fffaef'
+  const themeBg = { dark: '#181510', cream: '#ffffff', 'high-contrast': '#000' }[theme] || '#ffffff'
   return (
     <span className={`inline-flex items-center gap-1.5 whitespace-nowrap text-[0.68rem] font-semibold text-muted ${className}`}>
       <span className="inline-flex overflow-hidden rounded-full border border-line" aria-hidden="true">

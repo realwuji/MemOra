@@ -145,15 +145,15 @@
 /* Cream - dyslexia-friendly: sepia page, soft dark-brown text (never pure
    black on pure white), lowers visual stress. */
 [data-theme='cream'] {
-  --page: #faf3e2;
-  --surface: #fffaef;
-  --raised: #f2e9d2;
-  --line: #e3d6b6;
-  --fg: #3b3427;
-  --muted: #6d634d;
+  --page: #ffffff;
+  --surface: #ffffff;
+  --raised: #f4f4f5;
+  --line: #e4e4e7;
+  --fg: #18181b;
+  --muted: #5f5f68;
   --brand: #1a1a1a;
   --brand-strong: #000000;
-  --brand-soft: #efe6cf;
+  --brand-soft: #f1f1f3;
   --on-brand: #ffffff;
   --ring: #1a1a1a;
   --success: #1a7a4f;
@@ -164,13 +164,13 @@
   --quiz: #1a7a4f;
   --quiz-soft: #dcf0e2;
   --paper: #b7770c;
-  --paper-soft: #f6e8c9;
+  --paper-soft: #f6eccf;
   --on-danger: #ffffff;
   --on-flash: #ffffff;
   --on-quiz: #ffffff;
-  /* Same five hues as light, warmed slightly to sit on the sepia page. */
-  --r0-not-started: #d6c9ae;
-  --r1-seen: #a99872;
+  /* Same five hues as light, on the white page. */
+  --r0-not-started: #d4d4d8;
+  --r1-seen: #a1a1aa;
   --r2-shaky: #c87f1e;
   --r3-solid: #3f8f6b;
   --r4-exam-ready: #1f6b48;
@@ -235,7 +235,7 @@
 
 [data-accent='graphite'] { --brand: #334155; --brand-strong: #1e293b; --brand-soft: #e2e8f0; --ring: #334155; }
 [data-theme='dark'][data-accent='graphite'] { --brand: #cbd5e1; --brand-strong: #e2e8f0; --brand-soft: #2a3240; --ring: #cbd5e1; --on-brand: #0b0f14; }
-[data-theme='cream'][data-accent='graphite'] { --brand: #3f3a33; --brand-strong: #292521; --brand-soft: #e8e1d2; --ring: #3f3a33; }
+[data-theme='cream'][data-accent='graphite'] { --brand: #3f3f46; --brand-strong: #27272a; --brand-soft: #ececee; --ring: #3f3f46; }
 
 /* High contrast - low vision: pure black, white text, high-vis accents. */
 [data-theme='high-contrast'] {
@@ -1383,7 +1383,7 @@ body {
     filter: blur(7px) grayscale(1) sepia(0.4) brightness(0.6) contrast(1.25);
   }
   [data-theme='cream'] .hero-video {
-    filter: blur(7px) grayscale(1) sepia(0.45) brightness(1.1) contrast(0.95);
+    filter: blur(7px) grayscale(1) brightness(1.1) contrast(0.95);
   }
   .hero-video-tint {
     background: color-mix(in srgb, var(--page) 30%, transparent);
