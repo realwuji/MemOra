@@ -190,6 +190,9 @@ const STORAGE_KEY = 'memora:v1'
 // instead of each keeping their own copy.
 const LEGACY_EXAMS_KEY = 'memora:exams'
 const DEFAULTS = {
+  // The email of the account this browser's data belongs to. Everything below lives in this
+  // browser, so a different account signing in must not inherit it (see the effect in AppProvider).
+  owner: null,
   theme: 'cream',
   accent: 'mono',
   // Set only when accent === 'custom' - a hex string from the colour wheel
@@ -376,6 +379,41 @@ export default function AppProvider({ children }) {
   // later. Also keeps `account` correct if sign-in/out happens in another
   // tab, and on every future sign-in/sign-up/sign-out in this one.
   useEffect(() => auth.onAccountChange(setAccount), [])
+
+  // Progress, sessions, notes ticks and drafts are stored in this browser, not on the account. So a
+  // new account (or a different one) used to open to the previous person's progress. Data now
+  // belongs to the email that created it: when the signed-in account is not the owner, the
+  // browser's study data is cleared and the account starts fresh (appearance settings are kept).
+  useEffect(() => {
+    if (!account?.email || state.owner === account.email) return
+    // once per session and email, so a browser that cannot save (full or private storage) cannot loop
+    try {
+      if (sessionStorage.getItem('memora.owner-reset') === account.email) return
+      sessionStorage.setItem('memora.owner-reset', account.email)
+    } catch {
+      return
+    }
+    for (const k of ['memora:exams', 'memora.pastpapers.maths.done', 'memora.pastpapers.maths.attempts', 'memora.pastpapers.maths.dock', 'memora.dr2.seen', 'memora.app.known']) {
+      try {
+        localStorage.removeItem(k)
+      } catch {
+        /* storage unavailable: nothing to clear */
+      }
+    }
+    patch((s) => ({
+      ...DEFAULTS,
+      theme: s.theme,
+      accent: s.accent,
+      customAccent: s.customAccent,
+      a11y: s.a11y,
+      owner: account.email,
+      profile: { ...DEFAULT_PROFILE, name: account.name || DEFAULT_PROFILE.name },
+    }))
+    // modules that keep their own copy of this data (ticked questions, saved scores) read it once
+    // at load, so one reload makes them all start clean
+    setTimeout(() => window.location.reload(), 150)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [account?.email, state.owner])
   // Transient confirmation pill (see ui/Toast.jsx). Deliberately NOT part of
   // `state` - it must never be persisted or restored on reload.
   const [toast, setToast] = useState(null)

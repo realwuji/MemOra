@@ -1,3 +1,4 @@
+import { isOwner } from '@/constants/owner'
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
@@ -215,7 +216,7 @@ function SectionLabel({ children, action }) {
 }
 
 export default function Dashboard() {
-  const { user, sessions, attempts, examDates, posts, friends, profileSetupDone } = useApp()
+  const { user, account, sessions, attempts, examDates, posts, friends, profileSetupDone } = useApp()
   const navigate = useNavigate()
   const isYear12 = user.yearGroup === 'Year 12' && PRIORITISED_COURSES.includes(user.courseType)
   const [now] = useState(() => Date.now())
@@ -290,6 +291,7 @@ export default function Dashboard() {
           daysToNext={nextExam ? daysUntil(nextExam.date) : null}
           now={now}
           showSetup={!profileSetupDone}
+          owner={isOwner(account?.email)}
         />
         <div className="mt-4">
           <DailyQuote now={now} />

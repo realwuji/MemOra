@@ -82,6 +82,7 @@ export default function HeroBanner({
   daysToNext,
   now,
   showSetup,
+  owner = false,
 }) {
   const tier = streakTier(streak)
   const next = nextStreakTier(streak)
@@ -145,6 +146,14 @@ export default function HeroBanner({
             </h1>
             <p className="mt-1 flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-sm text-muted lg:justify-start">
               {username && <span className="font-semibold text-fg">@{username}</span>}
+              {owner && (
+                <span className="owner-tag" title="Owner of Memoora">
+                  <svg viewBox="0 0 24 24" aria-hidden="true" className="owner-tag-crown">
+                    <path d="M3 8l4.5 4L12 5l4.5 7L21 8l-2 11H5L3 8z" fill="currentColor" />
+                  </svg>
+                  Owner
+                </span>
+              )}
               <span className="srv-tag" style={{ '--tag': 'var(--fg)' }}>
                 <i aria-hidden="true" className="srv-led" />
                 LVL {String(lvl.level).padStart(2, '0')} · {lvl.title}

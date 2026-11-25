@@ -651,3 +651,58 @@ html {
     transform: none;
   }
 }
+
+/* ----------------------------------------------------------- owner badge
+   A gold hairline tag with a crown, for the owner's own dashboard. A band of light crosses it
+   every few seconds (transform only). */
+.owner-tag {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  overflow: hidden;
+  padding: 0.16rem 0.6rem 0.16rem 0.45rem;
+  border: 1px solid color-mix(in srgb, #e0a82e 55%, transparent);
+  border-radius: 0.3rem;
+  background: linear-gradient(135deg, color-mix(in srgb, #e0a82e 22%, transparent), color-mix(in srgb, #e0a82e 6%, transparent));
+  color: #e9b949;
+  font-family: var(--font-mono-ui);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  isolation: isolate;
+}
+.owner-tag-crown {
+  width: 0.85rem;
+  height: 0.85rem;
+  filter: drop-shadow(0 0 4px color-mix(in srgb, #e0a82e 70%, transparent));
+}
+.owner-tag::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(105deg, transparent 35%, color-mix(in srgb, #fff 38%, transparent) 50%, transparent 65%);
+  transform: translate3d(-120%, 0, 0);
+  animation: owner-sheen 5s ease-in-out 1.2s infinite;
+}
+@keyframes owner-sheen {
+  0%,
+  60% {
+    transform: translate3d(-120%, 0, 0);
+  }
+  100% {
+    transform: translate3d(120%, 0, 0);
+  }
+}
+[data-theme='cream'] .owner-tag {
+  color: #8a5d00;
+}
+@media (prefers-reduced-motion: reduce) {
+  .owner-tag::after {
+    animation: none;
+    opacity: 0;
+  }
+}
