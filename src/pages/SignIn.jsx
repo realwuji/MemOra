@@ -10,6 +10,7 @@ import AccentPicker from '@/components/ui/AccentPicker'
 import Footer from '@/components/layout/Footer'
 import { useApp } from '@/context/AppProvider'
 import { isValidEmail, passwordProblem } from '@/lib/auth'
+import { TEACHERS, teacherEmail } from '@/constants/teachers'
 import { usernameProblem, suggestUsername } from '@/lib/friends'
 import { spotifyConfigured, beginSpotifyLogin } from '@/lib/spotify'
 import useIsDesktop from '@/hooks/useIsDesktop'
@@ -92,11 +93,15 @@ export default function SignIn() {
     setPassword('')
   }
 
+  // Signing in takes an email, or a teacher's name (Boothy, Singh, Garrod, Miah).
+  const teacher = TEACHERS.find((t) => t.key === email.trim().toLowerCase())
+  const loginEmail = !isSignUp && teacher ? teacherEmail(teacher.key) : email
+
   async function onSubmit(e) {
     e.preventDefault()
     const nextErrors = {}
     if (isSignUp && !name.trim()) nextErrors.name = 'Tell us what to call you.'
-    if (!isValidEmail(email)) nextErrors.email = 'Enter a valid email address.'
+    if (!isValidEmail(loginEmail)) nextErrors.email = isSignUp ? 'Enter a valid email address.' : 'Enter your email address or username.'
     if (isSignUp) {
       const problem = passwordProblem(password)
       if (problem) nextErrors.password = problem
@@ -114,7 +119,7 @@ export default function SignIn() {
         setPassword('')
         setStage('setup')
       } else {
-        await signIn({ email, password })
+        await signIn({ email: loginEmail, password })
         navigate('/dashboard')
       }
     } catch (err) {
@@ -306,12 +311,12 @@ export default function SignIn() {
 
                 <Field
                   id="email"
-                  label="Email"
-                  type="email"
+                  label={isSignUp ? 'Email' : 'Email or username'}
+                  type={isSignUp ? 'email' : 'text'}
                   value={email}
                   onChange={setEmail}
                   error={errors.email}
-                  autoComplete="email"
+                  autoComplete={isSignUp ? 'email' : 'username'}
                 />
 
                 <Field
