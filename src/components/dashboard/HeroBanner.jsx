@@ -54,7 +54,7 @@ function LevelRing({ level, progress }) {
           r={r}
           className="level-ring-fill"
           strokeWidth="4"
-          strokeLinecap="round"
+          strokeLinecap={progress >= 1 ? 'butt' : 'round'}
           fill="none"
           strokeDasharray={c}
           initial={{ strokeDashoffset: c }}
@@ -63,7 +63,7 @@ function LevelRing({ level, progress }) {
         />
       </svg>
       <span
-        className={`level-ring-core grid h-10 w-10 place-items-center rounded-full font-extrabold leading-none tabular-nums ${String(level).length > 2 ? 'text-[0.8rem] tracking-tighter' : 'text-base'}`}
+        className={`level-ring-core grid h-9 w-9 place-items-center rounded-full font-extrabold leading-none tabular-nums ${String(level).length > 2 ? 'text-[0.72rem] tracking-tighter' : 'text-base'}`}
       >
         {level}
       </span>

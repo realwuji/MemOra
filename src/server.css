@@ -161,7 +161,7 @@ html {
   filter: none;
 }
 .level-ring-core {
-  border-radius: 0.5rem;
+  border-radius: 50%;
   background: var(--brand);
   box-shadow: none;
 }
