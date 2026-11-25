@@ -17,6 +17,7 @@ import lazyPage from '@/lib/lazyPage'
 const HowItWorks = lazyPage(() => import('@/pages/HowItWorks'))
 const Dashboard = lazyPage(() => import('@/pages/Dashboard'))
 const Profile = lazyPage(() => import('@/pages/Profile'))
+const Teachers = lazyPage(() => import('@/pages/Teachers'))
 const StudySession = lazyPage(() => import('@/pages/StudySession'))
 const Start = lazyPage(() => import('@/pages/Start'))
 const Flashcards = lazyPage(() => import('@/pages/Flashcards'))
@@ -99,6 +100,7 @@ export default function App() {
         <Route element={<AppLayout />}>
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/teachers" element={<Teachers />} />
           <Route path="/start" element={<Start />} />
           <Route path="/start/:subjectSlug" element={<Start />} />
           <Route path="/study" element={<StudyRoute />} />

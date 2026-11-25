@@ -62,7 +62,11 @@ function LevelRing({ level, progress }) {
           transition={{ duration: 1.1, ease: [0.22, 1, 0.36, 1] }}
         />
       </svg>
-      <span className="level-ring-core grid h-10 w-10 place-items-center rounded-full text-base font-extrabold">{level}</span>
+      <span
+        className={`level-ring-core grid h-10 w-10 place-items-center rounded-full font-extrabold leading-none tabular-nums ${String(level).length > 2 ? 'text-[0.8rem] tracking-tighter' : 'text-base'}`}
+      >
+        {level}
+      </span>
     </span>
   )
 }
