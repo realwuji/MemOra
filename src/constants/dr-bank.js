@@ -32,8 +32,8 @@ let pending = null
 export const loadBank = () => {
   if (cache) return Promise.resolve(cache)
   pending ||= Promise.all([import('../data/diagram-bank.json'), import('../data/diagram-copy.js'), import('../data/diagram-extras.js')]).then(([m, c, x]) => {
-    // The note-only diagrams (301+) are drawn in the same format, kept out of the bank and revision
-    const hidden = new Set([...c.HIDDEN, ...x.EXTRA_SLIDES.map((e) => e.id)])
+    // The note diagrams (301+) are drawn in the same format and sit in the bank and revision like the rest
+    const hidden = new Set(c.HIDDEN)
     const copy = { ...c.COPY, ...x.EXTRA_COPY }
     cache = Object.fromEntries([...m.default, ...x.EXTRA_SLIDES].map((s) => [s.id, withCopy(s, copy, hidden)]))
     return cache
@@ -83,6 +83,14 @@ const RANGES = [
   ['Phillips and Laffer', 207, 211],
   ['Inequality', 212, 216],
   ['Trade', 218, 226],
+  ['Monopoly', 301, 301],
+  ['Exchange rate', 302, 302],
+  ['AD / AS (Keynesian AS)', 303, 303],
+  ['Phillips and Laffer', 304, 304],
+  ['Costs', 305, 306],
+  ['Trade', 307, 307],
+  ['Inequality', 308, 308],
+  ['Money and bonds', 309, 309],
 ]
 // First range that contains the id wins, except where a later one is more specific.
 export const familyOf = (id) => {

@@ -397,15 +397,14 @@
 .dr-tip-head {
   margin: 0;
   min-width: 0;
-  overflow: hidden;
   color: var(--fg);
   font-family: var(--font-mono-ui);
   font-size: 0.64rem;
   font-weight: 700;
   letter-spacing: 0.1em;
-  text-overflow: ellipsis;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
   text-transform: uppercase;
-  white-space: nowrap;
 }
 .dr-tip-head::before {
   content: '// ';

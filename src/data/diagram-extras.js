@@ -152,17 +152,43 @@ function limitPricing() {
 /* 302 ----------------------------------------------------------- J-curve */
 function jCurve() {
   const z = 0.55
-  return slide(302, 'The J-curve', [
+  const pts = through([[0.06, z], [0.16, 0.34], [0.3, 0.2], [0.46, 0.32], [0.64, 0.6], [0.94, 0.88]])
+  const zy = +Y(z).toFixed(1)
+  let low = pts[0]
+  pts.forEach((p) => {
+    if (p[1] > low[1]) low = p
+  })
+  const cross = pts.findIndex((p, k) => k > pts.indexOf(low) && p[1] <= zy)
+  const dip = pts.slice(0, cross).map(([x, y]) => [x, Math.max(y, zy)])
+  const gain = [[pts[cross][0], zy], ...pts.slice(cross)]
+  const xc = pts[cross][0]
+  const s302 = slide(302, 'The J-curve', [
+    fill([...dip, [dip[dip.length - 1][0], zy]], 'red', 0.3),
+    fill([...gain, [gain[gain.length - 1][0], zy]], 'green', 0.3),
     ...axes('Current account balance', 'Time'),
-    guide([[OX, Y(z)], [X(0.95), Y(z)]]),
-    text(OX - 36, Y(z), '0'),
+    guide([[OX, zy], [X(0.95), zy]]),
+    text(OX - 36, zy, '0'),
     guide([[X(0.06), TOPY + 20], [X(0.06), OY]]),
     text(X(0.06) + 70, TOPY + 22, 'Depreciation'),
-    ink(through([[0.06, z], [0.16, 0.34], [0.3, 0.2], [0.46, 0.32], [0.64, 0.6], [0.94, 0.88]]), 3.8, { c: 'blue' }),
+    text(X(0.06), OY + 28, 'T₀'),
+    ink(pts, 3.8, { c: 'blue' }),
     text(X(0.94) + 62, Y(0.88) - 6, 'J-curve', 'blue'),
-    text(X(0.3), Y(0.2) + 30, 'worsens first', 'red'),
-    text(X(0.8), Y(0.4), 'then improves', 'green'),
+    guide([[low[0], low[1]], [OX, low[1]]]),
+    guide([[low[0], low[1]], [low[0], OY]]),
+    dot(low[0], low[1]),
+    text(OX - 36, low[1], 'B₁'),
+    text(low[0], OY + 28, 'T₁'),
+    text(low[0] + 18, low[1] + 22, 'a'),
+    guide([[xc, zy], [xc, OY]]),
+    dot(xc, zy),
+    text(xc, OY + 28, 'T₂'),
+    text(xc + 16, zy - 20, 'b'),
   ])
+  s302.areas = [
+    { fill: 0, name: 'Deficit worse than before', note: 'The import bill rises before export volumes respond (demand is inelastic in the short run), so the balance falls below its starting level until T₂.' },
+    { fill: 1, name: 'Improvement over time', note: 'Once demand becomes elastic (the Marshall-Lerner condition holds) export volumes rise and import volumes fall, so the balance rises above its starting level.' },
+  ]
+  return s302
 }
 
 /* 303 ------------------------------------------------ consumption function */
@@ -180,6 +206,8 @@ function consumption() {
     text(X(0.95) + 22, Y(a + b * 0.95) + 4, 'C', 'blue'),
     guide([[X(be), Y(be)], [X(be), OY]]),
     guide([[X(be), Y(be)], [OX, Y(be)]]),
+    text(OX - 36, Y(be), 'C₀'),
+    text(X(be), OY + 28, 'Y₀'),
     dot(X(be), Y(be)),
     text(X(be) + 70, Y(be) + 34, 'break-even'),
     text(OX - 28, Y(a), 'a'),
@@ -199,7 +227,7 @@ function longRunPhillips() {
   const at = (u, s) => s + 0.1 / (u + 0.05) - 0.06
   const lo = (s) => (u) => at(u, s)
   return slide(304, 'The long-run Phillips curve', [
-    ...axes('Inflation (%)', 'Unemployment (%)'),
+    ...axes('Inflation (π)', 'Unemployment (U)'),
     ink(curve(lo(0.18), 0.12, 0.95), 3.8),
     text(X(0.95) + 8, Y(at(0.95, 0.18)) + 26, 'SRPC_1'),
     ink(curve(lo(0.44), 0.12, 0.95), 3.8),
@@ -207,6 +235,14 @@ function longRunPhillips() {
     ink([[X(nairu), OY], [X(nairu), TOPY + 20]], 3.8),
     text(X(nairu), TOPY + 4, 'LRPC'),
     text(X(nairu), OY + 28, 'NAIRU'),
+    guide([[X(nairu), Y(at(nairu, 0.18))], [OX, Y(at(nairu, 0.18))]]),
+    text(OX - 36, Y(at(nairu, 0.18)), 'π₁'),
+    guide([[X(0.32), Y(at(0.32, 0.18))], [OX, Y(at(0.32, 0.18))]]),
+    guide([[X(0.32), Y(at(0.32, 0.18))], [X(0.32), OY]]),
+    text(OX - 36, Y(at(0.32, 0.18)), 'π₂'),
+    text(X(0.32), OY + 28, 'U₂'),
+    guide([[X(nairu), Y(at(nairu, 0.44))], [OX, Y(at(nairu, 0.44))]]),
+    text(OX - 36, Y(at(nairu, 0.44)), 'π₃'),
     dot(X(nairu), Y(at(nairu, 0.18))),
     text(X(nairu) + 18, Y(at(nairu, 0.18)) + 24, 'A'),
     dot(X(0.32), Y(at(0.32, 0.18))),
@@ -238,6 +274,8 @@ function lracEnvelope() {
   marks.lt = items.length - 1
   ;[5, 10, 15].forEach((q0) => items.push(dot(X(uq(q0)), Y(vq(lrac(q0))))))
   items.push(guide([[X(uq(10)), Y(vq(lrac(10)))], [X(uq(10)), OY]]))
+  items.push(guide([[X(uq(10)), Y(vq(lrac(10)))], [OX, Y(vq(lrac(10)))]]))
+  items.push(text(OX - 40, Y(vq(lrac(10))), 'AC*'))
   items.push(text(X(uq(10)), OY + 28, 'MES'))
   const s = slide(305, 'Short-run cost curves and the long-run envelope', items)
   s.fixes = {
@@ -283,14 +321,18 @@ function efficiency() {
     dot(X(ax(c)), Y(ay(ac(c)))),
     dot(X(ax(qa)), Y(ay(d(qa)))),
   ]
-  return slide(306, 'Productive and allocative efficiency', items)
+  const upper = curve(f((q) => ac(q) + 0.14), ax(0.26), ax(0.84))
+  const lower = curve(f(ac), ax(0.26), ax(0.84))
+  const s306 = slide(306, 'Productive and allocative efficiency', items)
+  s306.areas = [{ poly: [...upper, ...[...lower].reverse()], name: 'X-inefficiency', note: 'The gap between the dashed AC and the lowest AC the firm could reach. Organisational slack a firm shielded from competition can afford.' }]
+  return s306
 }
 
 /* 307 --------------------------------------------------------- terms of trade */
 function termsOfTrade() {
   const exportIdx = [100, 108, 118, 120, 118]
   const importIdx = [100, 104, 106, 116, 130]
-  const ux = (i) => 0.08 + i * 0.19
+  const ux = (i) => 0.08 + i * 0.15
   const vy = (v) => ((v - 90) / 50) * 0.92 + 0.04
   const line = (arr) => arr.map((v, i) => [+X(ux(i)).toFixed(1), +Y(vy(v)).toFixed(1)])
   const tot = exportIdx.map((e, i) => Math.round((e / importIdx[i]) * 100))
@@ -306,6 +348,13 @@ function termsOfTrade() {
     items.push(text(X(ux(i)), OY + 28, `Y${i + 1}`))
     items.push(text(X(ux(i)), OY + 66, `${tot[i]}`, tot[i] >= 100 ? 'green' : 'red'))
   })
+  items.push(guide([[X(ux(2)), Y(vy(118))], [OX, Y(vy(118))]]))
+  items.push(guide([[X(ux(2)), Y(vy(118))], [X(ux(2)), OY]]))
+  items.push(dot(X(ux(2)), Y(vy(118))))
+  items.push(text(OX - 40, Y(vy(118)), '118'))
+  items.push(guide([[X(ux(4)), Y(vy(130))], [OX, Y(vy(130))]]))
+  items.push(dot(X(ux(4)), Y(vy(130))))
+  items.push(text(OX - 40, Y(vy(130)), '130'))
   items.push(text(OX - 40, OY + 66, 'ToT'))
   items.push(text(OX - 40, Y(vy(100)), '100'))
   return slide(307, 'The terms of trade as an index', items, [150, 40, 960, 620])
