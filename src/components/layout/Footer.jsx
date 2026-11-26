@@ -15,7 +15,7 @@ export default function Footer() {
   const logoTo = account ? '/dashboard' : '/'
 
   return (
-    <footer data-bg="log" className="glass-strong !rounded-none !border-x-0 !border-b-0 !border-t !border-t-line relative z-10 mt-16">
+    <footer data-bg="log" className="app-footer glass-strong !rounded-none !border-x-0 !border-b-0 !border-t !border-t-line relative z-10 mt-16">
       <div className="mx-auto max-w-6xl px-5 py-14 sm:px-8">
         <div className="grid grid-cols-2 gap-x-6 gap-y-10 sm:grid-cols-4 sm:gap-x-8">
           {FOOTER_COLUMNS.map((col) => (

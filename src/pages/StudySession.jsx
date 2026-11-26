@@ -126,11 +126,41 @@ export default function StudySession() {
   // XP the finished session earned on its own (answers add theirs as they
   // happen), shown on the done screen with the buddy cheering.
   const [earnedXp, setEarnedXp] = useState(0)
+  // Set when the session was ended with Finish and continue: after rating, the next chapter opens
+  const [continueAfter, setContinueAfter] = useState(false)
 
   // Reading a chapter, working a question, drawing a diagram: while a session
   // is running the backdrop goes quiet (see src/lib/focusMode.js). It comes
   // back on the picker and the results screen.
   useFocusMode(phase === 'running')
+
+  // Full screen: the browser's own full screen, the page bar and footer out of the way, and the
+  // column as wide as the screen allows. Esc leaves it, and so does leaving the session.
+  const [full, setFull] = useState(false)
+  useEffect(() => {
+    document.documentElement.classList.toggle('study-full', full)
+    return () => document.documentElement.classList.remove('study-full')
+  }, [full])
+  useEffect(() => {
+    const sync = () => {
+      if (!document.fullscreenElement) setFull(false)
+    }
+    document.addEventListener('fullscreenchange', sync)
+    return () => {
+      document.removeEventListener('fullscreenchange', sync)
+      if (document.fullscreenElement) document.exitFullscreen?.().catch(() => {})
+    }
+  }, [])
+  const toggleFull = () => {
+    const next = !full
+    setFull(next)
+    try {
+      if (next) document.documentElement.requestFullscreen?.().catch(() => {})
+      else if (document.fullscreenElement) document.exitFullscreen?.().catch(() => {})
+    } catch {
+      /* the page still goes wide without the browser's full screen */
+    }
+  }
 
   const chapterLabel = chapter === ALL ? subjectLabel : chapter
 
@@ -223,6 +253,7 @@ export default function StudySession() {
   }
   const finishSession = () => {
     const { id, minutes } = recordSession()
+    setContinueAfter(false)
     setSessionId(id)
     setEarnedXp(minutes + 10)
     setPhase('done')
@@ -239,11 +270,11 @@ export default function StudySession() {
   // the same method, at the top.
   const finishAndContinue = () => {
     if (!nextTopic) return
-    recordSession()
-    setSessionId(null)
-    setChapter(nextTopic)
-    startStudying(nextTopic)
-    jumpToTop()
+    const { id, minutes } = recordSession()
+    setContinueAfter(true)
+    setSessionId(id)
+    setEarnedXp(minutes + 10)
+    setPhase('done')
   }
   // From the "Session saved" screen: no session left to log, just open the next chapter.
   const continueFromSaved = () => {
@@ -253,10 +284,31 @@ export default function StudySession() {
     startStudying(nextTopic)
   }
 
+  // The stars are how confident the chapter feels (5 = confident). A session stores it as
+  // difficulty, the other way round (1 = easy), so the rest of the app reads it as before.
   const rateDifficulty = (n) => {
-    if (sessionId) rateSession(sessionId, n)
+    if (sessionId) rateSession(sessionId, 6 - n)
+    if (continueAfter && nextTopic) {
+      setContinueAfter(false)
+      continueFromSaved()
+      return
+    }
     setPhase(`done-${n}`)
   }
+  const skipRating = () => {
+    setContinueAfter(false)
+    continueFromSaved()
+  }
+
+  // How each chapter was last rated in this method, for the colour on the chapter picker
+  const ratings = useMemo(() => {
+    const m = new Map()
+    sessions
+      .filter((x) => x.subject === subject && x.technique === technique && x.topic && x.difficulty)
+      .sort((a, b) => (a.ts || 0) - (b.ts || 0))
+      .forEach((x) => m.set(x.topic, 6 - x.difficulty))
+    return m
+  }, [sessions, subject, technique])
 
   // Leaving mid-run (back button, closing the tab's route) still counts
   // the minutes that were actually studied, once at least one has passed.
@@ -281,7 +333,7 @@ export default function StudySession() {
   )
 
   return (
-    <Section width={technique === 'diagram-bank' ? 'wide' : phase === 'chapter' || technique === 'essay-plans' || technique === 'diagram-revision' ? 'default' : 'narrow'} animateOnMount className="pt-10 pb-28">
+    <Section width={full && phase === 'running' ? 'full' : technique === 'diagram-bank' ? 'wide' : phase === 'chapter' || technique === 'essay-plans' || technique === 'diagram-revision' ? 'default' : 'narrow'} animateOnMount className="pt-10 pb-28">
       <motion.div variants={fadeInUp} className="mb-6 flex flex-wrap gap-2">
         <Button as={Link} to="/dashboard" variant="ghost" size="sm" className="-ml-4">
           <Icon name="arrowLeft" className="h-4 w-4" />
@@ -313,6 +365,7 @@ export default function StudySession() {
             onPick={pickChapter}
             allKey={ALL}
             marks={paperMarks}
+            ratings={ratings}
           />
         )}
 
@@ -350,7 +403,7 @@ export default function StudySession() {
                 scroll, and Finish session used to scroll away with the top
                 of the page - so ending a session meant scrolling all the way
                 back up. top-[68px] clears the app bar's scrolled height. */}
-            <div className="sticky top-[68px] z-30 mb-6 flex flex-wrap items-center justify-between gap-3 card p-4">
+            <div className={`sticky ${full ? 'top-3' : 'top-[68px]'} z-30 mb-6 flex flex-wrap items-center justify-between gap-3 card p-4`}>
               <div className="min-w-0">
                 <p className="text-xs font-semibold uppercase tracking-widest text-muted">
                   Studying · {techniqueLabel}
@@ -366,6 +419,15 @@ export default function StudySession() {
                 ) : (
                   <Button as={Link} to={`/start/${slugify(subject)}`} size="sm" variant="secondary">
                     Change method
+                  </Button>
+                )}
+                <Button size="sm" variant="secondary" onClick={toggleFull} aria-pressed={full}>
+                  <Icon name={full ? 'shrink' : 'expand'} className="h-4 w-4" />
+                  {full ? 'Exit full screen' : 'Full screen'}
+                </Button>
+                {nextTopic && (
+                  <Button size="sm" variant="secondary" onClick={finishAndContinue}>
+                    {STUDY_NEXT.cta}
                   </Button>
                 )}
                 <Button size="sm" onClick={finishSession}>
@@ -416,11 +478,18 @@ export default function StudySession() {
               Nice work on {chapterLabel}!
             </h1>
             <p className="readable mt-2 text-muted">
-              How difficult was this session, out of 5?
+              How confident do you feel with this chapter, out of 5?
             </p>
             <div className="mt-6">
               <Stars value={0} onRate={rateDifficulty} />
             </div>
+            {continueAfter && nextTopic && (
+              <div className="mt-5">
+                <Button size="sm" variant="ghost" onClick={skipRating}>
+                  Skip and open {nextTopic}
+                </Button>
+              </div>
+            )}
           </motion.div>
         )}
 
@@ -432,7 +501,7 @@ export default function StudySession() {
             </div>
             <h1 className="mt-4 text-2xl font-bold text-fg">Session saved</h1>
             <p className="readable mt-2 text-muted">
-              You rated it {phase.split('-')[1]}/5 difficulty. Come back soon.
+              You rated your confidence {phase.split('-')[1]}/5. Come back soon.
             </p>
             <div className="mt-7 flex flex-wrap justify-center gap-3">
               <Button as={Link} to="/dashboard">

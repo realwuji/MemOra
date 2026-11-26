@@ -81,7 +81,7 @@ export default function AppBar() {
       initial={{ y: -60, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.4, ease: 'easeOut' }}
-      className={`sticky top-0 z-40 transition-[margin] duration-300 ease-out ${
+      className={`app-bar sticky top-0 z-40 transition-[margin] duration-300 ease-out ${
         scrolled ? 'mx-3.5 mt-2.5' : 'mx-0 mt-0'
       }`}
     >

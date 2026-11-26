@@ -2436,3 +2436,12 @@ html.theme-switching :not(.theme-toggle, .theme-toggle *)::before,
 html.theme-switching :not(.theme-toggle, .theme-toggle *)::after {
   transition: none !important;
 }
+
+/* Study full screen: the page bar and footer step aside so the work gets the whole screen */
+html.study-full .app-bar,
+html.study-full .app-footer {
+  display: none;
+}
+html.study-full main {
+  min-height: 100vh;
+}

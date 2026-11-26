@@ -509,3 +509,30 @@
     transition: none;
   }
 }
+
+/* Chapters rated by confidence after a session: red (1 or 2 stars), amber (3), green (4 or 5) */
+.cp-card.is-rated.is-bad {
+  --rate: #d64545;
+}
+.cp-card.is-rated.is-ok {
+  --rate: #e0a22c;
+}
+.cp-card.is-rated.is-good {
+  --rate: #2e9e6b;
+}
+.cp-card.is-rated {
+  border-color: color-mix(in srgb, var(--rate) 80%, var(--line));
+  background-image: linear-gradient(135deg, color-mix(in srgb, var(--rate) 24%, transparent), transparent 70%);
+}
+.cp-card.is-rated .cp-card-status i {
+  background: var(--rate);
+}
+.cp-ring.is-rate-bad .cp-ring-fill {
+  stroke: #d64545;
+}
+.cp-ring.is-rate-ok .cp-ring-fill {
+  stroke: #e0a22c;
+}
+.cp-ring.is-rate-good .cp-ring-fill {
+  stroke: #2e9e6b;
+}

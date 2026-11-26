@@ -14,6 +14,7 @@ const widths = {
   narrow: 'max-w-3xl',
   default: 'max-w-6xl',
   wide: 'max-w-7xl',
+  full: 'max-w-[1800px]',
 }
 
 export default function Section({
