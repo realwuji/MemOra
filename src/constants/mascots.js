@@ -40,7 +40,7 @@ export const MASCOTS = [
     id: 'chopper',
     name: 'Chopper',
     blurb: 'Doctor on duty. Prescribes twenty-five minutes and a glass of water.',
-    look: { theme: 'cream', accent: 'pink', label: 'Cream · Pink' },
+    look: { theme: 'cream', accent: 'pink', label: 'White · Pink' },
     image: '/mascots/chopper.webp',
     lines: {
       idle: [
@@ -61,7 +61,7 @@ export const MASCOTS = [
     id: 'kon',
     name: 'Kon',
     blurb: 'Loud, cocky, secretly soft. Will not let you skip a day.',
-    look: { theme: 'cream', accent: 'orange', label: 'Cream · Orange' },
+    look: { theme: 'cream', accent: 'orange', label: 'White · Orange' },
     image: '/mascots/kon.webp',
     lines: {
       idle: [

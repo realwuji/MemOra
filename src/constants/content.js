@@ -22,7 +22,7 @@ export const NAV_LINKS = [
 // The sun/moon theme toggle in the header (components/layout/ThemeSwitcher.jsx).
 export const THEME_TOGGLE = {
   label: 'Black theme',
-  toCream: 'Switch to the cream theme',
+  toCream: 'Switch to the white theme',
   toBlack: 'Switch to the black theme',
 }
 

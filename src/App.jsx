@@ -33,6 +33,7 @@ const NotFound = lazyPage(() => import('@/pages/NotFound'))
 const DiagramGallery = lazyPage(() => import('@/pages/dev/DiagramGallery'))
 const BrandSheet = lazyPage(() => import('@/pages/dev/BrandSheet'))
 const BankGallery = lazyPage(() => import('@/pages/dev/BankGallery'))
+const CsQuestionPreview = lazyPage(() => import('@/pages/dev/CsQuestionPreview'))
 
 /*
   Routing.
@@ -127,6 +128,7 @@ export default function App() {
           {import.meta.env.DEV && <Route path="/dev/diagrams/:id?" element={<DiagramGallery />} />}
           {import.meta.env.DEV && <Route path="/dev/brand" element={<BrandSheet />} />}
           {import.meta.env.DEV && <Route path="/dev/bank" element={<BankGallery />} />}
+          {import.meta.env.DEV && <Route path="/dev/cs-questions" element={<CsQuestionPreview />} />}
           <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>

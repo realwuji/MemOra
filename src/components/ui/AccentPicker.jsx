@@ -34,14 +34,24 @@ export default function AccentPicker({ className = '' }) {
               aria-label={meta.label}
               title={meta.label}
               onClick={() => setAccent(id)}
-              className={`flex h-9 w-9 items-center justify-center rounded-full transition-transform hover:scale-110 ${
+              className={`flex h-9 w-9 items-center justify-center rounded-full ring-1 ring-line transition-transform hover:scale-110 ${
                 active ? 'ring-2 ring-offset-2 ring-offset-page' : ''
               }`}
-              style={{ backgroundColor: meta.swatch, ...(active ? { '--tw-ring-color': meta.swatch } : {}) }}
+              style={{
+                // Mono is the theme's own ink: black on cream, white on black. Others keep their colour.
+                backgroundColor: id === 'mono' ? 'var(--brand)' : meta.swatch,
+                ...(active ? { '--tw-ring-color': id === 'mono' ? 'var(--brand)' : meta.swatch } : {}),
+              }}
             >
               {active && (
                 <svg viewBox="0 0 20 20" fill="none" className="h-4 w-4" aria-hidden="true">
-                  <path d="M4 10.5l3.5 3.5L16 6" stroke="#fff" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
+                  <path
+                    d="M4 10.5l3.5 3.5L16 6"
+                    stroke={id === 'mono' ? 'var(--on-brand)' : '#fff'}
+                    strokeWidth="2.4"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
                 </svg>
               )}
             </button>

@@ -38,6 +38,8 @@ if (stray.length) {
 const manifest = REVISION.map((p) => {
   const light = { id: p.id, name: p.name, topics: p.topics }
   if (p.groups) light.groups = p.groups
+  // Whether exam questions are the image-based past paper sheets. The study page reads it before the full pack loads.
+  if (p.examImages) light.examImages = true
   light.counts = computeCounts(p)
   return light
 })

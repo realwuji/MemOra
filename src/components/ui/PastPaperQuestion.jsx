@@ -2,6 +2,7 @@ import { useState } from 'react'
 import AnswerPad from '@/components/ui/AnswerPad'
 import Chip from '@/components/ui/Chip'
 import Icon from '@/components/ui/Icon'
+import '@/components/ui/past-paper-stamp.css'
 
 /*
   One real exam question, as printed, with its mark scheme and the examiner's report
@@ -9,9 +10,30 @@ import Icon from '@/components/ui/Icon'
   The report is missing for some questions (the mock sets have none), and then there is no button.
 
   q: { num, set, paper, q, marks, h, msH, erH }. The images live in
-  public/past-papers/maths: <num>.webp (question), ms/<num>.webp, er/<num>.webp.
+  public/past-papers/<subject>: <num>.webp (question), ms/<num>.webp, er/<num>.webp.
+  q.base names the folder (set by each subject's index); maths is the default.
 */
-const BASE = '/past-papers/maths'
+const DEFAULT_BASE = '/past-papers/maths'
+
+// The mark just given: a red cross for wrong, a green tick for right. The key replays the animation
+// each time the mark changes.
+function MarkStamp({ result }) {
+  if (!result) return null
+  const wrong = result === 'wrong'
+  return (
+    <span key={result} className={`pp-stamp is-${result}`} role="status" aria-label={wrong ? 'Marked wrong' : 'Marked right'}>
+      <svg viewBox="0 0 64 64" aria-hidden="true">
+        <circle className="pp-stamp-ring" cx="32" cy="32" r="28" pathLength="1" />
+        {wrong ? (
+          <path className="pp-stamp-mark" d="M21 21 L43 43 M43 21 L21 43" pathLength="1" />
+        ) : (
+          <path className="pp-stamp-mark" d="M18 33 L28 43 L46 22" pathLength="1" />
+        )}
+      </svg>
+      <span className="pp-stamp-word">{wrong ? 'Wrong' : 'Right'}</span>
+    </span>
+  )
+}
 
 function Reveal({ open, src, alt, height }) {
   if (!open) return null
@@ -29,6 +51,7 @@ function Reveal({ open, src, alt, height }) {
 }
 
 export default function PastPaperQuestion({ q, result, onMark, showTopic = false, phase, score, onScore }) {
+  const BASE = q.base || DEFAULT_BASE
   // phase 'sit': timed paper, nothing but the question and the pad. 'mark': mark scheme open, with a mark box.
   const [msPick, setMs] = useState(null)
   const ms = msPick ?? phase === 'mark'
@@ -36,14 +59,20 @@ export default function PastPaperQuestion({ q, result, onMark, showTopic = false
   const label = `${q.set} ${q.paper}, question ${q.q}, ${q.marks} marks`
 
   return (
-    <li className="card exam-sheet overflow-hidden" style={{ contentVisibility: 'auto', containIntrinsicSize: 'auto 900px' }}>
+    <li
+      className={`card exam-sheet overflow-hidden${result ? ` is-${result}` : ''}`}
+      style={{ contentVisibility: 'auto', containIntrinsicSize: 'auto 900px' }}
+    >
       <header className="exam-sheet-head">
         <div>
           <p className="exam-sheet-source"><Icon name="paper" className="h-4 w-4" /> {q.set} / {q.paper}</p>
           <h3 className="exam-sheet-title">Question {q.q}</h3>
           {showTopic && q.topic && <p className="mt-1 text-sm text-muted">{q.topic}</p>}
         </div>
-        <span className="srv-tag exam-sheet-marks">{q.marks} {q.marks === 1 ? 'mark' : 'marks'}</span>
+        <div className="flex flex-wrap items-center justify-end gap-3">
+          <MarkStamp result={result} />
+          <span className="srv-tag exam-sheet-marks">{q.marks} {q.marks === 1 ? 'mark' : 'marks'}</span>
+        </div>
       </header>
       {/* The printed page is dark ink on white, so it keeps a white ground in every theme. */}
       <img
@@ -112,7 +141,7 @@ export default function PastPaperQuestion({ q, result, onMark, showTopic = false
       </div>
       )}
       <Reveal open={ms} src={`${BASE}/ms/${q.num}.webp`} alt={`Mark scheme: ${label}`} height={q.msH} />
-      <Reveal open={er} src={`${BASE}/er/${q.num}.webp`} alt={`Examiner's report: ${label}`} height={q.erH} />
+      <Reveal open={er} src={`${BASE}/er/${q.erFile || q.num}.webp`} alt={`Examiner's report: ${label}`} height={q.erH} />
     </li>
   )
 }

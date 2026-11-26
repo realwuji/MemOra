@@ -569,3 +569,40 @@
 .cp-ring.is-doing .cp-ring-mid {
   color: var(--doing);
 }
+
+/* Hero completion as lit dots, matching the page backdrop */
+.cp-dots {
+  display: grid;
+  justify-items: end;
+  gap: 0.15rem;
+  min-width: 11rem;
+  text-align: right;
+}
+.cp-dot-grid {
+  display: grid;
+  gap: 0.55rem;
+  margin-top: 0.85rem;
+  justify-items: center;
+  width: 11.5rem;
+}
+.cp-dot-grid i {
+  width: 0.34rem;
+  height: 0.34rem;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--fg) 20%, transparent);
+  transition: background 0.4s ease, box-shadow 0.4s ease, transform 0.4s ease;
+  transition-delay: var(--d, 0ms);
+}
+.cp-dot-grid i.is-lit {
+  background: var(--subject);
+  transform: scale(1.35);
+  box-shadow:
+    0 0 6px 1px color-mix(in srgb, var(--subject) 85%, transparent),
+    0 0 14px 3px color-mix(in srgb, var(--subject) 45%, transparent);
+}
+@media (max-width: 640px) {
+  .cp-dots {
+    justify-items: start;
+    text-align: left;
+  }
+}

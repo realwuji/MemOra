@@ -103,7 +103,7 @@ export default function StudySession() {
   // are keyed by paper and spec topic, and the planner carries its own
   // filters for those, so a chapter picker here would just be a second,
   // worse version of the same thing.
-  const hasChapters = Boolean(pack?.groups?.length) && technique !== 'essay-plans' && technique !== 'diagram-revision' && technique !== 'diagram-bank' && technique !== 'application' && technique !== 'past-papers'
+  const hasChapters = Boolean(pack?.groups?.length) && technique !== 'essay-plans' && technique !== 'diagram-revision' && technique !== 'diagram-bank' && technique !== 'application' && technique !== 'past-papers' && !(technique === 'exam-questions' && pack?.examImages)
 
   // A chapter bar segment (Progress/Dashboard) links straight here with
   // ?chapter=<topic> so tapping it lands on that exact chapter, not the

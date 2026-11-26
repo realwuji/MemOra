@@ -12,12 +12,19 @@ import { useApp } from '@/context/AppProvider'
 const KEY = 'memora.pastpapers.maths.done'
 const listeners = new Set()
 
+/*
+  Maths questions are keyed by their number (the saved lists predate other subjects). Any other
+  subject's questions carry a base folder, and are keyed by that folder and number, so the two
+  subjects' numbers never collide.
+*/
+export const doneKey = (q) => (q.base ? `${q.base}:${q.num}` : q.num)
+
 const read = () => {
   try {
     const v = JSON.parse(localStorage.getItem(KEY) || '[]')
     // an older list of ticked numbers counts as right
     if (Array.isArray(v)) return new Map(v.map((n) => (Array.isArray(n) ? n : [n, 'right'])))
-    return new Map(Object.entries(v).map(([k, r]) => [Number(k), r]))
+    return new Map(Object.entries(v).map(([k, r]) => [/^\d+$/.test(k) ? Number(k) : k, r]))
   } catch {
     return new Map()
   }
@@ -41,14 +48,15 @@ export default function usePastPaperDone() {
     listeners.add(setDone)
     return () => listeners.delete(setDone)
   }, [])
-  // mark(q, 'right' | 'wrong'): q is the question object (num, topic, question)
+  // mark(q, 'right' | 'wrong'): q is the question object (num, topic, question, subject)
   const mark = useCallback(
     (q, result) => {
       const next = new Map(state)
-      if (next.get(q.num) === result) next.delete(q.num)
+      const key = doneKey(q)
+      if (next.get(key) === result) next.delete(key)
       else {
-        next.set(q.num, result)
-        logAttempt?.({ subject: 'Maths', topic: q.topic, technique: 'exam-questions', question: q.question, correct: result === 'right', dontKnow: false })
+        next.set(key, result)
+        logAttempt?.({ subject: q.subject || 'Maths', topic: q.topic, technique: 'exam-questions', question: q.question, correct: result === 'right', dontKnow: false })
       }
       write(next)
     },

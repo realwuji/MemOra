@@ -59,6 +59,29 @@ function Ring({ pct, status, size = 38, stroke = 4, children }) {
   )
 }
 
+// Completion as a field of dots, the way the page backdrop draws its lit dots: the first dots
+// light up in the subject colour with a soft halo, the rest stay dim like the grid.
+const DOT_COLS = 12
+const DOT_ROWS = 4
+function DotMeter({ pct }) {
+  const total = DOT_COLS * DOT_ROWS
+  const lit = Math.round((pct / 100) * total)
+  return (
+    <div className="cp-dots" role="img" aria-label={`${pct}% completed`}>
+      <span className="cp-hero-num">
+        {pct}
+        <small>%</small>
+      </span>
+      <span className="cp-hero-cap">completed</span>
+      <div className="cp-dot-grid" style={{ gridTemplateColumns: `repeat(${DOT_COLS}, 1fr)` }} aria-hidden="true">
+        {Array.from({ length: total }, (_, i) => (
+          <i key={i} className={i < lit ? 'is-lit' : ''} style={{ '--d': `${(i % DOT_COLS) * 18 + Math.floor(i / DOT_COLS) * 6}ms` }} />
+        ))}
+      </div>
+    </div>
+  )
+}
+
 function Card({ topic, n, status, examReady, onPick, index, marks, rating, isNotes }) {
   const reduce = useReducedMotion()
   const s = status
@@ -198,13 +221,7 @@ export default function ChapterPicker({ pack, technique, techniqueLabel, states,
           </div>
         </div>
         <div className="cp-hero-ring">
-          <Ring pct={donePct} status="done" size={132} stroke={11}>
-            <span className="cp-hero-num">
-              {donePct}
-              <small>%</small>
-            </span>
-            <span className="cp-hero-cap">completed</span>
-          </Ring>
+          <DotMeter pct={donePct} />
         </div>
       </header>
 

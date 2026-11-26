@@ -522,10 +522,11 @@ export const PACK_MANIFEST = [
         ]
       }
     ],
+    "examImages": true,
     "counts": {
       "flashcards": 452,
       "mcq": 273,
-      "examQuestions": 305,
+      "examQuestions": 1157,
       "essayBank": 0,
       "notes": 22,
       "applicationItems": 0,

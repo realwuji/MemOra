@@ -1,0 +1,105 @@
+/* The mark stamp on a past paper question: a red cross (wrong) or a green tick (right) that draws
+   itself in, lands with a small bounce, and the card's edge takes the same colour. */
+.pp-stamp {
+  --c: var(--success);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  animation: pp-stamp-in 0.55s cubic-bezier(0.2, 1.4, 0.4, 1) both;
+}
+.pp-stamp.is-wrong {
+  --c: var(--danger);
+  animation: pp-stamp-in 0.55s cubic-bezier(0.2, 1.4, 0.4, 1) both, pp-shake 0.42s ease-in-out 0.5s;
+}
+.pp-stamp svg {
+  width: 3.25rem;
+  height: 3.25rem;
+  overflow: visible;
+  flex: none;
+}
+.pp-stamp-ring {
+  fill: color-mix(in srgb, var(--c) 14%, transparent);
+  stroke: var(--c);
+  stroke-width: 4;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: pp-draw 0.5s ease-out 0.08s forwards;
+}
+.pp-stamp-mark {
+  fill: none;
+  stroke: var(--c);
+  stroke-width: 6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: pp-draw 0.35s ease-out 0.42s forwards;
+}
+.pp-stamp-word {
+  border: 1.5px solid var(--c);
+  border-radius: 999px;
+  padding: 0.2rem 0.6rem;
+  color: var(--c);
+  background: var(--surface);
+  font-family: var(--font-mono-ui, monospace);
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.exam-sheet.is-wrong {
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--danger) 70%, transparent);
+  transition: box-shadow 0.3s ease;
+}
+.exam-sheet.is-right {
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--success) 70%, transparent);
+  transition: box-shadow 0.3s ease;
+}
+@keyframes pp-stamp-in {
+  from {
+    opacity: 0;
+    transform: scale(1.7) rotate(-16deg);
+  }
+  60% {
+    opacity: 1;
+    transform: scale(0.92) rotate(-5deg);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) rotate(-5deg);
+  }
+}
+@keyframes pp-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes pp-shake {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+  20% {
+    translate: -5px 0;
+  }
+  40% {
+    translate: 5px 0;
+  }
+  60% {
+    translate: -3px 0;
+  }
+  80% {
+    translate: 2px 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pp-stamp,
+  .pp-stamp.is-wrong {
+    animation: none;
+  }
+  .pp-stamp-ring,
+  .pp-stamp-mark {
+    animation: none;
+    stroke-dashoffset: 0;
+  }
+}

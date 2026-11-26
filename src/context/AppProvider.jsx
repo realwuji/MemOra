@@ -77,7 +77,7 @@ function useResolvedImage(value, setUrl) {
   localStorage on this device, no account and no backend. `user` is always
   present (never null) so pages never need to guard against a signed-out state.
 */
-// The site has two looks, black and cream, and the header toggle flips
+// The site has two looks, black and white, and the header toggle flips
 // between them. High contrast is kept for low-vision users but lives only in
 // Settings > Appearance, never in the toggle. The 'dark' key is the black
 // theme (the key predates the rename, and index.css, SilkField and the saved
@@ -85,13 +85,12 @@ function useResolvedImage(value, setUrl) {
 export const THEMES = ['dark', 'cream', 'high-contrast']
 export const THEME_META = {
   dark: { label: 'Black', icon: 'moon' },
-  cream: { label: 'Cream', icon: 'sun' },
+  cream: { label: 'White', icon: 'sun' },
   'high-contrast': { label: 'High contrast', icon: 'contrast' },
 }
 
-// The plain white theme was retired. Anything saved or recommended under
-// that name (older local state, a buddy's look) lands on cream, its nearest
-// light equivalent.
+// The light theme is called White on screen; its key stays 'cream' so saved
+// state keeps working. Anything saved as 'light' lands on it.
 export const normaliseTheme = (theme) => (theme === 'light' ? 'cream' : theme)
 
 // Accent colour, independent of light/dark - see the `[data-accent=...]`

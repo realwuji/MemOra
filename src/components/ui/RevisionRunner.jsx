@@ -722,7 +722,7 @@ export default function RevisionRunner({
       return <McqRunner items={pack.mcq} onAnswer={onAnswer} empty={empty} />
     case 'exam-questions':
       // Maths questions are the real past paper pages (their own runner, with mark scheme and report).
-      if (pack.pastPapers) {
+      if (pack.pastPapers || pack.examImages) {
         return pack.examQuestions?.length ? (
           <Suspense fallback={null}>
             <PastPaperChapter items={pack.examQuestions} chapterLabel={chapter || pack.name} />
