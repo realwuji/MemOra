@@ -186,9 +186,9 @@ function SubjectCard({ pack, spec, topics, hasActivity, pace, counts, value, cha
             Progress page, where clicking an individual chapter is the
             point. Shown from day one: its shape is the course itself. */}
         <div className="mt-4">
-          <BandBar pack={pack} chapterStates={chapterStates} isYear12={isYear12} color={color} />
+          <BandBar overview pack={pack} chapterStates={chapterStates} isYear12={isYear12} color={color} />
         </div>
-        {hasActivity && <PaceVerdict pace={pace} subjectName={pack.name} />}
+        {hasActivity && (pace.examTs || pace.weeklyRate > 0 || pace.chaptersRemaining === 0) && <PaceVerdict pace={pace} subjectName={pack.name} />}
       </SpineCard>
     </motion.div>
   )

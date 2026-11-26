@@ -36,18 +36,15 @@ export default function PastPaperQuestion({ q, result, onMark, showTopic = false
   const label = `${q.set} ${q.paper}, question ${q.q}, ${q.marks} marks`
 
   return (
-    <li className="card overflow-hidden" style={{ contentVisibility: 'auto', containIntrinsicSize: 'auto 900px' }}>
-      <div className="srv-titlebar">
-        <span className="leds" aria-hidden="true">
-          <i className="srv-led" />
-          <i className="srv-led" />
-          <i className="srv-led" />
-        </span>
-        <span className="path">
-          {q.set} / {q.paper} / Q{q.q} / {q.marks} {q.marks === 1 ? 'mark' : 'marks'}
-          {showTopic && q.topic ? ` / ${q.topic}` : ''}
-        </span>
-      </div>
+    <li className="card exam-sheet overflow-hidden" style={{ contentVisibility: 'auto', containIntrinsicSize: 'auto 900px' }}>
+      <header className="exam-sheet-head">
+        <div>
+          <p className="exam-sheet-source"><Icon name="paper" className="h-4 w-4" /> {q.set} / {q.paper}</p>
+          <h3 className="exam-sheet-title">Question {q.q}</h3>
+          {showTopic && q.topic && <p className="mt-1 text-sm text-muted">{q.topic}</p>}
+        </div>
+        <span className="srv-tag exam-sheet-marks">{q.marks} {q.marks === 1 ? 'mark' : 'marks'}</span>
+      </header>
       {/* The printed page is dark ink on white, so it keeps a white ground in every theme. */}
       <img
         src={`${BASE}/${q.num}.webp`}
@@ -56,12 +53,12 @@ export default function PastPaperQuestion({ q, result, onMark, showTopic = false
         decoding="async"
         width={1000}
         height={q.h}
-        className="block h-auto w-full bg-white"
+        className="exam-sheet-scan block h-auto w-full bg-white"
       />
       <AnswerPad lines={Math.min(24, Math.max(5, q.marks + 3))} />
       {phase === 'sit' ? null : (
-      <div className="flex flex-wrap items-center gap-2 border-t border-line px-3 py-2">
-        <span className="mr-auto font-mono text-xs text-muted">#{q.num}</span>
+      <div className="exam-sheet-actions">
+        <div className="exam-sheet-tools">
         {phase === 'mark' && (
           <label className="flex items-center gap-2 font-mono text-xs text-muted">
             Your mark
@@ -78,37 +75,39 @@ export default function PastPaperQuestion({ q, result, onMark, showTopic = false
           </label>
         )}
         {q.msH ? (
-          <Chip size="sm" selected={ms} aria-expanded={ms} onClick={() => setMs(!ms)}>
+          <Chip quiet size="sm" selected={ms} aria-expanded={ms} onClick={() => setMs(!ms)}>
             {ms ? 'Hide mark scheme' : 'Mark scheme'}
           </Chip>
         ) : null}
         {q.erH ? (
-          <Chip size="sm" selected={er} aria-expanded={er} onClick={() => setEr((v) => !v)}>
+          <Chip quiet size="sm" selected={er} aria-expanded={er} onClick={() => setEr((v) => !v)}>
             {er ? "Hide examiner's report" : "Examiner's report"}
           </Chip>
         ) : null}
+        </div>
         {phase === 'mark' ? null : (
-          <>
-            <Chip
+          <div className="exam-sheet-tools">
+            <Chip quiet
               size="sm"
               selected={result === 'right'}
               aria-pressed={result === 'right'}
               onClick={() => onMark(q, 'right')}
-              className={result === 'right' ? '!border-[#1a7a4f] !bg-[#1a7a4f] !text-white' : ''}
+              className="exam-sheet-right"
             >
-              {result === 'right' && <Icon name="check" className="h-3.5 w-3.5" />}
+              <Icon name="check" className="h-3.5 w-3.5" />
               Got it right
             </Chip>
-            <Chip
+            <Chip quiet
               size="sm"
               selected={result === 'wrong'}
               aria-pressed={result === 'wrong'}
               onClick={() => onMark(q, 'wrong')}
-              className={result === 'wrong' ? '!border-[#c0392b] !bg-[#c0392b] !text-white' : ''}
+              className="exam-sheet-wrong"
             >
+              <Icon name="x" className="h-3.5 w-3.5" />
               Got it wrong
             </Chip>
-          </>
+          </div>
         )}
       </div>
       )}

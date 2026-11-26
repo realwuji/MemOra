@@ -700,6 +700,57 @@ html {
 [data-theme='cream'] .owner-tag {
   color: #8a5d00;
 }
+
+/* Maths exam papers: source, printed sheet, working and self-marking. */
+.exam-sheet {
+  --sheet-gutter: clamp(.75rem, 2.5vw, 1.5rem);
+  background: var(--surface);
+}
+.exam-sheet-head, .exam-sheet-actions, .exam-sheet-toolbar, .exam-sheet-tools {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: .5rem;
+}
+.exam-sheet-head, .exam-sheet-actions {
+  justify-content: space-between;
+  padding: 1rem var(--sheet-gutter);
+}
+.exam-sheet-head { border-bottom: 1px solid var(--line); }
+.exam-sheet-source {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  color: var(--muted);
+  font: 600 .72rem/1.5 var(--font-mono, monospace);
+}
+.exam-sheet-title {
+  margin-top: .2rem;
+  font-size: clamp(1.45rem, 3vw, 2rem);
+  font-weight: 750;
+  line-height: 1.15;
+  letter-spacing: -.035em;
+}
+.exam-sheet .exam-sheet-marks { padding: .35rem .65rem; white-space: nowrap; }
+.exam-sheet-scan { padding-block: .5rem; }
+.exam-sheet-pad {
+  margin: var(--sheet-gutter);
+  border: 1px solid var(--line);
+  border-radius: var(--srv-r);
+  overflow: hidden;
+}
+.exam-sheet-toolbar { padding: .55rem .75rem; border-bottom: 1px solid var(--line); }
+.exam-sheet-pad canvas { background-color: var(--page); }
+.exam-sheet-actions { border-top: 1px solid var(--line); }
+.exam-sheet .srv-chip { min-height: 2rem; padding-inline: .65rem; box-shadow: none; }
+.exam-sheet .srv-chip:hover:not(:disabled) { border-color: var(--fg); }
+.exam-sheet-right[aria-pressed="true"], .exam-sheet-wrong[aria-pressed="true"] {
+  color: var(--result);
+  border-color: var(--result);
+  background: color-mix(in srgb, var(--result) 12%, var(--surface));
+}
+.exam-sheet-right { --result: var(--success); }
+.exam-sheet-wrong { --result: var(--danger); }
 @media (prefers-reduced-motion: reduce) {
   .owner-tag::after {
     animation: none;

@@ -106,22 +106,22 @@ export default function AnswerPad({ lines = 6 }) {
   }
 
   return (
-    <div className="border-t border-line">
-      <div className="flex flex-wrap items-center gap-2 px-3 py-2">
-        <span className="mr-auto font-mono text-xs uppercase tracking-wide text-muted">// Your working</span>
-        <Chip size="sm" selected={!erase} onClick={() => setErase(false)}>
+    <div className="exam-sheet-pad">
+      <div className="exam-sheet-toolbar">
+        <span className="mr-auto font-mono text-xs uppercase tracking-wide text-muted">Your working</span>
+        <Chip quiet size="sm" selected={!erase} aria-pressed={!erase} onClick={() => setErase(false)}>
           Pen
         </Chip>
-        <Chip size="sm" selected={erase} onClick={() => setErase(true)}>
+        <Chip quiet size="sm" selected={erase} aria-pressed={erase} onClick={() => setErase(true)}>
           Eraser
         </Chip>
-        <Chip size="sm" disabled={!count} onClick={undo}>
+        <Chip quiet size="sm" disabled={!count} onClick={undo}>
           Undo
         </Chip>
-        <Chip size="sm" disabled={!count} onClick={clear}>
+        <Chip quiet size="sm" disabled={!count} onClick={clear}>
           Clear
         </Chip>
-        <Chip size="sm" onClick={() => setRows((n) => n + 4)}>
+        <Chip quiet size="sm" onClick={() => setRows((n) => n + 4)}>
           More space
         </Chip>
       </div>
@@ -137,7 +137,7 @@ export default function AnswerPad({ lines = 6 }) {
           height: rows * STEP,
           touchAction: 'pan-y pinch-zoom',
           cursor: erase ? 'cell' : 'crosshair',
-          backgroundImage: `repeating-linear-gradient(to bottom, transparent 0, transparent ${STEP - 1}px, var(--srv-line, rgba(128,128,128,.35)) ${STEP - 1}px, var(--srv-line, rgba(128,128,128,.35)) ${STEP}px)`,
+          backgroundImage: `repeating-linear-gradient(to bottom, transparent 0, transparent ${STEP - 1}px, var(--line) ${STEP - 1}px, var(--line) ${STEP}px)`,
         }}
       />
     </div>

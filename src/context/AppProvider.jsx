@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useMemo, useState } from 'react'
 import * as auth from '@/lib/auth'
+import { rememberFinishedChapter } from '@/lib/chapterCompletion'
 import { normalizeAttempt } from '@/lib/attempts'
 import { PRIORITISED_COURSES, ADVANCED_YEAR_GROUPS } from '@/constants/content'
 import { claimDailyReward } from '@/lib/daily'
@@ -206,6 +207,7 @@ const DEFAULTS = {
   lastVisit: null,
   decks: [],
   sessions: [],
+  finishedChapters: {},
   attempts: [],
   posts: [],
   replies: [],
@@ -301,6 +303,7 @@ function load() {
       // (.correct, .dontKnow, .topic, .subject, .technique, .question) can
       // break. Runs once per load, not just once ever, which is deliberately
       // cheap and idempotent rather than versioned - there's nothing to gate.
+      finishedChapters: (saved.sessions || []).reduce(rememberFinishedChapter, saved.finishedChapters || {}),
       attempts: (saved.attempts || []).map((a) => ({ ...a, ...normalizeAttempt(a) })),
       // Migration: exam dates used to live only in CountdownCard's own
       // 'memora:exams' key, free-text name only. Bring them into central
@@ -560,6 +563,7 @@ export default function AppProvider({ children }) {
       lastVisit: state.lastVisit,
       decks: state.decks,
       sessions: state.sessions,
+      finishedChapters: state.finishedChapters,
       attempts: state.attempts,
       posts: state.posts,
       replies: state.replies,
@@ -739,6 +743,7 @@ export default function AppProvider({ children }) {
       logSession: (session) => {
         const id = 'ses' + Date.now() + Math.random().toString(36).slice(2, 6)
         patch((s) => ({
+          finishedChapters: rememberFinishedChapter(s.finishedChapters, session),
           sessions: [{ id, ts: Date.now(), ...session }, ...s.sessions].slice(0, 200),
         }))
         return id

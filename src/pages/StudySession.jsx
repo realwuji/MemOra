@@ -12,6 +12,7 @@ import { getPackByName } from '@/constants/packs'
 import usePack from '@/hooks/usePack'
 import PageFallback from '@/components/layout/PageFallback'
 import { useApp } from '@/context/AppProvider'
+import { chapterSubjectKey } from '@/lib/chapterCompletion'
 import { slugify, resolveSlug } from '@/lib/slug'
 import { computeAllChapterStates } from '@/lib/attempts'
 import { computeNextBestAction, relevantTopics } from '@/lib/pace'
@@ -70,7 +71,7 @@ export default function StudySession() {
   const { subjectSlug, technique: techniqueParam } = useParams()
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
-  const { user, setRecentTopic, setLastVisit, logSession, rateSession, logAttempt, sessions, attempts, examDates } = useApp()
+  const { user, setRecentTopic, setLastVisit, logSession, rateSession, logAttempt, sessions, finishedChapters, attempts, examDates } = useApp()
   const isYear12 = user?.yearGroup === 'Year 12' && PRIORITISED_COURSES.includes(user?.courseType)
 
   const availableSubjects = user?.courseType === 'University' && user?.courseName
@@ -220,6 +221,7 @@ export default function StudySession() {
       mcq: shuffle(inChapter(fullPack.mcq)).map(shuffleOptions),
       examQuestions: shuffle(inChapter(fullPack.examQuestions)),
     })
+    setSessionId(null)
     setStartedAt(Date.now())
     setPhase('running')
   }
@@ -242,6 +244,7 @@ export default function StudySession() {
   const recordSession = () => {
     const minutes = elapsedMinutes()
     const id = logSession({
+      finished: true,
       subject,
       technique,
       difficulty: null,
@@ -312,15 +315,16 @@ export default function StudySession() {
 
   // Leaving mid-run (back button, closing the tab's route) still counts
   // the minutes that were actually studied, once at least one has passed.
-  const live = useRef({ phase, startedAt, sessionId })
-  live.current = { phase, startedAt, sessionId }
+  const live = useRef(null)
+  live.current = { phase, startedAt, sessionId, subject, technique, chapter }
   useEffect(
     () => () => {
-      const { phase: ph, startedAt: st, sessionId: sid } = live.current
+      const { phase: ph, startedAt: st, sessionId: sid, subject, technique, chapter } = live.current
       if (ph !== 'running' || sid || !st) return
       const minutes = Math.min(180, Math.round((Date.now() - st) / 60000))
       if (minutes < 1) return
       logSession({
+        finished: false,
         subject,
         technique,
         difficulty: null,
@@ -360,6 +364,7 @@ export default function StudySession() {
             technique={technique}
             techniqueLabel={techniqueLabel}
             states={chapterStates}
+            finishedTopics={finishedChapters?.[chapterSubjectKey(subject)]}
             recs={pickerRecs}
             topics={pickerTopics}
             onPick={pickChapter}

@@ -202,7 +202,7 @@ export function computeChapterState({ attempts = [], sessions = [], now = Date.n
 
   const scored = attempts.filter((a) => typeof a.score === 'number' && a.mode && a.mode in MODE_WEIGHT)
   if (!scored.length) {
-    return { ...EMPTY_CHAPTER_STATE, coverageState }
+    return { ...EMPTY_CHAPTER_STATE, coverageState, band: coverageState === 'not_started' ? 'not_started' : 'seen' }
   }
 
   let numerator = 0
@@ -268,8 +268,17 @@ export function computeAllChapterStates({ attempts = [], sessions = [], now = Da
       sessions: group.sessions.filter((s) => s.ts <= weekAgo),
       now: weekAgo,
     })
+    let latestRating = null
+    for (const session of group.sessions) {
+      const difficulty = Number(session.difficulty)
+      if (Number.isInteger(difficulty) && difficulty >= 1 && difficulty <= 5 &&
+          (!latestRating || (session.ts ?? 0) >= (latestRating.ts ?? 0))) {
+        latestRating = session
+      }
+    }
     result.set(k, {
       ...state,
+      confidence: latestRating ? 6 - latestRating.difficulty : null,
       subject: group.subject,
       topic: group.topic,
       bandLastWeek: weekAgoState.band,

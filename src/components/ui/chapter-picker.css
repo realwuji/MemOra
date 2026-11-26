@@ -419,12 +419,15 @@
 .cp-card-n {
   grid-row: 1 / span 2;
   align-self: start;
-  color: color-mix(in srgb, var(--subject) 55%, transparent);
+  color: var(--muted);
   font-family: var(--font-head);
   font-size: 1.55rem;
   font-weight: 800;
   line-height: 1.1;
   font-variant-numeric: tabular-nums;
+}
+[data-theme='dark'] .cp-card-n {
+  color: var(--subject);
 }
 .cp-card-body {
   display: grid;
@@ -512,29 +515,31 @@
 
 /* Chapters rated by confidence after a session: red (1 or 2 stars), amber (3), green (4 or 5) */
 .cp-card.is-rated.is-bad {
-  --rate: #d64545;
+  --rate: var(--danger);
 }
 .cp-card.is-rated.is-ok {
-  --rate: #e0a22c;
+  --rate: var(--warning);
 }
 .cp-card.is-rated.is-good {
-  --rate: #2e9e6b;
+  --rate: var(--success);
 }
 .cp-card.is-rated {
-  border-color: color-mix(in srgb, var(--rate) 80%, var(--line));
-  background-image: linear-gradient(135deg, color-mix(in srgb, var(--rate) 24%, transparent), transparent 70%);
+  border-color: color-mix(in srgb, var(--rate) 68%, var(--line));
+  background-image: linear-gradient(135deg, color-mix(in srgb, var(--rate) 22%, transparent), transparent 70%);
 }
+.cp-card.is-rated::before,
 .cp-card.is-rated .cp-card-status i {
   background: var(--rate);
 }
-.cp-ring.is-rate-bad .cp-ring-fill {
-  stroke: #d64545;
+.cp-card.is-rated .cp-card-status,
+.cp-card.is-rated .cp-ring-mid {
+  color: var(--rate);
 }
-.cp-ring.is-rate-ok .cp-ring-fill {
-  stroke: #e0a22c;
+.cp-card.is-rated .cp-ring-fill {
+  stroke: var(--rate);
 }
-.cp-ring.is-rate-good .cp-ring-fill {
-  stroke: #2e9e6b;
+.cp-card.is-rated .cp-ring-track {
+  stroke: color-mix(in srgb, var(--rate) 30%, transparent);
 }
 
 /* Not started: a soft dashed ring with a play mark, lighting up when the card is hovered */

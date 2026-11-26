@@ -22,6 +22,7 @@ const sizes = {
 
 export default function Chip({
   selected = false,
+  quiet = false,
   size = 'md',
   as,
   to,
@@ -36,10 +37,10 @@ export default function Chip({
     ? 'cursor-not-allowed border-line bg-surface text-muted opacity-40'
     : selected
       ? 'border-brand bg-brand text-on-brand'
-      : 'btn-charge border-line bg-surface text-fg'
+      : quiet ? 'border-line bg-surface text-fg' : 'btn-charge border-line bg-surface text-fg'
 
   // an unselected chip carries the same charged hover as a button (selected ones are already filled)
-  const charged = !disabled && !selected
+  const charged = !quiet && !disabled && !selected
   const inner = charged ? (
     <>
       <span className="btn-charge-current" aria-hidden="true" />
