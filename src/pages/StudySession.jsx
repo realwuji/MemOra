@@ -404,35 +404,53 @@ export default function StudySession() {
                 of the page - so ending a session meant scrolling all the way
                 back up. top-[68px] clears the app bar's scrolled height. */}
             <div className={`sticky ${full ? 'top-3' : 'top-[68px]'} z-30 mb-6 flex flex-wrap items-center justify-between gap-3 card p-4`}>
-              <div className="min-w-0">
-                <p className="text-xs font-semibold uppercase tracking-widest text-muted">
-                  Studying · {techniqueLabel}
-                </p>
-                <h1 className="truncate text-xl font-bold text-fg">{chapterLabel}</h1>
+              <div className="flex min-w-0 items-center gap-3">
+                {hasChapters ? (
+                  <button
+                    type="button"
+                    onClick={() => setPhase('chapter')}
+                    className="flex h-9 w-9 flex-none items-center justify-center rounded-full border border-line text-muted transition hover:border-brand hover:text-fg"
+                    aria-label="All chapters"
+                    title="All chapters"
+                  >
+                    <Icon name="arrowLeft" className="h-4 w-4" />
+                  </button>
+                ) : (
+                  <Link
+                    to={`/start/${slugify(subject)}`}
+                    className="flex h-9 flex-none items-center rounded-full border border-line px-3 text-xs font-semibold text-muted transition hover:border-brand hover:text-fg"
+                  >
+                    Change method
+                  </Link>
+                )}
+                <div className="min-w-0">
+                  <p className="text-xs font-semibold uppercase tracking-widest text-muted">
+                    Studying · {techniqueLabel}
+                  </p>
+                  <h1 className="truncate text-xl font-bold text-fg">{chapterLabel}</h1>
+                </div>
               </div>
               <div className="flex items-center gap-2">
-                {hasChapters ? (
-                  <Button size="sm" variant="secondary" onClick={() => setPhase('chapter')}>
-                    <Icon name="arrowLeft" className="h-4 w-4" />
-                    All chapters
-                  </Button>
-                ) : (
-                  <Button as={Link} to={`/start/${slugify(subject)}`} size="sm" variant="secondary">
-                    Change method
-                  </Button>
-                )}
-                <Button size="sm" variant="secondary" onClick={toggleFull} aria-pressed={full}>
+                <button
+                  type="button"
+                  onClick={toggleFull}
+                  aria-pressed={full}
+                  aria-label={full ? 'Exit full screen' : 'Full screen'}
+                  title={full ? 'Exit full screen' : 'Full screen'}
+                  className="flex h-9 w-9 flex-none items-center justify-center rounded-full border border-line text-muted transition hover:border-brand hover:text-fg"
+                >
                   <Icon name={full ? 'shrink' : 'expand'} className="h-4 w-4" />
-                  {full ? 'Exit full screen' : 'Full screen'}
-                </Button>
-                {nextTopic && (
-                  <Button size="sm" variant="secondary" onClick={finishAndContinue}>
-                    {STUDY_NEXT.cta}
-                  </Button>
-                )}
-                <Button size="sm" onClick={finishSession}>
+                </button>
+                <span className="mx-1 hidden h-6 w-px bg-line sm:block" aria-hidden="true" />
+                <Button size="sm" variant="secondary" onClick={finishSession}>
                   Finish session
                 </Button>
+                {nextTopic && (
+                  <Button size="sm" onClick={finishAndContinue}>
+                    {STUDY_NEXT.cta}
+                    <Icon name="arrowRight" className="h-4 w-4" />
+                  </Button>
+                )}
               </div>
             </div>
 
