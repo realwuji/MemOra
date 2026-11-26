@@ -555,9 +555,39 @@ export default function AppProvider({ children }) {
         return next
       },
       signUp: async (creds) => {
+        // Firebase reports the new account the instant it exists, before this function resumes, so
+        // the clean-start check above has to be told in advance that this email is being set up here
+        try {
+          sessionStorage.setItem('memora.owner-reset', String(creds.email || '').trim().toLowerCase())
+        } catch {
+          /* nothing to record */
+        }
         const next = await auth.signUp(creds)
+        // A brand new account starts clean right here. Left to the check above it would clear the
+        // data and reload the page, which sent people back to the sign in form before the setup
+        // steps (study buddy, photo, username) could show.
+        try {
+          sessionStorage.setItem('memora.owner-reset', next.email)
+        } catch {
+          /* nothing to record */
+        }
+        for (const k of ['memora:exams', 'memora.pastpapers.maths.done', 'memora.pastpapers.maths.attempts', 'memora.pastpapers.maths.dock', 'memora.dr2.seen', 'memora.app.known']) {
+          try {
+            localStorage.removeItem(k)
+          } catch {
+            /* storage unavailable: nothing to clear */
+          }
+        }
+        patch((s) => ({
+          ...DEFAULTS,
+          theme: s.theme,
+          accent: s.accent,
+          customAccent: s.customAccent,
+          a11y: s.a11y,
+          owner: next.email,
+          profile: { ...DEFAULT_PROFILE, name: next.name },
+        }))
         setAccount(next)
-        patch((s) => ({ profile: { ...s.profile, name: next.name } }))
         return next
       },
       signOut: async () => {
