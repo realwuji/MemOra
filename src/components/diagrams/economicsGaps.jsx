@@ -172,9 +172,9 @@ function LongRunPhillips() {
         NAIRU
       </Note>
 
-      <Dot x={px(nairu)} y={py(at(nairu, 0.18))} r={4} colour="var(--fg)" label="A" dy={-10} />
-      <Dot x={px(0.32)} y={py(at(0.32, 0.18))} r={4} colour="var(--fg)" label="B" dy={-10} />
-      <Dot x={px(nairu)} y={py(at(nairu, 0.44))} r={4} colour="var(--fg)" label="C" dy={-10} />
+      <Dot x={px(nairu)} y={py(at(nairu, 0.18))} r={4} colour="var(--fg)" label="A" dx={14} dy={14} />
+      <Dot x={px(0.32)} y={py(at(0.32, 0.18))} r={4} colour="var(--fg)" label="B" dx={-12} dy={-8} />
+      <Dot x={px(nairu)} y={py(at(nairu, 0.44))} r={4} colour="var(--fg)" label="C" dx={14} dy={-8} />
       <ShiftArrow x1={px(nairu) - 4} y1={py(at(nairu, 0.18)) - 4} x2={px(0.34)} y2={py(at(0.32, 0.18)) + 6} colour={DEMAND} />
       <ShiftArrow x1={px(0.34)} y1={py(at(0.32, 0.18)) - 6} x2={px(nairu) - 4} y2={py(at(nairu, 0.44)) + 6} colour={SOCIAL} />
       <Note x={px(0.78)} y={py(0.93)}>expectations adjust:</Note>
@@ -213,8 +213,8 @@ function LracEnvelope() {
           d={plot(srac(q0), q0 - 4.5, q0 + 4.5)}
           colour={[DEMAND, SOCIAL, ALT][i]}
           label={`SRAC${i + 1}`}
-          lx={ex(q0 - 4.2)}
-          ly={ey(srac(q0)(q0 - 4.2)) - 8}
+          lx={i === 0 ? ex(q0 - 1.6) : ex(q0 - 4.2)}
+          ly={i === 0 ? ey(srac(q0)(q0 - 3.2)) - 4 : ey(srac(q0)(q0 - 4.2)) - 8}
         />
       ))}
       <Curve d={plot(lrac, 2, 18)} colour={SUPPLY} label="LRAC" lx={ex(17.2)} ly={ey(lrac(17.2)) + 14} width={2.6} />
@@ -549,7 +549,7 @@ function Efficiency() {
       <Curve d={plot((q) => ac(q) + 0.12, 0.24, 0.84)} colour={ALT} dashed />
       <Guides x={ax(c)} y={ay(ac(c))} xText="Qₚ" />
       <Guides x={ax(qa)} y={ay(d(qa))} xText="Qₐ" />
-      <Note x={ax(0.56)} y={ay(0.92)} colour={ALT}>
+      <Note x={ax(0.5)} y={ay(1.0)} colour={ALT}>
         dashed: X-inefficient AC (slack)
       </Note>
       <Note x={ax(0.3)} y={ay(0.16)} colour={SUPPLY}>

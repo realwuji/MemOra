@@ -740,7 +740,7 @@ function ConsumptionFunction() {
       <Curve d={`M ${px(0)} ${py(0)} L ${px(0.95)} ${py(0.95)}`} colour="var(--muted)" label="45°" lx={px(0.9)} ly={py(0.99)} width="1.4" />
       <Curve d={`M ${px(0)} ${py(0.22)} L ${px(0.95)} ${py(0.8)}`} colour={DEMAND} label="C" lx={px(0.96)} ly={py(0.8)} />
       <circle cx={px(0.565)} cy={py(0.565)} r="3.4" fill="var(--fg)" />
-      <Note x={px(0.565)} y={py(0.565) - 9}>break-even</Note>
+      <Note x={px(0.6)} y={py(0.47)} anchor="start">break-even</Note>
       <Note x={O.x - 6} y={py(0.22) + 4} anchor="end">a</Note>
       <Note x={px(0.78)} y={py(0.94)} colour={SOCIAL}>saving</Note>
       <Note x={px(0.22)} y={py(0.1)} colour={LOSS}>dissaving</Note>
