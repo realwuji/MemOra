@@ -659,3 +659,18 @@
     opacity: 1;
   }
 }
+
+/* Focus mode never draws the travelling ring of dots: the page just settles, the quiet field
+   fading in softly over the backdrop. */
+.bg-wave {
+  display: none;
+}
+.bg-quiet {
+  -webkit-mask-image: none;
+  mask-image: none;
+  opacity: 0;
+  transition: opacity 0.9s ease;
+}
+.atmosphere[data-focus] .bg-quiet {
+  opacity: 1;
+}
