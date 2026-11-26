@@ -31,11 +31,14 @@ let cache = null
 let pending = null
 export const loadBank = () => {
   if (cache) return Promise.resolve(cache)
-  pending ||= Promise.all([import('../data/diagram-bank.json'), import('../data/diagram-copy.js'), import('../data/diagram-extras.js')]).then(([m, c, x]) => {
+  pending ||= Promise.all([import('../data/diagram-bank.json'), import('../data/diagram-copy.js'), import('../data/diagram-extras.js'), import('../data/diagram-points.js')]).then(([m, c, x, pts]) => {
     // The note diagrams (301+) are drawn in the same format and sit in the bank and revision like the rest
     const hidden = new Set(c.HIDDEN)
     const copy = { ...c.COPY, ...x.EXTRA_COPY }
-    cache = Object.fromEntries([...m.default, ...x.EXTRA_SLIDES].map((s) => [s.id, withCopy(s, copy, hidden)]))
+    const marked = new Set(pts.POINT_SLIDES)
+    // slides that never picked a point on their curves get one, with guides to both axes
+    const withPoint = (s) => (marked.has(s.id) ? { ...s, items: [...s.items, ...pts.pointItems(s)] } : s)
+    cache = Object.fromEntries([...m.default, ...x.EXTRA_SLIDES].map((s) => [s.id, withCopy(withPoint(s), copy, hidden)]))
     return cache
   })
   return pending
