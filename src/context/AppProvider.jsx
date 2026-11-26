@@ -371,6 +371,47 @@ function load() {
   }
 }
 
+/*
+  One browser can be used by several accounts. Each account's data (profile picture, progress, past
+  paper marks) is kept under its own email when someone else signs in, and put back when that
+  account signs in again, so signing out and back in never loses a picture.
+*/
+const ACCOUNT_KEYS = ['memora:exams', 'memora.pastpapers.maths.done', 'memora.pastpapers.maths.attempts', 'memora.pastpapers.maths.dock', 'memora.dr2.seen', 'memora.app.known']
+const stashKey = (email) => 'memora:acct:' + String(email).toLowerCase()
+
+function stashAccount(owner, state) {
+  if (!owner) return
+  try {
+    const extras = {}
+    for (const k of ACCOUNT_KEYS) {
+      const v = localStorage.getItem(k)
+      if (v !== null) extras[k] = v
+    }
+    localStorage.setItem(stashKey(owner), JSON.stringify({ state, extras }))
+  } catch {
+    /* storage full or unavailable: that account starts fresh next time */
+  }
+}
+
+// Puts a stashed account's extras back where they live and returns its saved state (or null).
+function restoreAccount(email) {
+  let saved = null
+  try {
+    saved = JSON.parse(localStorage.getItem(stashKey(email)) || 'null')
+  } catch {
+    saved = null
+  }
+  for (const k of ACCOUNT_KEYS) {
+    try {
+      localStorage.removeItem(k)
+      if (saved?.extras?.[k] != null) localStorage.setItem(k, saved.extras[k])
+    } catch {
+      /* storage unavailable */
+    }
+  }
+  return saved?.state || null
+}
+
 const AppContext = createContext(null)
 
 export default function AppProvider({ children }) {
@@ -396,22 +437,21 @@ export default function AppProvider({ children }) {
     } catch {
       return
     }
-    for (const k of ['memora:exams', 'memora.pastpapers.maths.done', 'memora.pastpapers.maths.attempts', 'memora.pastpapers.maths.dock', 'memora.dr2.seen', 'memora.app.known']) {
-      try {
-        localStorage.removeItem(k)
-      } catch {
-        /* storage unavailable: nothing to clear */
-      }
-    }
-    patch((s) => ({
-      ...DEFAULTS,
-      theme: s.theme,
-      accent: s.accent,
-      customAccent: s.customAccent,
-      a11y: s.a11y,
-      owner: account.email,
-      profile: { ...DEFAULT_PROFILE, name: account.name || DEFAULT_PROFILE.name },
-    }))
+    stashAccount(state.owner, state)
+    const back = restoreAccount(account.email)
+    patch((s) =>
+      back
+        ? { ...back, theme: s.theme, accent: s.accent, customAccent: s.customAccent, a11y: s.a11y, owner: account.email }
+        : {
+            ...DEFAULTS,
+            theme: s.theme,
+            accent: s.accent,
+            customAccent: s.customAccent,
+            a11y: s.a11y,
+            owner: account.email,
+            profile: { ...DEFAULT_PROFILE, name: account.name || DEFAULT_PROFILE.name },
+          },
+    )
     // modules that keep their own copy of this data (ticked questions, saved scores) read it once
     // at load, so one reload makes them all start clean
     setTimeout(() => window.location.reload(), 150)
@@ -571,13 +611,8 @@ export default function AppProvider({ children }) {
         } catch {
           /* nothing to record */
         }
-        for (const k of ['memora:exams', 'memora.pastpapers.maths.done', 'memora.pastpapers.maths.attempts', 'memora.pastpapers.maths.dock', 'memora.dr2.seen', 'memora.app.known']) {
-          try {
-            localStorage.removeItem(k)
-          } catch {
-            /* storage unavailable: nothing to clear */
-          }
-        }
+        stashAccount(state.owner, state)
+        restoreAccount(next.email)
         patch((s) => ({
           ...DEFAULTS,
           theme: s.theme,
