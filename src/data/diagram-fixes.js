@@ -1,3 +1,4 @@
+import { EXTRA_FIXES } from './diagram-extras'
 /*
   Corrections to the converted bank, by slide id. The slides are the teacher's
   and are kept as they are; this only adds what a slide left off.
@@ -570,3 +571,5 @@ export const FIXES = {
     drop: [16],
   },
 }
+
+Object.assign(FIXES, EXTRA_FIXES)

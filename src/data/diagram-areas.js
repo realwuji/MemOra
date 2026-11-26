@@ -1,3 +1,4 @@
+import { EXTRA_AREAS } from './diagram-extras'
 /*
   What the shaded or lettered areas of a diagram are, by slide number. Hover an
   area in the bank or in diagram revision and it says what it is.
@@ -26,3 +27,5 @@ export const AREAS = {
     { poly: [[413, 336], [577, 336], [577, 509], [413, 509]], name: 'Area C: revenue gained', note: 'The extra units sold, Q to Q1, at P1. New revenue is B + C.' },
   ],
 }
+
+Object.assign(AREAS, EXTRA_AREAS)

@@ -31,9 +31,11 @@ let cache = null
 let pending = null
 export const loadBank = () => {
   if (cache) return Promise.resolve(cache)
-  pending ||= Promise.all([import('../data/diagram-bank.json'), import('../data/diagram-copy.js')]).then(([m, c]) => {
-    const hidden = new Set(c.HIDDEN)
-    cache = Object.fromEntries(m.default.map((s) => [s.id, withCopy(s, c.COPY, hidden)]))
+  pending ||= Promise.all([import('../data/diagram-bank.json'), import('../data/diagram-copy.js'), import('../data/diagram-extras.js')]).then(([m, c, x]) => {
+    // The note-only diagrams (301+) are drawn in the same format, kept out of the bank and revision
+    const hidden = new Set([...c.HIDDEN, ...x.EXTRA_SLIDES.map((e) => e.id)])
+    const copy = { ...c.COPY, ...x.EXTRA_COPY }
+    cache = Object.fromEntries([...m.default, ...x.EXTRA_SLIDES].map((s) => [s.id, withCopy(s, copy, hidden)]))
     return cache
   })
   return pending
@@ -153,6 +155,15 @@ export const NOTE_DIAGRAMS = {
   'external-economies': [117],
   'surplus-change': [38],
   'ad-as-classical': [172],
+  'limit-pricing': [301],
+  'j-curve': [302],
+  'consumption-function': [303],
+  'long-run-phillips': [304],
+  'lrac-envelope': [305],
+  efficiency: [306],
+  'terms-of-trade': [307],
+  'poverty-trap': [308],
+  'bond-price-yield': [309],
 }
 
 /* ----------------------------------------------------------- questions */
