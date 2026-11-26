@@ -99,7 +99,7 @@ function Card({ topic, n, status, examReady, onPick, index, marks, rating }) {
         </span>
       </span>
       <Ring pct={marked ? Math.max(4, markPct) : s.pct} status={marked ? (wrongLeads ? 'wrong' : 'right') : rated ? `rate-${rated}` : s.id}>
-        {marked ? <span className="text-[0.68rem] font-bold tabular-nums">{markPct}%</span> : s.id === 'done' ? <Icon name="check" className="h-4 w-4" /> : null}
+        {marked ? <span className="text-[0.68rem] font-bold tabular-nums">{markPct}%</span> : rated ? <span className="text-[0.7rem] font-bold tabular-nums">{rating}</span> : s.id === 'done' ? <Icon name="check" className="h-4 w-4" /> : s.id === 'todo' ? <Icon name="play" className="ml-0.5 h-3 w-3" /> : null}
       </Ring>
       <span className="cp-card-go" aria-hidden="true">
         {s.id === 'todo' ? 'Start' : s.id === 'doing' ? 'Continue' : 'Revise again'}

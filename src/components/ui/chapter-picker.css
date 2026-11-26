@@ -536,3 +536,31 @@
 .cp-ring.is-rate-good .cp-ring-fill {
   stroke: #2e9e6b;
 }
+
+/* Not started: a soft dashed ring with a play mark, lighting up when the card is hovered */
+.cp-ring.is-todo .cp-ring-track {
+  stroke: color-mix(in srgb, var(--fg) 22%, transparent);
+  stroke-dasharray: 2 4.4;
+  stroke-linecap: round;
+  stroke-width: 2;
+  transition: stroke 0.25s ease;
+}
+.cp-ring.is-todo .cp-ring-mid {
+  color: color-mix(in srgb, var(--fg) 40%, transparent);
+  transition: color 0.25s ease, transform 0.25s ease;
+}
+.cp-card:hover .cp-ring.is-todo .cp-ring-track {
+  stroke: var(--subject, var(--brand-strong));
+}
+.cp-card:hover .cp-ring.is-todo .cp-ring-mid {
+  color: var(--subject, var(--brand-strong));
+  transform: scale(1.15);
+}
+/* Started: a thinner, cleaner track under the arc */
+.cp-ring.is-doing .cp-ring-track,
+.cp-ring.is-done .cp-ring-track {
+  stroke-width: 3;
+}
+.cp-ring.is-doing .cp-ring-mid {
+  color: var(--doing);
+}
