@@ -543,21 +543,40 @@ function GameTheory() {
 }
 
 function LimitPricing() {
+  // Fractions of the plot. AR slopes down, MR is twice as steep, MC cuts MR at Qm, and ATC meets AR at Qc.
+  const ar = (x) => 0.96 - 0.95 * x
+  const mr = (x) => 0.96 - 1.9 * x
+  const QM = 0.3025
+  const MCM = 0.3875 // MC where it cuts MR
+  const QC = 0.55
+  const PM = ar(QM)
+  const PC = ar(QC)
+  const A = [px(QM), py(PM)]
+  const B = [px(QC), py(PC)]
+  const E = [px(QM), py(MCM)]
   return (
     <Figure
       title="Limit pricing in a contestable market"
-      desc="An incumbent setting price below the profit maximising level and just under a potential entrant's average cost, deterring entry."
-      caption="The incumbent sets price BELOW the profit-maximising level - just under a potential entrant's average cost - so entering would be unprofitable. It sacrifices short-run profit to keep rivals out. Distinct from PREDATORY pricing, which goes below cost to drive out a rival already in the market, and is illegal."
+      desc="A monopolist with average revenue, marginal revenue, marginal cost and average total cost curves. It would earn supernormal profit at price Pm and output Qm, where MR equals MC. Fearing entry it cuts price to Pc, where AR meets ATC, so only normal profit is made, at output Qc."
+      caption="A monopolist facing potential entrants in a contestable market would fear entry, so it cuts price from Pm to Pc, the limit price. At Pc the AR curve meets ATC (point B), so profit falls to just normal profit and entering is no longer worth it. It gives up short-run supernormal profit (at A, where MR = MC) to keep rivals out. Distinct from PREDATORY pricing, which goes below cost to drive out a rival already in the market, and is illegal."
     >
-      <Axes xLabel="Output" yLabel="Price / cost" />
-      <Curve d={`M ${px(0.04)} ${py(0.95)} L ${px(0.92)} ${py(0.14)}`} colour={DEMAND} label="AR" lx={px(0.84)} ly={py(0.1)} />
-      {/* Label sits well below the line: at px(0.58) it ran straight through
-          both the limit-price line and the AC line it belongs to. */}
-      <Curve d={`M ${px(0.06)} ${py(0.2)} L ${px(0.9)} ${py(0.5)}`} colour={SUPPLY} label="AC (incumbent)" lx={px(0.44)} ly={py(0.14)} />
-      <Seg x1={O.x} y1={py(0.66)} x2={px(0.94)} y2={py(0.66)} colour={LOSS} width={1.8} dashed />
-      <Note x={px(0.94)} y={py(0.66) - 6} anchor="end" colour={LOSS}>entrant&apos;s AC</Note>
-      <Seg x1={O.x} y1={py(0.58)} x2={px(0.94)} y2={py(0.58)} colour={SOCIAL} width={2} />
-      <Note x={px(0.94)} y={py(0.52)} anchor="end" colour={SOCIAL}>limit price</Note>
+      <Axes xLabel="Output" yLabel="Costs & Revenue" />
+      <Curve d={`M ${px(0.05)} ${py(ar(0.05))} L ${px(0.92)} ${py(ar(0.92))}`} colour={DEMAND} label="AR" lx={px(0.92)} ly={py(ar(0.92)) + 16} />
+      <Curve d={`M ${px(0.05)} ${py(mr(0.05))} L ${px(0.49)} ${py(mr(0.49))}`} colour={LOSS} label="MR" lx={px(0.53)} ly={py(0.1)} />
+      <Curve d={`M ${px(0.1)} ${py(0.14)} Q ${px(0.42)} ${py(0.5)} ${px(0.66)} ${py(0.95)}`} colour={ALT} label="MC" lx={px(0.68)} ly={py(0.95) + 4} />
+      <Curve d={`M ${px(0.12)} ${py(0.78)} Q ${px(0.52)} ${py(0.06)} ${px(0.92)} ${py(0.8)}`} colour={SOCIAL} label="ATC" lx={px(0.93)} ly={py(0.8)} />
+      <Seg x1={O.x} y1={A[1]} x2={A[0]} y2={A[1]} colour="var(--muted)" width={1.2} dashed />
+      <Seg x1={A[0]} y1={A[1]} x2={A[0]} y2={O.y} colour="var(--muted)" width={1.2} dashed />
+      <Seg x1={O.x} y1={B[1]} x2={B[0]} y2={B[1]} colour="var(--muted)" width={1.2} dashed />
+      <Seg x1={B[0]} y1={B[1]} x2={B[0]} y2={O.y} colour="var(--muted)" width={1.2} dashed />
+      <Dot x={A[0]} y={A[1]} colour={DEMAND} label="A" dx={-12} dy={-8} />
+      <Dot x={B[0]} y={B[1]} colour={SOCIAL} label="B" dx={10} dy={-9} />
+      <Dot x={E[0]} y={E[1]} colour={LOSS} />
+      <Text x={O.x - 6} y={A[1] + 4} anchor="end">Pm</Text>
+      <Text x={O.x - 6} y={B[1] + 4} anchor="end">Pc</Text>
+      <Text x={A[0]} y={O.y + 16}>Qm</Text>
+      <Text x={B[0]} y={O.y + 16}>Qc</Text>
+      <ShiftArrow x1={px(0.065)} y1={A[1] + 8} x2={px(0.065)} y2={B[1] - 8} colour={ALT} />
     </Figure>
   )
 }
