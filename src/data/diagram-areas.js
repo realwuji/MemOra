@@ -1,4 +1,5 @@
 import { EXTRA_AREAS } from './diagram-extras'
+import { MORE_AREAS } from './diagram-areas-more'
 /*
   What the shaded or lettered areas of a diagram are, by slide number. Hover an
   area in the bank or in diagram revision and it says what it is.
@@ -28,4 +29,4 @@ export const AREAS = {
   ],
 }
 
-Object.assign(AREAS, EXTRA_AREAS)
+Object.assign(AREAS, MORE_AREAS, EXTRA_AREAS)
