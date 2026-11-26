@@ -553,12 +553,11 @@ function LimitPricing() {
       <Curve d={`M ${px(0.04)} ${py(0.95)} L ${px(0.92)} ${py(0.14)}`} colour={DEMAND} label="AR" lx={px(0.84)} ly={py(0.1)} />
       {/* Label sits well below the line: at px(0.58) it ran straight through
           both the limit-price line and the AC line it belongs to. */}
-      <Curve d={`M ${px(0.06)} ${py(0.2)} L ${px(0.9)} ${py(0.5)}`} colour={SUPPLY} label="AC (incumbent)" lx={px(0.74)} ly={py(0.3)} />
+      <Curve d={`M ${px(0.06)} ${py(0.2)} L ${px(0.9)} ${py(0.5)}`} colour={SUPPLY} label="AC (incumbent)" lx={px(0.44)} ly={py(0.14)} />
       <Seg x1={O.x} y1={py(0.66)} x2={px(0.94)} y2={py(0.66)} colour={LOSS} width={1.8} dashed />
       <Note x={px(0.94)} y={py(0.66) - 6} anchor="end" colour={LOSS}>entrant&apos;s AC</Note>
       <Seg x1={O.x} y1={py(0.58)} x2={px(0.94)} y2={py(0.58)} colour={SOCIAL} width={2} />
       <Note x={px(0.94)} y={py(0.52)} anchor="end" colour={SOCIAL}>limit price</Note>
-      <Note x={px(0.24)} y={py(0.14)} anchor="start">below profit max, above own AC</Note>
     </Figure>
   )
 }

@@ -12,7 +12,7 @@
   any other, and the axis labels never need repositioning per diagram.
 */
 
-import { createContext, useContext } from 'react'
+import { createContext, useContext, useEffect, useRef } from 'react'
 
 /*
   Per-use annotations for a shared diagram. The same AD/AS component is
@@ -277,7 +277,47 @@ export function Dot({ x, y, r = 4, colour = 'var(--fg)', label, dx = 0, dy = -8 
   below is visible to everyone, because a diagram in an exam context needs
   to say what it shows even when you can see it.
 */
+/*
+  A figure draws itself the first time it scrolls into view: lines trace from their start, then the
+  labels and points fade in, in the order they were written. Same idea as the diagram bank's pen, in a
+  simpler form for these hand-drawn figures. Skipped for reduced motion.
+*/
+function useDrawIn(ref) {
+  useEffect(() => {
+    const svg = ref.current
+    if (!svg || typeof IntersectionObserver === 'undefined') return undefined
+    if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return undefined
+    const io = new IntersectionObserver(
+      ([e]) => {
+        if (!e.isIntersecting) return
+        io.disconnect()
+        const els = [...svg.querySelectorAll('path, line, polyline, circle, rect, text, polygon')].filter((el) => !el.closest('title, desc'))
+        els.forEach((el, i) => {
+          const delay = Math.min(i * 55, 1800)
+          const isStroke = ['path', 'line', 'polyline'].includes(el.tagName.toLowerCase()) && el.getAttribute('fill') === 'none' || el.tagName.toLowerCase() === 'line'
+          let len = 0
+          try {
+            len = isStroke && el.getTotalLength ? el.getTotalLength() : 0
+          } catch {
+            len = 0
+          }
+          if (len > 1) {
+            el.animate([{ strokeDasharray: len, strokeDashoffset: len }, { strokeDasharray: len, strokeDashoffset: 0 }], { duration: 650, delay, easing: 'ease-out', fill: 'backwards' })
+          } else {
+            el.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 400, delay: delay + 200, easing: 'ease-out', fill: 'backwards' })
+          }
+        })
+      },
+      { threshold: 0.35 },
+    )
+    io.observe(svg)
+    return () => io.disconnect()
+  }, [ref])
+}
+
 export function Figure({ title, desc, caption, children }) {
+  const svgRef = useRef(null)
+  useDrawIn(svgRef)
   const titleId = `t-${title.replace(/\W+/g, '-').toLowerCase()}`
   const descId = `${titleId}-d`
   const annotations = useContext(AnnotationContext)
@@ -294,6 +334,7 @@ export function Figure({ title, desc, caption, children }) {
         <span className="path">diagram · {title}</span>
       </div>
       <svg
+        ref={svgRef}
         viewBox={`0 0 ${BOX.w} ${BOX.h}`}
         role="img"
         aria-labelledby={`${titleId} ${descId}`}
