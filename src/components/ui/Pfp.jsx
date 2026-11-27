@@ -119,7 +119,7 @@ export default function Pfp({
       {/* Always-visible badge - the hover overlay above is the desktop cue, this is the one a phone actually sees. */}
       <span
         aria-hidden="true"
-        className="pointer-events-none absolute bottom-0 right-0 grid place-items-center rounded-full border-2 border-surface bg-brand text-on-brand shadow"
+        className="pointer-events-none absolute bottom-0 right-0 grid place-items-center rounded-full border-2 border-surface bg-brand text-on-brand "
         style={{ width: '30%', height: '30%', minWidth: '1.35rem', minHeight: '1.35rem' }}
       >
         <span style={{ width: '58%', height: '58%' }}>
@@ -133,7 +133,7 @@ export default function Pfp({
           onClick={() => setAdjusting({ url: photo })}
           title="Adjust position"
           aria-label="Adjust how the picture is positioned"
-          className="absolute bottom-0 left-0 grid place-items-center rounded-full border-2 border-surface bg-brand-soft text-brand-strong shadow transition-colors hover:bg-brand hover:text-on-brand"
+          className="absolute bottom-0 left-0 grid place-items-center rounded-full border-2 border-surface bg-brand-soft text-brand-strong transition-colors hover:bg-brand hover:text-on-brand"
           style={{ width: '30%', height: '30%', minWidth: '1.35rem', minHeight: '1.35rem' }}
         >
           <span style={{ width: '58%', height: '58%' }}>

@@ -97,6 +97,7 @@ React Router v7 - Supabase client (optional, unused in the demo).
 | `npm run build`   | Production build into `dist/`         |
 | `npm run preview` | Preview the production build          |
 | `npm run lint`    | Lint the codebase (oxlint)            |
+| `npm test`        | Run the test scripts (question order, Continue logic, menu links, Computer Science data) |
 | `npm run deploy`  | Build and deploy to Firebase Hosting  |
 
 ## Adding a page (canonical example)
@@ -129,3 +130,24 @@ chunk. A page that only lists chapters or shows counts must not need the
 content; one that shows questions or notes must load it. Importing `library.js`
 from the app puts every subject (about 2.7MB) in the first download of the page.
 The flashcard maker, study session, and progress page pick it up automatically.
+
+## AI (Mistral Large)
+
+All model calls go through `src/lib/ai/` and nowhere else: `client.js` (config, timeout, error codes,
+optional `VITE_AI_PROXY_URL`), `features.js` (flashcards, mark an answer against a supplied mark scheme,
+explain a mistake) and `index.js` (the app-wide entry, `aiErrorText`). Add a feature as one function in
+`features.js` plus a line in `index.js`, with a test in `scripts/test-ai.mjs` (a fake `fetch`, no key
+needed). The key (`VITE_MISTRAL_API_KEY`) is set by the maintainer in `.env.local`; never commit one. Send
+only the text a feature needs, never a name, email or profile. Without a key the app works as before and
+AI screens say so.
+
+## PWA (install and offline)
+
+`public/site.webmanifest` (icons from `scripts/generate-pwa-icons.mjs`, shortcuts, `id`), the worker
+(`scripts/sw-template.js`, written to `dist/sw.js` with a content version by `scripts/generate-sw.mjs`
+at the end of `npm run build`), `public/offline.html`, and `src/lib/pwa.js` (registration in production
+only, install prompt, iOS and Safari written steps, update and offline state). UI: `src/components/pwa/`
+(install panel in Settings, "Install app" in the account menu and footer, offline and update chips). The
+worker precaches the app shell and pages, and caches past-paper images on first open (capped). Test with
+`scripts/test-pwa.mjs`; to try it for real run `npm run build && npm run preview`, open the site, stop the
+server and reload. Update prompts only appear when a new build changes the version.

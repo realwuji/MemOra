@@ -81,7 +81,7 @@ export default function HowItWorks() {
           </motion.div>
           <motion.p
             variants={fadeInUp}
-            className="mb-5 inline-flex items-center gap-2 rounded-full border border-line bg-surface/70 px-3.5 py-1.5 text-sm font-semibold text-brand-strong backdrop-blur"
+            className="mb-5 inline-flex items-center gap-2 rounded-full border border-line bg-surface/70 px-3.5 py-1.5 text-sm font-semibold text-brand-strong"
           >
             <Icon name="sparkles" className="h-4 w-4" />
             {MARKETING.hero.eyebrow}

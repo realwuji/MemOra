@@ -1,0 +1,12 @@
+{
+  "_about": "Human corrections to the chapter the keyword rules chose (see tag_topics.py). Maps a question number (the index's num) to a chapter name. Found by reading samples of the tagged questions.",
+  "809": "Applications Generation (Translators)",
+  "127": "Assembly Language and the Little Man Computer",
+  "632": "Applications Generation (Translators)",
+  "1098": "Data Structures",
+  "622": "Programming Paradigms",
+  "324": "Programming Paradigms",
+  "24": "Programming Paradigms",
+  "128": "Programming Paradigms",
+  "271": "Programming Paradigms"
+}

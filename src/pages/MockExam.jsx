@@ -411,7 +411,7 @@ export default function MockExam() {
         {phase === 'running' && (
           <motion.div key="running" variants={fadeInUp} initial="hidden" animate="show" exit={{ opacity: 0 }}>
             <div
-              className={`sticky top-20 z-30 mb-6 flex items-center justify-between gap-3 rounded-2xl border px-4 py-3 shadow-lg ${
+              className={`sticky top-20 z-30 mb-6 flex items-center justify-between gap-3 border px-4 py-3 ${
                 secondsLeft <= 300
                   ? 'border-danger bg-danger/10'
                   : 'border-line bg-surface'

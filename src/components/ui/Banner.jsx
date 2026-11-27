@@ -93,7 +93,7 @@ export default function Banner({
           </button>
           <span
             aria-hidden="true"
-            className="pointer-events-none absolute bottom-2 right-2 grid h-6 w-6 place-items-center rounded-full border-2 border-surface bg-brand text-on-brand shadow"
+            className="pointer-events-none absolute bottom-2 right-2 grid h-6 w-6 place-items-center rounded-full border-2 border-surface bg-brand text-on-brand "
           >
             <Icon name="camera" className="h-3 w-3" />
           </span>
@@ -103,7 +103,7 @@ export default function Banner({
               onClick={() => setAdjusting({ url: src })}
               title="Adjust position"
               aria-label="Adjust how the banner is positioned"
-              className="absolute bottom-2 left-2 inline-flex items-center gap-1.5 rounded-full border border-white/30 bg-black/45 px-2.5 py-1 text-[0.68rem] font-bold text-white shadow backdrop-blur-sm transition-colors hover:bg-black/65"
+              className="absolute bottom-2 left-2 inline-flex items-center gap-1.5 rounded-full border border-white/30 bg-black/45 px-2.5 py-1 text-[0.68rem] font-bold text-white transition-colors hover:bg-black/65"
             >
               <Icon name="motion" className="h-3 w-3" />
               Adjust

@@ -1,0 +1,468 @@
+/* ===================================================================
+   Header chrome and mega menu, in Memoraa's square terminal style.
+   Square corners come from the global rule in server.css; hairlines are --srv-line; a "lit" dot is
+   the same pinpoint-and-faint-bloom as the backdrop (--bg-lit, atmosphere.css). Nothing here blurs,
+   glows or rounds. Motion is transform, opacity and (for the one morph) width, height and left.
+   =================================================================== */
+
+/* ------------------------------------------------------------ the bar */
+.app-bar-bg {
+  background: color-mix(in srgb, var(--page) 94%, transparent);
+  border-bottom: 1px solid var(--srv-line);
+  transition: border-color 0.2s ease;
+}
+.app-bar[data-scrolled='true'] .app-bar-bg {
+  border-bottom-color: color-mix(in srgb, var(--fg) 30%, transparent);
+}
+.app-bar-btn {
+  display: grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 1px solid var(--srv-line);
+  background: var(--surface);
+  color: var(--fg);
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+.app-bar-btn:hover,
+.app-bar-btn[aria-expanded='true'] {
+  border-color: var(--fg);
+}
+
+/* On public pages the bar is see-through and borderless at the very top, so it merges into the backdrop,
+   and takes the page colour and a hairline once the page scrolls. */
+.mkt-bar[data-scrolled='false'] .app-bar-bg {
+  background: transparent;
+  border-bottom-color: transparent;
+}
+
+/* --------------------------------------------------------- the triggers */
+.mn-nav {
+  display: none;
+  align-items: center;
+  gap: 1.5rem;
+}
+@media (min-width: 768px) {
+  .mn-nav { display: flex; }
+}
+.mn-top {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.35rem 0;
+  border: 0;
+  background: none;
+  color: var(--muted);
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+.mn-top:hover,
+.mn-top:focus-visible,
+.mn-top[aria-expanded='true'],
+.mn-top.is-route {
+  color: var(--fg);
+}
+.mn-caret {
+  width: 0.8rem;
+  height: 0.8rem;
+  transition: transform 0.2s ease;
+}
+.mn-top[aria-expanded='true'] .mn-caret { transform: rotate(180deg); }
+/* the current page or open menu is marked by a row of lit dots under its label, not a drawn line */
+.mn-top::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -5px;
+  height: 7px;
+  background-image: radial-gradient(circle, var(--fg) 0, color-mix(in srgb, var(--fg) 80%, transparent) 0.6px, color-mix(in srgb, var(--fg) 25%, transparent) 1.5px, transparent 2.6px);
+  background-size: 7px 7px;
+  background-position: 0 50%;
+  opacity: 0;
+  transition: opacity 0.18s ease;
+  pointer-events: none;
+}
+.mn-top.is-route::after,
+.mn-top[aria-expanded='true']::after {
+  opacity: 0.85;
+}
+
+/* ------------------------------------------------------------ the panel */
+.mn-panel {
+  position: absolute;
+  top: calc(100% - 1px);
+  left: 0;
+  z-index: 60;
+  width: 0;
+  height: 0;
+  border: 1px solid color-mix(in srgb, var(--fg) 32%, transparent);
+  background: var(--surface);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translateY(-4px);
+  transition:
+    width 0.28s cubic-bezier(0.2, 0.7, 0.2, 1),
+    height 0.28s cubic-bezier(0.2, 0.7, 0.2, 1),
+    left 0.28s cubic-bezier(0.2, 0.7, 0.2, 1),
+    opacity 0.16s ease,
+    transform 0.2s ease,
+    visibility 0s linear 0.16s;
+}
+.mn-panel[data-open='true'] {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: none;
+  transition-delay: 0s;
+}
+/* first open: land at size with no morph */
+.mn-panel[data-instant='true'] {
+  transition: opacity 0.16s ease, transform 0.2s ease, visibility 0s;
+}
+/* a bridge so the pointer can travel from the bar to the panel without it closing */
+.mn-panel::before {
+  content: '';
+  position: absolute;
+  left: -1px;
+  right: -1px;
+  top: -14px;
+  height: 14px;
+}
+.mn-viewport {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+.mn-content {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: max-content;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease, transform 0.28s cubic-bezier(0.2, 0.7, 0.2, 1), visibility 0s linear 0.2s;
+}
+.mn-content[data-pos='before'] { transform: translateX(-28px); }
+.mn-content[data-pos='after'] { transform: translateX(28px); }
+.mn-content[data-pos='active'] {
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+  transition-delay: 0s;
+}
+/* the content of a closed panel stays hidden, so nothing shows while it fades */
+.mn-panel[data-open='false'] .mn-content[data-pos='active'] { opacity: 0; }
+
+/* ------------------------------------------------- title bar and body */
+.mn-bar .mn-hint {
+  margin-left: auto;
+  padding: 0.05rem 0.35rem;
+  border: 1px solid var(--srv-line);
+  font-size: 0.6rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.mn-body {
+  display: flex;
+  background-image: radial-gradient(circle, color-mix(in srgb, var(--fg) 11%, transparent) 0.8px, transparent 1.4px);
+  background-size: 14px 14px;
+}
+.mn-cols {
+  display: flex;
+  gap: 1.75rem;
+  padding: 1rem 1.25rem 1.1rem;
+}
+.mn-col { width: 14.5rem; }
+.mn-coltitle {
+  margin: 0 0 0.45rem;
+  color: var(--muted);
+  font-family: var(--font-mono-ui);
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.mn-list {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* ------------------------------------------------------------- the links */
+.mn-link {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  padding: 0.5rem 0.6rem;
+  border-left: 2px solid transparent;
+  color: var(--fg);
+  text-decoration: none;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+.mn-prompt {
+  width: 1ch;
+  margin-top: 0.05rem;
+  color: var(--muted);
+  font-family: var(--font-mono-ui);
+  font-size: 0.85rem;
+  font-weight: 700;
+  opacity: 0;
+  transform: translateX(-4px);
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+.mn-text { display: flex; flex-direction: column; gap: 0.1rem; min-width: 0; }
+.mn-label { font-size: 0.92rem; font-weight: 650; line-height: 1.25; }
+.mn-desc { color: var(--muted); font-size: 0.78rem; line-height: 1.35; }
+/* hover and focus: a coloured edge, the prompt appears, and dots light up along the row's right end */
+.mn-link::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  background-image: radial-gradient(circle, var(--fg) 0, color-mix(in srgb, var(--fg) 80%, transparent) 0.5px, color-mix(in srgb, var(--fg) 30%, transparent) 1.2px, transparent 2.4px);
+  background-size: 10px 10px;
+  -webkit-mask-image: linear-gradient(90deg, transparent 55%, #000 100%);
+  mask-image: linear-gradient(90deg, transparent 55%, #000 100%);
+  transition: opacity 0.2s ease;
+}
+.mn-link:hover,
+.mn-link:focus-visible {
+  outline: none;
+  border-left-color: var(--fg);
+  background: color-mix(in srgb, var(--fg) 5%, transparent);
+}
+.mn-link:hover .mn-prompt,
+.mn-link:focus-visible .mn-prompt { opacity: 1; transform: none; color: var(--fg); }
+.mn-link:hover::after,
+.mn-link:focus-visible::after { opacity: 0.5; }
+
+/* ------------------------------------------------------------- the cards */
+.mn-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  width: 15rem;
+  padding: 1rem 1.1rem 1.1rem 0;
+}
+.mn-card {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--srv-line);
+  background: var(--surface);
+  color: var(--fg);
+  text-decoration: none;
+  transition: border-color 0.15s ease;
+}
+.mn-card:hover,
+.mn-card:focus-visible { outline: none; border-color: var(--fg); }
+.mn-card-body { display: flex; flex-direction: column; gap: 0.25rem; padding: 0.7rem 0.8rem 0.8rem; }
+.mn-card-title {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+.mn-card-arrow {
+  font-family: var(--font-mono-ui);
+  color: var(--muted);
+  transition: transform 0.18s ease, color 0.18s ease;
+}
+.mn-card:hover .mn-card-arrow,
+.mn-card:focus-visible .mn-card-arrow { transform: translateX(3px); color: var(--fg); }
+.mn-card-desc { color: var(--muted); font-size: 0.76rem; line-height: 1.4; }
+
+/* Below 1024px the panel is narrower than the cards need: drop the card column, keep the links. */
+@media (max-width: 1023px) {
+  .mn-cards { display: none; }
+  .mn-cols { gap: 1.25rem; padding-right: 1rem; }
+}
+
+/* ------------------------------------------------------- the dot art */
+.mn-art {
+  position: relative;
+  height: 84px;
+  overflow: hidden;
+  border-bottom: 1px solid var(--srv-line);
+  background-image: radial-gradient(circle, var(--bg-dot) 0, var(--bg-dot) 0.9px, transparent 1.5px);
+  background-size: 14px 14px;
+}
+.mn-win {
+  position: absolute;
+  display: block;
+  overflow: hidden;
+  will-change: transform;
+}
+.mn-win > i {
+  position: absolute;
+  display: block;
+  background-image: var(--bg-lit);
+  background-size: 14px 14px;
+  will-change: transform;
+}
+/* packets along a row: the window slides right, the bright lattice inside slides left */
+.mn-h { left: 0; width: var(--len); height: 14px; animation: mn-h-band var(--dur) linear infinite; animation-delay: var(--delay); -webkit-mask-image: linear-gradient(90deg, transparent, #000 90%); mask-image: linear-gradient(90deg, transparent, #000 90%); }
+.mn-h > i { left: 0; top: 0; width: 420px; height: 14px; animation: mn-h-pin var(--dur) linear infinite; animation-delay: var(--delay); }
+.mn-h.rev, .mn-h.rev > i { animation-direction: reverse; }
+.mn-h.rev { -webkit-mask-image: linear-gradient(270deg, transparent, #000 90%); mask-image: linear-gradient(270deg, transparent, #000 90%); }
+@keyframes mn-h-band { from { transform: translate3d(calc(var(--len) * -1), 0, 0); } to { transform: translate3d(238px, 0, 0); } }
+@keyframes mn-h-pin { from { transform: translate3d(var(--len), 0, 0); } to { transform: translate3d(-238px, 0, 0); } }
+/* packets down a column */
+.mn-v { top: 0; width: 14px; height: var(--len); animation: mn-v-band var(--dur) linear infinite; animation-delay: var(--delay); -webkit-mask-image: linear-gradient(180deg, transparent, #000 90%); mask-image: linear-gradient(180deg, transparent, #000 90%); }
+.mn-v > i { left: 0; top: 0; width: 14px; height: 200px; animation: mn-v-pin var(--dur) linear infinite; animation-delay: var(--delay); }
+.mn-v.rev, .mn-v.rev > i { animation-direction: reverse; }
+.mn-v.rev { -webkit-mask-image: linear-gradient(0deg, transparent, #000 90%); mask-image: linear-gradient(0deg, transparent, #000 90%); }
+@keyframes mn-v-band { from { transform: translate3d(0, calc(var(--len) * -1), 0); } to { transform: translate3d(0, 84px, 0); } }
+@keyframes mn-v-pin { from { transform: translate3d(0, var(--len), 0); } to { transform: translate3d(0, -84px, 0); } }
+/* log dashes drifting up, soft at the top and bottom so a row of dots swells and fades */
+.mn-u { top: 0; height: 28px; opacity: 0.8; animation: mn-u-band var(--dur) linear infinite; animation-delay: var(--delay); -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 14px, transparent 100%), linear-gradient(180deg, transparent, #000 50%, transparent); mask-image: linear-gradient(90deg, transparent 0, #000 14px, transparent 100%), linear-gradient(180deg, transparent, #000 50%, transparent); -webkit-mask-composite: source-in; mask-composite: intersect; }
+.mn-u > i { left: 0; top: 0; width: 100%; height: 200px; animation: mn-u-pin var(--dur) linear infinite; animation-delay: var(--delay); }
+@keyframes mn-u-band { from { transform: translate3d(0, 112px, 0); } to { transform: translate3d(0, -56px, 0); } }
+@keyframes mn-u-pin { from { transform: translate3d(0, -112px, 0); } to { transform: translate3d(0, 56px, 0); } }
+/* rack: rows of lit dots as the unit dividers, and a few LEDs that blink irregularly */
+.mn-rackrows {
+  position: absolute;
+  inset: 0;
+  background-image: var(--bg-lit);
+  background-size: 14px 14px;
+  opacity: 0.5;
+  -webkit-mask-image: linear-gradient(to bottom, #000 14px, transparent 14px);
+  mask-image: linear-gradient(to bottom, #000 14px, transparent 14px);
+  -webkit-mask-size: 100% 42px;
+  mask-size: 100% 42px;
+  -webkit-mask-repeat: repeat-y;
+  mask-repeat: repeat-y;
+}
+.mn-led {
+  position: absolute;
+  top: 21px;
+  left: var(--x);
+  width: 14px;
+  height: 14px;
+  margin-left: -7px;
+  margin-top: -7px;
+  background-image: var(--bg-lit);
+  animation: mn-blink var(--blink) steps(1, end) infinite;
+  animation-delay: var(--delay);
+}
+.mn-led:nth-of-type(even) { top: 63px; }
+@keyframes mn-blink {
+  0%, 18% { opacity: 1; }
+  19%, 28% { opacity: 0; }
+  29%, 52% { opacity: 1; }
+  53%, 61% { opacity: 0; }
+  62%, 100% { opacity: 1; }
+}
+
+/* ------------------------------------------- the card for something real */
+/* A card that names real state (your last chapter, your weakest one) carries the subject's colour on a
+   left edge, a status LED, the subject name and, when there is one, its readiness. */
+.mn-card.has-subject { border-left: 2px solid var(--subject); }
+.mn-card-eyebrow {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  color: var(--subject);
+  font-family: var(--font-mono-ui);
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.mn-card-eyebrow .srv-led { --led: var(--subject); }
+.mn-card-eyebrow .srv-tag { margin-left: auto; }
+
+/* ------------------------------------------------ the Continue shortcut */
+.mn-resume {
+  display: none;
+  align-items: center;
+  gap: 0.5rem;
+  max-width: 17rem;
+  height: 2.5rem;
+  padding: 0 0.8rem;
+  border: 1px solid var(--srv-line);
+  border-left: 2px solid var(--subject, var(--fg));
+  background: var(--surface);
+  color: var(--fg);
+  text-decoration: none;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+@media (min-width: 1100px) {
+  .mn-resume { display: inline-flex; }
+}
+.mn-resume .srv-led { --led: var(--subject, var(--fg)); }
+.mn-resume-label {
+  color: var(--muted);
+  font-family: var(--font-mono-ui);
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.mn-resume-topic {
+  min-width: 0;
+  overflow: hidden;
+  font-size: 0.82rem;
+  font-weight: 650;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.mn-resume:hover,
+.mn-resume:focus-visible {
+  outline: none;
+  border-color: var(--fg);
+  border-left-color: var(--subject, var(--fg));
+  background: color-mix(in srgb, var(--fg) 5%, var(--surface));
+}
+
+/* ------------------------------------------------------ the account menu */
+.mn-account {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 6px);
+  z-index: 60;
+  width: 16rem;
+  border: 1px solid color-mix(in srgb, var(--fg) 32%, transparent);
+  background: var(--surface);
+}
+.mn-account .mn-who {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.75rem 0.9rem;
+  border-bottom: 1px solid var(--srv-line);
+}
+.mn-account .mn-items { display: flex; flex-direction: column; padding: 0.35rem; }
+.mn-account .mn-link { padding: 0.55rem 0.6rem; width: 100%; text-align: left; font: inherit; background: none; border-top: 0; border-right: 0; border-bottom: 0; cursor: pointer; }
+.mn-account .mn-link .mn-label { font-size: 0.88rem; }
+.mn-account .mn-sep { margin: 0.3rem 0; border-top: 1px solid var(--srv-line); }
+
+/* -------------------------------------------------- reduced motion, contrast */
+@media (prefers-reduced-motion: reduce) {
+  .mn-panel,
+  .mn-panel[data-instant='true'],
+  .mn-content,
+  .mn-prompt,
+  .mn-card-arrow,
+  .mn-caret { transition: opacity 0.12s ease; transform: none; }
+  .mn-content[data-pos='before'],
+  .mn-content[data-pos='after'] { transform: none; }
+  .mn-win,
+  .mn-led { display: none; }
+}
+[data-theme='high-contrast'] .mn-link::after,
+[data-theme='high-contrast'] .mn-top::after { display: none; }
+[data-theme='high-contrast'] .mn-panel,
+[data-theme='high-contrast'] .mn-account { border: 2px solid var(--fg); }

@@ -111,12 +111,11 @@ export default function HeroBanner({
       </div>
       <Banner src={banner} pos={bannerPos} className="aspect-[24/6] w-full">
         <span aria-hidden="true" className="banner-scrim absolute inset-0" />
-        <span aria-hidden="true" className="srv-scan" />
         <div className="relative flex h-full items-start justify-end p-4 sm:p-5">
           {showSetup && (
             <Link
               to="/profile"
-              className="inline-flex items-center gap-1.5 rounded-md bg-black/40 px-3 py-1 text-[0.7rem] font-bold text-white backdrop-blur-sm transition-colors hover:bg-black/55"
+              className="inline-flex items-center gap-1.5 rounded-md bg-black/40 px-3 py-1 text-[0.7rem] font-bold text-white transition-colors hover:bg-black/55"
               style={{ fontFamily: 'var(--font-mono-ui)' }}
             >
               <Icon name="user" className="h-3.5 w-3.5" />
@@ -132,7 +131,7 @@ export default function HeroBanner({
               editor: changing it happens there, never here. */}
           <Link
             to="/profile"
-            className="mx-auto block h-32 w-32 rounded-full bg-surface p-1.5 shadow-lg ring-1 ring-line transition-transform hover:-translate-y-0.5 sm:h-36 sm:w-36 lg:mx-0"
+            className="mx-auto block h-32 w-32 rounded-full bg-surface p-1.5 ring-1 ring-line transition-transform hover:-translate-y-0.5 sm:h-36 sm:w-36 lg:mx-0"
             aria-label="Your profile"
           >
             <Pfp photo={photo} pos={photoPos} name={fullName || name} className="h-full w-full" />
@@ -235,8 +234,6 @@ export default function HeroBanner({
                 animate={{ width: `${Math.max(2, lvl.progress * 100)}%` }}
                 transition={{ duration: 1.1, ease: [0.22, 1, 0.36, 1] }}
               >
-                <span aria-hidden="true" className="xp-shine" />
-                <span aria-hidden="true" className="xp-tip" />
               </motion.div>
             </div>
             {reward && (

@@ -122,7 +122,7 @@ To check one question on screen, run `npm run dev` and open `http://localhost:51
 ## 6. Limits
 
 - **Parts with no header.** Question 6 of the June 2017 Paper 2 has parts (e) and (f) with no header in the PDF. They sit in the image of part (d)(iii), so that image shows them too. The marks shown are those of (d)(iii) only. The source is wrong here, not the converter, so these cannot be split without the source.
-- **No topics yet.** The chapter view needs a topic for each question. The text is in the images, so this needs either hand mapping by question or OCR. `topic` is null until then.
+- **Topics are assigned by keyword rules, not by a person.** See section 9. About nine in ten are right by spot-check; the rest can be corrected in `scripts/pastpapers/topic-overrides.json`.
 - **Stems repeat.** A long stem appears in every part of its question. This is deliberate, so each part stands alone. It is also why some images are tall.
 - **Only one copy per id.** When two PDFs have the same id, the first file in sorted order is kept.
 
@@ -137,6 +137,42 @@ To check one question on screen, run `npm run dev` and open `http://localhost:51
 
 ## 8. Still to do
 
-- Map each Computer Science question to a chapter, so the chapter view can use them.
 - Add a Computer Science past-papers view, based on `PastPapers.jsx`, and point the exam-questions page at the new list.
 - Look at the 31 tall parts and fix the parts that are missing headers, if the source can be read another way.
+- Find the answer areas for Maths too (section 10 only covers Computer Science).
+
+## 9. Topics: how each question got its chapter
+
+Every question has a `topic` in the index, one of the 22 chapters of the Computer Science pack (the same names as the notes and the chapter picker). The questions are images, so there was no text to search; the method is:
+
+1. **Read the text off the images** with `scripts/pastpapers/ocr_questions.py`. It uses Apple Vision (macOS, nothing to install system-wide) in its "fast" mode, which read these printed pages well; the "accurate" mode returned nothing here. It needs `pip install ocrmac pillow` in a virtualenv, and writes one JSON file of `{ num: text }`. It takes under a minute.
+2. **Tag by keyword rules** with `scripts/pastpapers/tag_topics.py <ocr.json> --write`. Each chapter has weighted keyword patterns (specific terms like "round robin" and "two's complement" weigh more than generic ones like "table"). The highest score wins. If it is too low to trust, the other parts of the same question vote (they share a scenario). If the whole question has no signal, it goes to a default chapter for its component. Paper 1 and AS Paper 1 are Component 1; Paper 2 and AS Paper 2 are Component 2, which gives the chapters of that component a small bonus.
+3. **Corrections** live in `scripts/pastpapers/topic-overrides.json` (question number to chapter name) and win over the rules. A spot-check finding is recorded there without touching the rules.
+4. Without `--write` the script only reports: how many questions each chapter got, how many were decided by their own text, by neighbours or by default, and a random sample (`--sample N --seed S`) to read.
+
+**Checks done:** two independent random samples of 70 questions each (about 6 per cent of the set each) were read against their text. The first found about seven wrong or doubtful tags (a Big O question read as "O{n)", a binary search tree tagged as binary search, RAM versus ROM pulled into processors by a stray "GPU", the verb "inherit" in an AI-bias question tagged as OOP, a database part tagged OOP, and stacks lost to a same-component bonus); the rules were fixed for each. The second sample, on the fixed rules, was about 90 per cent right, with five wrong or probably wrong (a "type of translator" question tagged Systems Software, an LMC addressing question tagged Processor, library files tagged Paradigms, a 2D array question tagged Sorting, a stack in an array tagged Programming Techniques); the rules were fixed where a rule was the cause and the rest are in the overrides file. Every chapter has questions (Programming Paradigms has the fewest, 5, because the exam rarely asks about it directly). `npm run check:past-papers` fails the build if any question has no topic, a topic that is not a chapter of the pack, or a chapter has no questions.
+
+**Known weak spots:** a question whose scenario is about one thing and whose part asks about another can follow the scenario (the stem is repeated in every part). Heavily mixed questions go to the chapter they mostly test. Run the tagger with a new `--seed` to spot-check again after changing a rule.
+
+## 10. Answer areas: typing straight onto the paper
+
+A question image is a printed page, so the places a student writes are part of the picture. `scripts/pastpapers/detect_answer_areas.py` finds them once, and the app lays a transparent text field over each (`components/ui/PaperFields.jsx`), in the handwriting font and a blue-black biro ink, so a keyboard user can fill a truth table or write on the printed lines. The working pad and the pen are untouched, and nothing is drawn on the image.
+
+**What it finds** (OpenCV, no machine learning): (1) the empty cells of a table, and empty ruled boxes: long horizontal and vertical lines are kept by a morphological opening, the regions they enclose are the cells, and a cell is an answer area when it has almost no ink in it (a printed value, even one digit, makes it a given, not an answer); (2) answer lines: rows of dots and long ruled lines, including pale grey ones, with blank paper directly above them (a printed row of text, such as a code listing, has ink on both sides and is rejected). The grid is found on a sensitive mask so a table with pale cell edges is still one table of cells. Short lines (circuit wires, arrows, underlines) are ignored.
+
+**Output:** `src/data/computer-science-answer-areas.js`, `{ num: [[x, y, w, h, kind], ...] }` in per mille of the image's own width and height (so it is exact at any display size), `kind` 0 for a cell or box and 1 for a line. 1,155 of the 1,158 questions have at least one area, about 10,000 areas in all (190 KB). `npm run check:past-papers` validates every area.
+
+**What it cannot do:** it finds ruled boxes and lines, so it misses an answer area that is only white space (it falls back on the pad), and may offer an empty cell the question did not mean as an answer, which is harmless (a field in the wrong place is simply not used). Checked by eye on a truth table, a Dijkstra table with pale edges, dotted answer lines, and a code listing.
+
+**Run it:** `pip install opencv-python-headless numpy pillow` in a virtualenv, then `python3 scripts/pastpapers/detect_answer_areas.py computer-science` (add `--debug <dir>` to write an overlay PNG per question with the areas boxed, `--only <num>` for one question).
+
+**Behaviour in the app:** the sheet is a CSS container and the text is sized in container-width units from the area's real height, so it stays in proportion to its cell at any width. A line is written at about one and a half times the printed text height; a cell is filled to about two thirds of its height; each field has a faint repeatable tilt (not random on each render). Enter moves to the next field. Typed text is kept for the browser session only (a reload keeps it; closing the tab clears it), and a "Clear typing" chip appears when there is any. In the reading fonts (OpenDyslexic, Atkinson Hyperlegible) the field uses the reading font instead of the handwriting face.
+
+## Typing on answer lines: grouping
+
+`detect_answer_areas.py` removes printed text before looking for dotted lines (only marks 5px tall or less
+are kept), so a label such as "Data bus ......" yields only its dots: the area starts after the label and
+sits exactly on the line. `src/lib/answerBlocks.js` then groups consecutive lines into one writing block
+(a labelled first line may be indented; later lines share the left edge; a gap starts a new block), and
+`PaperFields.jsx` renders each block as one text area whose text wraps from line to line. Tests:
+`scripts/test-answer-blocks.mjs`.

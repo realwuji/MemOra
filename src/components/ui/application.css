@@ -73,9 +73,7 @@
   padding: 1rem 1.2rem;
   border: 1px solid var(--line);
   border-radius: 1.1rem;
-  background:
-    radial-gradient(80% 90% at 100% 0%, color-mix(in srgb, var(--brand-soft) 80%, transparent), transparent 70%),
-    var(--surface);
+  background: var(--surface);
   color: var(--fg);
   text-align: left;
   cursor: pointer;
@@ -90,15 +88,12 @@
 }
 .ap-quick-btn.is-live {
   border-color: color-mix(in srgb, var(--ap-amber) 55%, var(--line));
-  background:
-    radial-gradient(80% 90% at 100% 0%, color-mix(in srgb, var(--ap-amber) 18%, transparent), transparent 70%),
-    var(--surface);
 }
 .ap-quick-btn:hover,
 .ap-topic:hover {
   transform: translateY(-2px);
   border-color: var(--brand);
-  box-shadow: 0 16px 28px -22px var(--brand);
+  box-shadow: none;
 }
 .ap-theme {
   margin-top: 2rem;
@@ -465,16 +460,11 @@
   padding: 1.3rem 1.4rem 1.5rem;
   border: 1px solid var(--line);
   border-radius: 1.4rem;
-  background:
-    radial-gradient(60% 40% at 100% 0%, color-mix(in srgb, var(--brand-soft) 70%, transparent), transparent 70%),
-    var(--surface);
+  background: var(--surface);
 }
 .ar-card.is-live {
   border-color: color-mix(in srgb, var(--ap-amber) 55%, var(--line));
   box-shadow: inset 5px 0 0 var(--ap-amber);
-  background:
-    radial-gradient(60% 40% at 100% 0%, color-mix(in srgb, var(--ap-amber) 14%, transparent), transparent 70%),
-    var(--surface);
 }
 .ar-top {
   display: flex;
@@ -541,7 +531,9 @@
   bottom: 0.6rem;
   width: 3px;
   border-radius: 3px;
-  background: linear-gradient(var(--brand), color-mix(in srgb, var(--brand) 25%, transparent));
+  /* a column of dots (the backdrop's), not a fading bar */
+  color: var(--brand);
+  background: var(--srv-dots) 50% 0 / 6px 9px repeat-y;
   transform-origin: top;
 }
 .ar-beat {
@@ -786,4 +778,30 @@
   .ar-tl-line {
     transform: none !important;
   }
+}
+
+/* Dots, not a gradient wash: a flat surface with the backdrop's glowing dots gathering in one corner. */
+.ap-quick-btn,
+.ar-card {
+  position: relative;
+  isolation: isolate;
+  background: var(--surface);
+}
+.ap-quick-btn::after,
+.ar-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  color: var(--brand);
+  opacity: 0.35;
+  background-image: var(--srv-dots);
+  background-size: 11px 11px;
+  -webkit-mask-image: radial-gradient(70% 70% at 100% 0%, #000, transparent 70%);
+  mask-image: radial-gradient(70% 70% at 100% 0%, #000, transparent 70%);
+}
+.ap-quick-btn.is-live::after,
+.ar-card.is-live::after {
+  color: var(--ap-amber);
 }

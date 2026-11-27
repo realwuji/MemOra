@@ -261,7 +261,7 @@ export default function Start() {
                 </span>
                 <span className="relative mt-4 text-lg font-extrabold text-fg">{t.label}</span>
                 <span className="relative mt-1 text-sm text-muted">{t.desc}</span>
-                <span className="relative mt-auto pt-5 text-xs font-semibold text-muted">
+                <span className="relative mt-auto pr-10 pt-5 text-xs font-semibold text-muted">
                   {available ? stat(pack, t.id) : `Not for ${pack.name} yet`}
                 </span>
                 {isRec && (

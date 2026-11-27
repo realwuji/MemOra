@@ -1,7 +1,10 @@
-import { useState } from 'react'
+import { useId, useRef, useState } from 'react'
 import AnswerPad from '@/components/ui/AnswerPad'
+import PaperFields from '@/components/ui/PaperFields'
+import usePaperFields from '@/hooks/usePaperFields'
 import Chip from '@/components/ui/Chip'
 import Icon from '@/components/ui/Icon'
+import { doneKey } from '@/hooks/usePastPaperDone'
 import '@/components/ui/past-paper-stamp.css'
 
 /*
@@ -12,6 +15,18 @@ import '@/components/ui/past-paper-stamp.css'
   q: { num, set, paper, q, marks, h, msH, erH }. The images live in
   public/past-papers/<subject>: <num>.webp (question), ms/<num>.webp, er/<num>.webp.
   q.base names the folder (set by each subject's index); maths is the default.
+
+  `index` is the question's place in the list on screen (1, 2, 3...). It becomes the card's title
+  so a shuffled or filtered list always reads Question 1, 2, 3, and the paper reference
+  ("June 2016 / AS Paper 2 - Q7(d)") moves to the small line above it. The mark scheme and the
+  examiner's report keep the full reference, because the images and the exam board use it.
+  Without `index` (the timed papers, where the printed number matters) the title is the
+  reference, as before.
+
+  Working space: "Your working" is closed behind an Extra Space button, and grows out of that
+  button when opened. The pad stays mounted while closed (hidden and inert) so the drawing is
+  kept, and is also kept for the session. In a timed sitting (phase 'sit') the pad IS the answer
+  area, so it is always open there and has no button.
 */
 const DEFAULT_BASE = '/past-papers/maths'
 
@@ -50,12 +65,39 @@ function Reveal({ open, src, alt, height }) {
   )
 }
 
-export default function PastPaperQuestion({ q, result, onMark, showTopic = false, phase, score, onScore }) {
+export default function PastPaperQuestion({ q, result, onMark, showTopic = false, phase, score, onScore, index }) {
   const BASE = q.base || DEFAULT_BASE
   // phase 'sit': timed paper, nothing but the question and the pad. 'mark': mark scheme open, with a mark box.
   const [msPick, setMs] = useState(null)
   const ms = msPick ?? phase === 'mark'
   const [er, setEr] = useState(false)
+  // Typing straight onto the paper (empty cells and answer lines found in the image). See PaperFields.jsx.
+  const fields = usePaperFields(doneKey(q))
+  const hasAreas = Boolean(q.areas?.length)
+  // Extra Space: closed by default, except in a timed sitting where the pad is the answer area.
+  const [padOpen, setPadOpen] = useState(false)
+  const padId = useId()
+  const padWrap = useRef(null)
+  const padButton = useRef(null)
+  const alwaysOpen = phase === 'sit'
+  const open = alwaysOpen || padOpen
+  const toggledPad = () => {
+    // The pad opens from the button: its clip starts at the button's horizontal position.
+    const wrap = padWrap.current
+    const btn = padButton.current
+    if (wrap && btn && !padOpen) {
+      const x = btn.getBoundingClientRect().left - wrap.getBoundingClientRect().left + btn.offsetWidth / 2
+      wrap.style.setProperty('--pad-x', `${Math.max(0, Math.round(x))}px`)
+    }
+    setPadOpen(!padOpen)
+  }
+  const closePadOnEsc = (e) => {
+    if (e.key === 'Escape' && padOpen && !alwaysOpen) {
+      e.stopPropagation()
+      setPadOpen(false)
+      padButton.current?.focus()
+    }
+  }
   const label = `${q.set} ${q.paper}, question ${q.q}, ${q.marks} marks`
 
   return (
@@ -65,8 +107,11 @@ export default function PastPaperQuestion({ q, result, onMark, showTopic = false
     >
       <header className="exam-sheet-head">
         <div>
-          <p className="exam-sheet-source"><Icon name="paper" className="h-4 w-4" /> {q.set} / {q.paper}</p>
-          <h3 className="exam-sheet-title">Question {q.q}</h3>
+          <p className="exam-sheet-source">
+            <Icon name="paper" className="h-4 w-4" /> {q.set} / {q.paper}
+            {index ? ` · Q${q.q}` : ''}
+          </p>
+          <h3 className="exam-sheet-title">Question {index || q.q}</h3>
           {showTopic && q.topic && <p className="mt-1 text-sm text-muted">{q.topic}</p>}
         </div>
         <div className="flex flex-wrap items-center justify-end gap-3">
@@ -75,19 +120,32 @@ export default function PastPaperQuestion({ q, result, onMark, showTopic = false
         </div>
       </header>
       {/* The printed page is dark ink on white, so it keeps a white ground in every theme. */}
-      <img
-        src={`${BASE}/${q.num}.webp`}
-        alt={label}
-        loading="lazy"
-        decoding="async"
-        width={1000}
-        height={q.h}
-        className="exam-sheet-scan block h-auto w-full bg-white"
-      />
-      <AnswerPad lines={Math.min(24, Math.max(5, q.marks + 3))} />
+      <div className="paper-sheet">
+        <img
+          src={`${BASE}/${q.num}.webp`}
+          alt={label}
+          loading="lazy"
+          decoding="async"
+          width={1000}
+          height={q.h}
+          className="exam-sheet-scan block h-auto w-full bg-white"
+        />
+        {hasAreas && <PaperFields areas={q.areas} height={q.h} fields={fields} />}
+      </div>
       {phase === 'sit' ? null : (
       <div className="exam-sheet-actions">
         <div className="exam-sheet-tools">
+        <Chip
+          ref={padButton}
+          quiet
+          size="sm"
+          selected={padOpen}
+          aria-expanded={padOpen}
+          aria-controls={padId}
+          onClick={toggledPad}
+        >
+          {padOpen ? 'Hide space' : 'Extra Space'}
+        </Chip>
         {phase === 'mark' && (
           <label className="flex items-center gap-2 font-mono text-xs text-muted">
             Your mark
@@ -102,6 +160,11 @@ export default function PastPaperQuestion({ q, result, onMark, showTopic = false
             />
             / {q.marks}
           </label>
+        )}
+        {fields.count > 0 && (
+          <Chip quiet size="sm" onClick={fields.clear}>
+            Clear typing
+          </Chip>
         )}
         {q.msH ? (
           <Chip quiet size="sm" selected={ms} aria-expanded={ms} onClick={() => setMs(!ms)}>
@@ -140,6 +203,17 @@ export default function PastPaperQuestion({ q, result, onMark, showTopic = false
         )}
       </div>
       )}
+      <div
+        ref={padWrap}
+        id={padId}
+        className={`exam-pad-reveal${open ? ' is-open' : ''}`}
+        inert={!open}
+        onKeyDown={closePadOnEsc}
+      >
+        <div className="exam-pad-inner">
+          <AnswerPad lines={Math.min(24, Math.max(5, q.marks + 3))} storeKey={doneKey(q)} />
+        </div>
+      </div>
       <Reveal open={ms} src={`${BASE}/ms/${q.num}.webp`} alt={`Mark scheme: ${label}`} height={q.msH} />
       <Reveal open={er} src={`${BASE}/er/${q.erFile || q.num}.webp`} alt={`Examiner's report: ${label}`} height={q.erH} />
     </li>

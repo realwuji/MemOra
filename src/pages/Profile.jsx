@@ -20,6 +20,7 @@ import { useApp, THEMES, THEME_META } from '@/context/AppProvider'
 import { AVATAR_STYLES, AVATAR_BACKGROUNDS, AVATAR_BG_HEX } from '@/lib/avatar'
 import { validateDisplayName } from '@/lib/safety'
 import { usernameProblem, suggestUsername } from '@/lib/friends'
+import InstallPanel from '@/components/pwa/InstallPanel'
 import { XP_RULES, LEVEL_REWARDS, xpBreakdown } from '@/lib/xp'
 
 /*
@@ -37,6 +38,7 @@ const SECTIONS = [
   { id: 'assessments', label: 'Assessment dates', icon: 'calendar' },
   { id: 'levels', label: 'Levels and rewards', icon: 'star' },
   { id: 'community', label: 'Community identity', icon: 'users' },
+  { id: 'app', label: 'Install and offline', icon: 'download' },
   { id: 'account', label: 'Account', icon: 'shield' },
 ]
 
@@ -596,6 +598,12 @@ export default function Profile() {
                   </div>
                 </div>
               </div>
+            </Panel>
+          )}
+
+          {section === 'app' && (
+            <Panel key="app" title="Install and offline" blurb="Put Memoraa on your device and keep revising without a connection.">
+              <InstallPanel />
             </Panel>
           )}
 

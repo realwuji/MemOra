@@ -19,7 +19,7 @@ import WeekChart from '@/components/dashboard/WeekChart'
 import useMe from '@/hooks/useMe'
 import { fadeInUp, staggerContainer } from '@/lib/motion'
 import { useApp } from '@/context/AppProvider'
-import { PRIORITISED_COURSES, subjectColor, subjectIcon } from '@/constants/content'
+import { PRIORITISED_COURSES, ink, subjectColor, subjectIcon } from '@/constants/content'
 import { getPackByName } from '@/constants/packs'
 import { daysAgo, daysUntilDate } from '@/lib/sessions'
 import { computeAllChapterStates, hasSlipped } from '@/lib/attempts'
@@ -33,7 +33,8 @@ import {
   subjectBandCounts,
 } from '@/lib/pace'
 import { slugify } from '@/lib/slug'
-import { studyPathFor, techniqueLabel as modeLabel } from '@/lib/techniques'
+import { techniqueLabel as modeLabel } from '@/lib/techniques'
+import { BAND_LABEL, pickResume, relativeDay, resumePath, subjectNamesOf } from '@/lib/resume'
 
 const nearestExamDate = (examDates, subjectName) => {
   const dates = examDates.filter((e) => !subjectName || e.subject === subjectName)
@@ -45,34 +46,9 @@ const nearestExamDate = (examDates, subjectName) => {
 // different countdowns for the same exam again.
 const daysUntil = (dateStr) => daysUntilDate(dateStr)
 
-const bandLabel = {
-  not_started: 'Not started',
-  seen: 'Seen once',
-  shaky: 'Shaky',
-  solid: 'Solid',
-  'exam-ready': 'Exam-ready',
-}
+const bandLabel = BAND_LABEL
 
-/*
-  The most recent session that names a chapter, so "continue" has something
-  concrete to point at. Sessions with topic === null are whole-subject runs
-  ("all chapters" mode) - resuming those means resuming the subject, which
-  is a weaker offer, so a chaptered session wins even if it's older.
-*/
-function lastResumable(sessions) {
-  const withTopic = sessions.filter((s) => s.topic && s.subject)
-  const best = withTopic[0] || sessions.find((s) => s.subject)
-  return best || null
-}
 
-// daysAgo() returns a raw number; "MCQ · 1" isn't a sentence.
-function relativeDay(ts) {
-  const d = daysAgo(ts)
-  if (d === null) return null
-  if (d === 0) return 'today'
-  if (d === 1) return 'yesterday'
-  return `${d} days ago`
-}
 
 /*
   "Good night" is a farewell - saying it to someone who has just opened a
@@ -104,9 +80,7 @@ function BandPill({ band }) {
 function ResumeCard({ session, state }) {
   const color = subjectColor(session.subject)
   const technique = session.technique || 'notes'
-  const to = session.topic
-    ? studyPathFor(session.subject, session.topic, technique)
-    : `/study/${slugify(session.subject)}/${technique}`
+  const to = resumePath(session)
   const when = relativeDay(session.ts)
   return (
     <motion.div variants={fadeInUp}>
@@ -114,7 +88,7 @@ function ResumeCard({ session, state }) {
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2">
-              <p className="text-[0.7rem] font-bold uppercase tracking-[0.12em]" style={{ color }}>
+              <p className="text-[0.7rem] font-bold uppercase tracking-[0.12em]" style={{ color: ink(color) }}>
                 {session.subject}
               </p>
               {state && <BandPill band={state.band} />}
@@ -170,7 +144,7 @@ function SubjectCard({ pack, spec, topics, hasActivity, pace, counts, value, cha
                 {hasActivity && value !== null ? (
                   <>
                     {' · '}
-                    <span style={{ color }}>{Math.round(value * 100)}% ready</span>
+                    <span style={{ color: ink(color) }}>{Math.round(value * 100)}% ready</span>
                   </>
                 ) : null}
               </p>
@@ -222,10 +196,7 @@ export default function Dashboard() {
   const [now] = useState(() => Date.now())
   const me = useMe(now)
 
-  const subjectNames =
-    user.courseType === 'University' && user.courseName
-      ? [user.courseName]
-      : (user.subjects || []).map((s) => s.name)
+  const subjectNames = subjectNamesOf(user)
 
   const { streak, xp, weekMinutes: minutesThisWeek, firstName } = me
   const sortedExams = [...examDates].sort((a, b) => daysUntil(a.date) - daysUntil(b.date))
@@ -252,14 +223,8 @@ export default function Dashboard() {
     now,
     limit: Math.max(1, subjectPacks.length),
   }).map((rec) => ({ ...rec, daysToExam: examDaysFor(rec.subject) }))
-  // Only offer to resume a subject the student still studies - dropping a
-  // subject shouldn't leave a dead card pointing at it.
-  const resumeSession = (() => {
-    // whichever is newer: a finished session, or the last screen opened (saved straight away)
-    const finished = lastResumable(sessions)
-    const s = lastVisit && (!finished || (lastVisit.ts || 0) >= (finished.ts || 0)) ? lastVisit : finished
-    return s && subjectNames.includes(s.subject) ? s : null
-  })()
+  // The same definition the header uses (lib/resume.js), so the two always agree.
+  const resumeSession = pickResume({ sessions, lastVisit, subjectNames })
 
   const trackedStates = [...allStates.values()].filter((s) => subjectNames.includes(s.subject))
   const slipped = trackedStates.filter(hasSlipped)

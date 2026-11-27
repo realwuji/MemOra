@@ -173,7 +173,7 @@ export default function ColorWheel({ value, onChange }) {
         >
           <span
             aria-hidden="true"
-            className="absolute left-1/2 h-4 w-4 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white shadow"
+            className="absolute left-1/2 h-4 w-4 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white "
             style={{ top: `${barThumbY}%`, backgroundColor: hexDraft, boxShadow: '0 0 0 1px rgba(0,0,0,0.35)' }}
           />
         </div>

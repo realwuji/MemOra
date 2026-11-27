@@ -12,7 +12,7 @@ import { useApp } from '@/context/AppProvider'
 import { REVISION_LIGHT, countsOf, loadPack, preloadPack } from '@/constants/packs'
 import { PACK_LOAD_ERROR } from '@/constants/content'
 import jumpToTop from '@/lib/jumpToTop'
-import { generateFlashcards, chatConfigured } from '@/lib/chat'
+import { generateFlashcards, aiConfigured as chatConfigured, aiErrorText } from '@/lib/ai'
 
 /*
   Flashcard maker (route /flashcards). Three internal views:
@@ -272,11 +272,9 @@ function AiView({ onSave, onCancel }) {
   const [title, setTitle] = useState('')
 
   const errorText = (code) =>
-    code === 'quota'
-      ? 'The AI has hit its usage limit for now. Try again later, or build the deck yourself.'
-      : code === 'no-key'
-        ? 'No AI key is set up yet. Add VITE_MISTRAL_API_KEY to .env.local to use AI generation.'
-        : 'Could not generate cards just now. Please try again in a moment.'
+    code === 'no-key'
+      ? 'No AI key is set up yet. Add VITE_MISTRAL_API_KEY to .env.local to use AI generation.'
+      : aiErrorText(code)
 
   const generate = async () => {
     const t = topic.trim()

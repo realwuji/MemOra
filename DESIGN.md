@@ -38,8 +38,13 @@ If an addition does not fit this metaphor, ask whether it needs to exist.
    section 4).
 2. **Hairlines, not shadows.** Depth comes from 1px borders and a faint top edge
    highlight. No soft drop shadows, no glossy gradients.
-3. **Tight corners.** Panels use one radius, `--srv-r` (0.6rem). Pills are for
-   buttons and avatars only.
+3. **Square corners.** Nothing has rounded corners: panels, cards, buttons, chips,
+   pills, inputs, menus, avatars and the toggle are all square, like a terminal
+   window. One rule in `server.css` (the square corners block) enforces it with
+   `!important`, so do not add `rounded-*` to try to soften something; it will not
+   apply. Only the status LEDs (`.srv-led`), the level ring's centre badge and
+   anything marked `.keep-round` stay circular. Never mix (a circle inside a
+   square frame always looks like a mistake).
 4. **Console labels.** Small uppercase text is monospace. Body copy and headings
    stay in the reading fonts.
 5. **Light is a pinpoint with a faint bloom.** A lit dot or LED is a tiny bright
@@ -62,6 +67,11 @@ If an addition does not fit this metaphor, ask whether it needs to exist.
 | `src/components/ui/notes.css` | Study-note content: callouts, tables, diagram frames inside notes |
 | `src/components/diagrams/primitives.jsx` | `Figure` (the diagram frame and title bar) and the shared diagram parts |
 | `src/lib/themeTransition.js` | The theme-switch reveal |
+| `src/components/layout/MegaNav.jsx`, `MenuArt.jsx`, `meganav.css`, `src/constants/nav-menu.js`, `src/hooks/useHeaderMenus.js` | The header: the bar, the morphing menus and their data (section 6, "The header and its menus") |
+| `src/lib/resume.js` | "Continue where you left off", the one definition the dashboard and the header share |
+| `src/components/ui/PaperFields.jsx`, `src/hooks/usePaperFields.js`, `scripts/pastpapers/detect_answer_areas.py` | Typing straight onto a question paper (section 6, "Typing") |
+| `src/components/ui/AnswerPad.jsx` | The working pad: pen, eraser and a Type mode |
+| `scripts/test-*.mjs`, `scripts/check-cs-past-papers.mjs` | The test scripts, all run by `npm test` (section 15) |
 | `src/lib/audioReactive.js` | Optional audio analysis that drives the background |
 | `scripts/og/` | Generator for the per-page share images |
 | `public/brand/` | Logo files (outlined SVG, no font needed) |
@@ -90,7 +100,7 @@ If an addition does not fit this metaphor, ask whether it needs to exist.
 
 ### Name
 
-The product is **Memoraa** (two o's). Use it in all display text, metadata and
+The product is **Memoraa** (two a's). Use it in all display text, metadata and
 docs.
 
 **Do not rename these**, even though they still say "memora". Changing them
@@ -239,8 +249,8 @@ that runs along the top edge on hover. It is pure CSS.
 <SpineCard color={subjectColor(name)} className="p-5 pl-6">...</SpineCard>
 ```
 
-Do not add `rounded-2xl` / `rounded-3xl` to panels expecting it to apply; the
-shared radius overrides it.
+Do not add `rounded-*` to panels expecting it to apply: every corner is square (see
+principle 3) and a rule with `!important` enforces it.
 
 ### Status LED
 
@@ -415,6 +425,80 @@ the baseline and fades it out at the bottom edge. Do not put a glow or
 
 ---
 
+### The header and its menus
+
+The header is a flat, square bar with a hairline under it: no pill, no blur, no rounded
+corners. On public pages it is transparent and borderless at the very top and takes the page
+colour and a hairline after 90px of scroll (`.mkt-bar`). Both headers (`AppBar.jsx`,
+`MarketingHeader.jsx`) use one component, `MegaNav.jsx`, driven by data in
+`constants/nav-menu.js`.
+
+- **One shared panel that morphs** between menus. Width, height and left edge animate
+  together over 280ms; the outgoing content slides away and the new one slides in. The
+  first open from closed lands at size with no morph (`data-instant`).
+- **It looks like a terminal window**: a console title bar (`srv-titlebar`: three LEDs, the
+  path `~/memoraa/<menu>`, an `esc` badge), `//` column headings, rows with a `>` prompt that
+  appears on hover along with a left edge and dots along the right end, and cards that carry a
+  small dot animation (`MenuArt.jsx`) previewing the page: the same four effects as the backdrop.
+  The current page or the open menu is marked by a row of lit dots under its label, not a line.
+- **Behaviour**: hover intent (90ms to open, 180ms to close, none to switch while open); click
+  toggles (a click right after a hover-open is ignored); outside press, a route change, Escape
+  (focus returns to the trigger) and focus leaving all close it. Keyboard: Enter, Space or
+  ArrowDown opens and focuses the first link, ArrowUp the last; ArrowLeft and ArrowRight move
+  between items (switching the open menu); Home and End; ArrowUp and ArrowDown inside. A
+  disclosure pattern, not `role="menu"`. Every menu's content is in the DOM (inactive ones are
+  `inert`), so it is crawlable. Reduced motion: opacity only.
+- **Every link must be a real route.** `npm test` checks each menu link against `App.jsx`.
+- **The panel must always fit the screen.** Its left edge starts at the nav and is clamped; the
+  card column is hidden below 1024px so the panel never overflows.
+
+#### Continue where you left off, and no placeholders
+
+The menus show the student's own state, not generic copy (`hooks/useHeaderMenus.js`). The static
+text in `nav-menu.js` is only what a brand-new account sees, and what stays where there is nothing
+real to say. The rule: **never show a placeholder when a real value is known, and never invent a
+value that is not.**
+
+- Study: your subjects with real progress ("OCR. 22 chapters, none started"), the methods that
+  actually exist for the subject you were last in (a method with no content is left out), and a
+  Continue card naming your last chapter, its readiness, the method and when.
+- Track: real counts on Progress and Mistakes, and a card naming the chapter that most needs a
+  second look and why (the first of "Close your gaps").
+- Together: how many friends you have.
+- The bar also carries a **Continue** shortcut (1100px and up) naming the actual chapter, with the
+  subject's colour on its edge.
+- The definition of "continue" is `lib/resume.js`, shared with the dashboard, so the two can
+  never point at different places: whichever is newer of the last screen opened and the last
+  finished session that names a chapter, only for a subject you still study. Tested by
+  `scripts/test-resume.mjs`. If you add a menu fact, take it from the same helpers the dashboard
+  uses (`lib/gaps.js`, `lib/pace.js`), never compute a second version.
+
+### Typing: on the pad and on the paper
+
+Two ways to type an answer, both optional and neither touching the pen:
+
+- **The working pad** (`AnswerPad.jsx`) has Pen, Eraser and **Type**. The typed text is a
+  transparent textarea over the ruled canvas, on the same line pitch (`STEP`, 36px) and in the
+  handwriting face (Caveat), so each line of typing sits on a rule. It only receives the pointer in
+  Type mode; in Pen and Eraser mode every pen, mouse and touch event falls through to the canvas
+  (checked: the hit-test returns the canvas), so drawing and finger scrolling work exactly as before.
+  It grows with the text.
+- **The question paper** (`PaperFields.jsx`): a transparent field over each empty table cell and
+  answer line found in the image (`scripts/pastpapers/detect_answer_areas.py`, see
+  `examconversion.md` section 10). The handwriting is sized the way a pen fills the space (a line
+  at about 1.5 times the printed text height, a cell to about two thirds of its height) in a
+  **fixed blue-black biro ink**, with a faint repeatable tilt per field. The ink is fixed, not the
+  theme's text colour, because the scan is forced white in every theme and the theme colour is white
+  in the dark theme. Fields are invisible until hovered or focused, so the paper looks exactly as
+  printed. Enter moves to the next field.
+- Typed text and drawing are kept for the **browser session only** (sessionStorage), never saved to
+  an account. The reading fonts replace the handwriting face on both, like everywhere else.
+- **Extra Space**: the pad is closed behind a button and grows out of it (clip from the button's
+  position and a height animation on the pad's own box); it stays mounted while closed so nothing is
+  lost, and is `inert` while closed. In a timed sitting the pad is always open.
+
+---
+
 ## 7. The background system
 
 `AtmosphereBackground` is a fixed layer behind the page. It is mounted by the
@@ -435,9 +519,9 @@ crosses the middle of the screen:
 | `data-bg` | Effect | Use it for |
 | --------- | ------ | ---------- |
 | `packets` | Data packets streaming along rows, plus blinking dots | Heroes, "doing work" |
-| `rack`    | Rack units with status LEDs down both edges | Dashboards, status, features |
+| `rack`    | Rows and a rail of lit dots with status LEDs down both edges | Dashboards, status, features |
 | `bus`     | Packets running down vertical lines | Flows, step-by-step explanations |
-| `log`     | Terminal log lines in the margins | Footers, FAQ, legal |
+| `log`     | Dashes of lit dots drifting up the margins | Footers, FAQ, legal |
 
 ```jsx
 <section data-bg="rack">...</section>
@@ -461,6 +545,32 @@ tile size, the dots will no longer line up and it will look doubled.
 
 - Both transforms must use identical timing, or they drift apart.
 - Round offsets to whole pixels so they cancel exactly.
+
+### No drawn lines: everything is the grid's own dots
+
+The backdrop contains **no separate line or bar graphics**. A line, a rule, a log
+entry, a rack divider are all built by lighting the page's own dots, never by drawing a
+rectangle or a gradient stripe across them (a drawn bar cuts across the dots and looks
+like a different material). This is why the rack and log modes were rebuilt:
+
+- **rack** (`.bg-rack`): the unit dividers are rows of lit dots, the rail is a column of
+  lit dots, and the LEDs are brighter lit dots. Every position is a whole cell: the
+  strips start on a grid column, LED columns sit in cells 3, 4 and 5 (left strip) or
+  7, 5, 3 and 1 (right strip), and the LED row is a dot row (`--ly`). The two strips are
+  deliberately different.
+- **log** (`.bg-log` and `.bg-dash`): each log line is a short run of the bright
+  lattice (a "dash") with soft ends, two cells tall and soft top and bottom, so as it
+  drifts up a row of dots swells and fades one dot at a time and is never cut by a hard
+  edge. Every dash has its own place, length, speed (30 to 46 seconds across the screen)
+  and delay, so they glide independently and never move as one tiled sheet. There are
+  few of them, they peak at 0.45 to 0.7 opacity, and the same lone blinking dots as the
+  home page sit among them. It is the **hero's language**: crisp small dots, a dim even
+  grid, an occasional single lit dot. Nothing bloomy.
+- Strips start on a grid column and are a whole number of cells wide using CSS `round()`
+  (`round(down, ..., var(--bg-cell))`), so lit dots coincide with the page's. Without
+  `round()` support the strips are hidden (`@supports not`), never drawn misaligned.
+- If you add a line-like effect, make it a mask over the lit lattice (see
+  `.bg-dash`), not a drawn element.
 
 ### The cursor
 
@@ -545,6 +655,24 @@ place important small text over a bright effect without it.
 Lit dots use `--bg-lit`: a pinpoint core and a faint bloom reaching 4.4px. The
 `.srv-led` halo is two faint box-shadows. If you add a new lit thing, copy these;
 do not use a solid disc or a large radius.
+
+**No gradient fades.** Soft coloured washes and glows (a corner gradient on a card, a
+cursor-following radial wash, a coloured drop shadow under a button) are not part of the
+look; use glowing dots. The chapter picker (`chapter-picker.css`, the glowing-dots block at
+the end) is the model: a flat surface, a field of dots gathering in a corner, and on hover
+the dots around the pointer light up (`--dc` is the dot colour, `--dg` the pitch). The
+`.btn-charge` buttons keep their own look on purpose; only washes and glows around them
+were replaced. Mind the cascade: `chapter-picker.css` loads with the study chunk, after
+`server.css`, so put rules for it at the end of that file.
+
+This holds app-wide, not just on the picker: the Start page hero and method cards, notes,
+essay plans, application, diagram revision, friends, profile and the marketing pages were
+all converted. Shadow tokens (`--shadow-sm`, `--shadow-lift`) are flat, and `.glass*` and the
+leaderboard pills no longer blur. Kept on purpose: `.btn-charge` buttons, the plain-button
+hover sheen, legibility scrims over images, modal dimming scrims, the calm-zone haze behind
+the content, and LED halos (a 5px dot with a small box-shadow, e.g. the notes "Answer" tag).
+Audit a page by scanning computed styles for `gradient(`, blurred `box-shadow`, `filter` and
+`backdrop-filter`; anything outside that list is a regression.
 
 ---
 
@@ -762,6 +890,11 @@ Saved subjects outside the catalog are kept and can be removed from the picker.
 | Do | Don't |
 | -- | ----- |
 | Use `server.css` classes (`srv-led`, `srv-tag`, `srv-bar`, `srv-titlebar`) | Write a new one-off rounded, shadowed card |
+| Keep every shape square-cornered | Round a corner, or mix a circle into a square component |
+| Build a line or a log entry by lighting the grid's own dots | Draw a bar or rule across the backdrop |
+| Use glowing dots for emphasis | Add a gradient wash, a coloured glow or a drop shadow |
+| Show the student's real state in a menu (last chapter, real counts) | Show generic placeholder copy when a real value is known, or invent a value that is not |
+| Take "continue" from `lib/resume.js` | Compute a second version of it |
 | Use semantic tokens | Hard-code a colour, or bring back blue as a brand colour |
 | Keep colour meaningful (subject, readiness, state, diagram meaning) | Add colour for decoration |
 | Use `SigilWordmark` | Type the name in a heading font, or recolour or stretch the logo |
@@ -795,7 +928,11 @@ Saved subjects outside the catalog are kept and can be removed from the picker.
 - [ ] Reduced motion is handled
 - [ ] New decorative elements are `aria-hidden`; text has real contrast
 - [ ] If copy changed on a routed page: `npm run og` run, PNGs committed
-- [ ] `npm run lint` is clean and `npm run build` passes
+- [ ] `npm run lint` is clean, `npm test` passes and `npm run build` passes
+  (`npm test` runs the question-order tests, the Continue-logic tests, a check that every
+  header menu link is a real route, and the Computer Science data check: images, topics,
+  every chapter has questions, typing areas valid)
+- [ ] Nothing has a rounded corner, and nothing is drawn across the dot grid (a line, a bar)
 - [ ] No em dashes in copy
 - [ ] If you changed anything in section 7 or 9, you re-read the rules there
   (the alignment trick and the mask composite are easy to break quietly)
@@ -848,3 +985,21 @@ A short history, so nobody undoes a fix by accident.
 - **Focus mode was added** so the backdrop stops competing with what you are reading.
   The first sweep crossed the screen in a third of a second and was invisible; it was
   slowed to a pace you can follow.
+- **The backdrop's lines were rebuilt from dots.** The log margins used drawn grey bars and the rack
+  used hairline rules; both cut across the dot grid and read as a different material. They were
+  replaced by lit dots (dashes drifting up, divider rows and a rail), first as a tiled mask that scrolled
+  as one sheet (stiff and busy), then as independent soft-edged dashes at the home page's calm pace.
+  The reference is the hero: crisp small dots and the occasional lit one, never bloom.
+- **Gradient washes and glows became glowing dots** on the chapter picker (a corner wash, a
+  cursor-following wash and coloured shadows). The charged buttons were left alone on purpose: the
+  problem was the washes around them, not the buttons.
+- **Everything became square-cornered**, with one `!important` rule, because corners were being set four
+  different ways and a half-rounded component (a circle in a square frame) always looked like a mistake.
+- **The header became a morphing mega menu** in the terminal style, filled with the student's own state.
+  The first version listed generic copy; the menus now read the same helpers as the dashboard so they
+  cannot disagree with it.
+- **Typing on the paper uses detected answer areas, not guessing.** The images are pictures, so the
+  empty cells and lines are found with OpenCV once and stored; a first version offered table cells that
+  already had printed values, a circuit wire as an answer line, and rows of code as lines, each fixed
+  by a specific test (count ink pixels, a minimum length, blank paper above the line).
+

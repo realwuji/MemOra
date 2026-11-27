@@ -17,7 +17,8 @@ export default function Toast() {
   return (
     <div
       aria-live="polite"
-      className="pointer-events-none fixed inset-x-0 bottom-6 z-[70] flex justify-center px-4"
+      style={{ bottom: 'max(1.5rem, env(safe-area-inset-bottom))' }}
+      className="pointer-events-none fixed inset-x-0 z-[70] flex justify-center px-4"
     >
       <AnimatePresence>
         {toast && (
@@ -27,7 +28,7 @@ export default function Toast() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 8, scale: 0.98 }}
             transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
-            className="glass-strong flex items-center gap-2.5 rounded-full px-5 py-3 shadow-lg"
+            className="glass-strong flex items-center gap-2.5 px-5 py-3"
           >
             <span className="flex h-5 w-5 items-center justify-center rounded-full bg-success/20 text-success">
               <Icon name="check" className="h-3.5 w-3.5" />

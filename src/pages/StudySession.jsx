@@ -103,7 +103,7 @@ export default function StudySession() {
   // are keyed by paper and spec topic, and the planner carries its own
   // filters for those, so a chapter picker here would just be a second,
   // worse version of the same thing.
-  const hasChapters = Boolean(pack?.groups?.length) && technique !== 'essay-plans' && technique !== 'diagram-revision' && technique !== 'diagram-bank' && technique !== 'application' && technique !== 'past-papers' && !(technique === 'exam-questions' && pack?.examImages)
+  const hasChapters = Boolean(pack?.groups?.length) && technique !== 'essay-plans' && technique !== 'diagram-revision' && technique !== 'diagram-bank' && technique !== 'application' && technique !== 'past-papers'
 
   // A chapter bar segment (Progress/Dashboard) links straight here with
   // ?chapter=<topic> so tapping it lands on that exact chapter, not the
@@ -114,7 +114,17 @@ export default function StudySession() {
     : null
 
   // Maths past papers: how many questions of each chapter were marked right and wrong
-  const paperMarks = usePastPaperMarks(Boolean(pack?.counts?.pastPapers || pack?.pastPapers))
+  // Only the exam-question methods show right and wrong: a notes or flashcard card shows how
+  // confident you feel, and the two meanings are never mixed on one card.
+  const marksSource =
+    technique === 'exam-questions' || technique === 'past-papers'
+      ? pack?.counts?.pastPapers || pack?.pastPapers
+        ? 'maths'
+        : pack?.examImages
+          ? 'computer-science'
+          : null
+      : null
+  const paperMarks = usePastPaperMarks(marksSource)
 
   // chapter | ready | running | done | done-N (difficulty rating saved)
   const [phase, setPhase] = useState(preselectedChapter ? 'ready' : hasChapters ? 'chapter' : 'ready')
@@ -152,8 +162,7 @@ export default function StudySession() {
       if (document.fullscreenElement) document.exitFullscreen?.().catch(() => {})
     }
   }, [])
-  const toggleFull = () => {
-    const next = !full
+  const setFullScreen = (next) => {
     setFull(next)
     try {
       if (next) document.documentElement.requestFullscreen?.().catch(() => {})
@@ -162,6 +171,23 @@ export default function StudySession() {
       /* the page still goes wide without the browser's full screen */
     }
   }
+  const toggleFull = () => setFullScreen(!full)
+  // Full screen belongs to a running session: leaving it (Finish, the chapter list, the results) brings
+  // the app bar and footer back, otherwise the next screen would load with no way to navigate.
+  useEffect(() => {
+    if (full && phase !== 'running') setFullScreen(false)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [phase])
+  // Esc leaves it. In the browser's own full screen the browser handles Esc (see the fullscreenchange
+  // listener above); where that API is missing (iPhone Safari) the page-wide mode needs this instead.
+  useEffect(() => {
+    if (!full) return undefined
+    const onKey = (e) => {
+      if (e.key === 'Escape' && !document.fullscreenElement) setFull(false)
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [full])
 
   const chapterLabel = chapter === ALL ? subjectLabel : chapter
 
@@ -408,7 +434,7 @@ export default function StudySession() {
                 scroll, and Finish session used to scroll away with the top
                 of the page - so ending a session meant scrolling all the way
                 back up. top-[68px] clears the app bar's scrolled height. */}
-            <div className={`sticky ${full ? 'top-3' : 'top-[68px]'} z-30 mb-6 flex flex-wrap items-center justify-between gap-3 card p-4`}>
+            <div className={`sm:sticky ${full ? 'top-3' : 'top-[68px]'} z-30 mb-6 flex flex-wrap items-center justify-between gap-3 card p-4`}>
               <div className="flex min-w-0 items-center gap-3">
                 {hasChapters ? (
                   <button
@@ -423,25 +449,32 @@ export default function StudySession() {
                 ) : (
                   <Link
                     to={`/start/${slugify(subject)}`}
-                    className="flex h-9 flex-none items-center rounded-full border border-line px-3 text-xs font-semibold text-muted transition hover:border-brand hover:text-fg"
+                    className="flex h-9 w-9 flex-none items-center justify-center rounded-full border border-line text-muted transition hover:border-brand hover:text-fg"
+                    aria-label="Change method"
+                    title="Change method"
                   >
-                    Change method
+                    <Icon name="arrowLeft" className="h-4 w-4" />
                   </Link>
                 )}
                 <div className="min-w-0">
                   <p className="text-xs font-semibold uppercase tracking-widest text-muted">
                     Studying · {techniqueLabel}
+                    {technique === 'exam-questions' && runPack.examQuestions?.length > 0 && (
+                      <span className="font-mono normal-case tracking-normal">
+                        {' '}· {runPack.examQuestions.length.toLocaleString()} {runPack.examQuestions.length === 1 ? 'question' : 'questions'}
+                      </span>
+                    )}
                   </p>
                   <h1 className="truncate text-xl font-bold text-fg">{chapterLabel}</h1>
                 </div>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex max-w-full flex-wrap items-center gap-2">
                 <button
                   type="button"
                   onClick={toggleFull}
                   aria-pressed={full}
                   aria-label={full ? 'Exit full screen' : 'Full screen'}
-                  title={full ? 'Exit full screen' : 'Full screen'}
+                  title={full ? 'Exit full screen (Esc)' : 'Full screen'}
                   className="flex h-9 w-9 flex-none items-center justify-center rounded-full border border-line text-muted transition hover:border-brand hover:text-fg"
                 >
                   <Icon name={full ? 'shrink' : 'expand'} className="h-4 w-4" />
@@ -458,6 +491,19 @@ export default function StudySession() {
                 )}
               </div>
             </div>
+
+            {/* On a phone the header scrolls away, so full screen needs an exit that is always on screen. */}
+            {full && (
+              <button
+                type="button"
+                onClick={toggleFull}
+                className="srv-chip fixed z-50 inline-flex items-center gap-1.5 border border-line bg-surface px-3 py-2 text-xs font-semibold text-fg sm:hidden"
+                style={{ right: 'max(0.75rem, env(safe-area-inset-right))', top: 'max(0.75rem, env(safe-area-inset-top))' }}
+              >
+                <Icon name="shrink" className="h-4 w-4" />
+                Exit full screen
+              </button>
+            )}
 
             <RevisionRunner
               key={chapter}

@@ -45,12 +45,7 @@ function DashboardPreview() {
 
   return (
     <motion.div variants={fadeInUp} className="relative mx-auto w-full max-w-4xl">
-      <div
-        className="pointer-events-none absolute -inset-12 -z-10 rounded-[3rem] opacity-70 blur-[90px]"
-        style={{ background: 'radial-gradient(closest-side, var(--brand), transparent)' }}
-        aria-hidden="true"
-      />
-      <div className="glass-strong overflow-hidden rounded-[1.75rem] p-2 shadow-2xl sm:p-3">
+      <div className="glass-strong overflow-hidden p-2 sm:p-3">
         <div className="flex items-center gap-1.5 px-3 py-2">
           <span className="h-2.5 w-2.5 rounded-full bg-danger/70" />
           <span className="h-2.5 w-2.5 rounded-full bg-warning/70" />
@@ -62,12 +57,7 @@ function DashboardPreview() {
           <div className="glass rounded-2xl p-5 sm:p-7">
             <p className="text-xl font-extrabold leading-tight text-fg sm:text-2xl">
               Hi Alex,{' '}
-              <span
-                className="bg-clip-text text-transparent"
-                style={{ backgroundImage: 'linear-gradient(100deg, var(--fg), var(--muted))' }}
-              >
-                let&rsquo;s make today count.
-              </span>
+              <span className="text-muted">let&rsquo;s make today count.</span>
             </p>
             <div className="mt-4 flex flex-wrap items-center gap-2.5">
               <span className="inline-flex items-center gap-1.5 rounded-full bg-brand px-4 py-2 text-xs font-bold text-on-brand">

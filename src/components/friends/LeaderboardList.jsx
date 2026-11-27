@@ -84,7 +84,7 @@ export default function LeaderboardList({ me, friends, limit, showTabs = true })
                 <span className="lb-scrim absolute inset-0" />
               </span>
               <span
-                className={`relative grid h-7 w-7 shrink-0 place-items-center rounded-full text-xs font-extrabold tabular-nums shadow ${rankClass}`}
+                className={`relative grid h-7 w-7 shrink-0 place-items-center rounded-full text-xs font-extrabold tabular-nums ${rankClass}`}
               >
                 {r.rank}
               </span>

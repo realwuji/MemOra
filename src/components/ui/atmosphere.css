@@ -206,12 +206,14 @@
 }
 
 /* ------------------------------------------------------------- mode: rack */
-/* Two rack strips down the page edges. They are NOT mirror images: the left
-   strip uses 56px units with its LEDs set well in from the rail; the right
-   strip uses tighter 42px units, a narrower body and LEDs in different places,
-   and its LEDs run different blink patterns. Per-side values live in custom
-   properties, so the drawing rules below are shared but the result is not
-   symmetrical. Faded toward the page centre so content stays clear. */
+/* Two rack strips down the page edges, made ONLY of the grid's own dots: the unit
+   dividers are rows of lit dots, the rail is a column of lit dots, and the status LEDs
+   are brighter lit dots. There are no drawn lines. Everything sits on the 14px grid
+   (the strips start on a grid column, every position is a whole cell), so a lit dot is
+   always one of the page's dots. The strips are NOT mirror images: the left one has 56px
+   units and LEDs in cells 3, 4 and 5; the right one has tighter 42px units, a rail in
+   cell 8, LEDs in cells 7, 5, 3 and 1, and an extra sparse LED. Faded toward the page
+   centre so content stays clear. */
 .bg-rack {
   position: absolute;
   top: 0;
@@ -219,43 +221,60 @@
 }
 .bg-rack.l {
   left: 0;
-  width: clamp(72px, 14vw, 180px);
+  width: 126px;
   --u: 56px;
-  --ear: 12px;
-  --rail-a: 28px;
-  --rail-b: 29px;
-  --lx1: 50px;
-  --lx2: 66px;
-  --lx3: 82px;
+  --ly: 35px; /* LED row: the middle of a unit, on a dot row */
+  --rail: 28px;
+  --lx1: 49px;
+  --lx2: 63px;
+  --lx3: 77px;
   -webkit-mask-image: linear-gradient(90deg, #000 55%, transparent 100%);
   mask-image: linear-gradient(90deg, #000 55%, transparent 100%);
 }
 .bg-rack.r {
   right: 0;
-  width: clamp(60px, 10vw, 138px);
+  width: 140px;
   --u: 42px;
-  --ear: calc(100% - 10px);
-  --rail-a: calc(100% - 24px);
-  --rail-b: calc(100% - 23px);
-  --lx1: calc(100% - 34px);
-  --lx2: calc(100% - 50px);
-  --lx3: calc(100% - 78px);
+  --ly: 21px;
+  --rail: 112px;
+  --lx1: 105px;
+  --lx2: 77px;
+  --lx3: 49px;
+  --lx4: 21px;
   -webkit-mask-image: linear-gradient(270deg, #000 50%, transparent 100%);
   mask-image: linear-gradient(270deg, #000 50%, transparent 100%);
+}
+/* Start the right strip on a grid column so its dots coincide with the page's. */
+@supports (width: round(down, 10px, 7px)) {
+  .bg-rack.r {
+    right: auto;
+    left: round(down, calc(100% - 140px), var(--bg-cell));
+  }
+}
+@supports not (width: round(down, 10px, 7px)) {
+  .bg-rack.r { display: none; }
 }
 .bg-rack > .units,
 .bg-rack > .led {
   position: absolute;
   inset: 0;
 }
+/* The structure: a lit-dot lattice shown only along the first row of every unit (the divider)
+   and down one column (the rail). */
 .bg-rack > .units {
-  background-image:
-    linear-gradient(to bottom, color-mix(in srgb, var(--fg) 30%, transparent) 1px, transparent 1px),
-    radial-gradient(circle at var(--ear) 12px, color-mix(in srgb, var(--fg) 28%, transparent) 2.2px, transparent 2.8px),
-    radial-gradient(circle at var(--ear) calc(var(--u) - 12px), color-mix(in srgb, var(--fg) 28%, transparent) 2.2px, transparent 2.8px),
-    linear-gradient(to right, transparent var(--rail-a), color-mix(in srgb, var(--fg) 22%, transparent) var(--rail-a) var(--rail-b), transparent var(--rail-b));
-  background-size: 100% var(--u), 100% var(--u), 100% var(--u), 100% 100%;
-  background-repeat: repeat-y, repeat-y, repeat-y, no-repeat;
+  background-image: var(--bg-lit);
+  background-size: var(--bg-cell) var(--bg-cell);
+  opacity: 0.55;
+  -webkit-mask-image:
+    linear-gradient(to bottom, #000 var(--bg-cell), transparent var(--bg-cell)),
+    linear-gradient(to right, transparent var(--rail), #000 var(--rail), #000 calc(var(--rail) + var(--bg-cell)), transparent calc(var(--rail) + var(--bg-cell)));
+  mask-image:
+    linear-gradient(to bottom, #000 var(--bg-cell), transparent var(--bg-cell)),
+    linear-gradient(to right, transparent var(--rail), #000 var(--rail), #000 calc(var(--rail) + var(--bg-cell)), transparent calc(var(--rail) + var(--bg-cell)));
+  -webkit-mask-size: 100% var(--u), 100% 100%;
+  mask-size: 100% var(--u), 100% 100%;
+  -webkit-mask-repeat: repeat-y, no-repeat;
+  mask-repeat: repeat-y, no-repeat;
 }
 .bg-rack > .led {
   opacity: 0;
@@ -267,26 +286,27 @@
   background-repeat: repeat-y;
 }
 /* Three LED columns per strip. Their tile heights are 1, 2 and 3 units, so the
-   lights are not the same in every unit; each runs a different blink pattern. */
+   lights are not the same in every unit; each runs a different blink pattern. Each LED is one
+   grid dot lit brighter, with a slightly longer bloom than the ambient lit dots. */
 .bg-rack > .led.a {
-  background-image: radial-gradient(circle at var(--lx1) calc(var(--u) / 2), var(--fg) 0, color-mix(in srgb, var(--fg) 85%, transparent) 0.9px, color-mix(in srgb, var(--fg) 38%, transparent) 1.8px, color-mix(in srgb, var(--fg) 14%, transparent) 3.4px, color-mix(in srgb, var(--fg) 4%, transparent) 5.5px, transparent 7.5px);
+  background-image: radial-gradient(circle at var(--lx1) var(--ly), var(--fg) 0, color-mix(in srgb, var(--fg) 85%, transparent) 0.9px, color-mix(in srgb, var(--fg) 38%, transparent) 1.8px, color-mix(in srgb, var(--fg) 14%, transparent) 3.4px, color-mix(in srgb, var(--fg) 4%, transparent) 5.5px, transparent 7px);
   background-size: 100% var(--u);
   animation-name: bg-blink-3;
 }
 .bg-rack > .led.b {
-  background-image: radial-gradient(circle at var(--lx2) calc(var(--u) / 2), var(--fg) 0, color-mix(in srgb, var(--fg) 85%, transparent) 0.9px, color-mix(in srgb, var(--fg) 38%, transparent) 1.8px, color-mix(in srgb, var(--fg) 14%, transparent) 3.4px, color-mix(in srgb, var(--fg) 4%, transparent) 5.5px, transparent 7.5px);
+  background-image: radial-gradient(circle at var(--lx2) var(--ly), var(--fg) 0, color-mix(in srgb, var(--fg) 85%, transparent) 0.9px, color-mix(in srgb, var(--fg) 38%, transparent) 1.8px, color-mix(in srgb, var(--fg) 14%, transparent) 3.4px, color-mix(in srgb, var(--fg) 4%, transparent) 5.5px, transparent 7px);
   background-size: 100% calc(var(--u) * 2);
   animation-name: bg-blink-1;
 }
 .bg-rack > .led.c {
-  background-image: radial-gradient(circle at var(--lx3) calc(var(--u) / 2), var(--fg) 0, color-mix(in srgb, var(--fg) 85%, transparent) 0.9px, color-mix(in srgb, var(--fg) 38%, transparent) 1.8px, color-mix(in srgb, var(--fg) 14%, transparent) 3.4px, color-mix(in srgb, var(--fg) 4%, transparent) 5.5px, transparent 7.5px);
+  background-image: radial-gradient(circle at var(--lx3) var(--ly), var(--fg) 0, color-mix(in srgb, var(--fg) 85%, transparent) 0.9px, color-mix(in srgb, var(--fg) 38%, transparent) 1.8px, color-mix(in srgb, var(--fg) 14%, transparent) 3.4px, color-mix(in srgb, var(--fg) 4%, transparent) 5.5px, transparent 7px);
   background-size: 100% calc(var(--u) * 3);
   background-position: 0 var(--u);
   animation-name: bg-blink-5;
 }
 /* A fourth, sparse LED on the right strip only. */
 .bg-rack.r > .led.d {
-  background-image: radial-gradient(circle at calc(100% - 94px) calc(var(--u) / 2), var(--fg) 0, color-mix(in srgb, var(--fg) 85%, transparent) 0.9px, color-mix(in srgb, var(--fg) 38%, transparent) 1.8px, color-mix(in srgb, var(--fg) 14%, transparent) 3.4px, color-mix(in srgb, var(--fg) 4%, transparent) 5.5px, transparent 7.5px);
+  background-image: radial-gradient(circle at var(--lx4) var(--ly), var(--fg) 0, color-mix(in srgb, var(--fg) 85%, transparent) 0.9px, color-mix(in srgb, var(--fg) 38%, transparent) 1.8px, color-mix(in srgb, var(--fg) 14%, transparent) 3.4px, color-mix(in srgb, var(--fg) 4%, transparent) 5.5px, transparent 7px);
   background-size: 100% calc(var(--u) * 5);
   background-position: 0 calc(var(--u) * 2);
   animation-name: bg-blink-2;
@@ -338,36 +358,94 @@
 }
 
 /* -------------------------------------------------------------- mode: log */
-/* Terminal log lines scrolling up each margin. The tall inner element holds a
-   repeating tile of "lines" (bars of different lengths); moving it up by
-   exactly one tile height, forever, loops seamlessly. */
+/* Terminal log lines in the margins, made of the grid's own dots. There are no drawn bars: each
+   line is a short run of the bright lattice (a "dash"), like one of the home page's packets,
+   drifting slowly upward and fading in low on the page and out high up. Every dash is
+   independent (its own place, length, speed and delay), so they glide across the margin at
+   different paces and never move as one tiled sheet. Few, dim and well apart, so it stays calm.
+
+   Each dash is the same window and counter-window trick as the packets: the window (a mask that
+   is bright at the head and fades down the trail, and soft at both ends) moves up; the bright
+   lattice inside it moves down by exactly the same amount, so the dots stay pinned to the page
+   grid and only the lit shape travels. Motion is continuous, never stepped.
+
+   Strips start on a grid column and are a whole number of cells wide (CSS round()), so lit dots
+   coincide with the page's. Without round() support the strips are hidden. */
 .bg-log {
+  --w: clamp(126px, 22vw, 322px);
   position: absolute;
   top: 0;
   bottom: 0;
-  width: clamp(120px, 22vw, 320px);
+  left: 0;
+  width: var(--w);
   overflow: hidden;
   -webkit-mask-image: linear-gradient(90deg, #000 0%, transparent 100%);
   mask-image: linear-gradient(90deg, #000 0%, transparent 100%);
 }
-.bg-log.l { left: 0; }
 .bg-log.r {
-  right: 0;
   -webkit-mask-image: linear-gradient(270deg, #000 0%, transparent 100%);
   mask-image: linear-gradient(270deg, #000 0%, transparent 100%);
 }
-.bg-log > i {
+@supports (width: round(down, 10px, 7px)) {
+  .bg-log {
+    --w: round(down, clamp(126px, 22vw, 322px), var(--bg-cell));
+  }
+  .bg-log.r {
+    left: round(down, calc(100% - var(--w)), var(--bg-cell));
+  }
+}
+@supports not (width: round(down, 10px, 7px)) {
+  .bg-log { display: none; }
+}
+
+.bg-dash {
+  position: absolute;
+  top: 0;
+  left: calc(var(--x) * var(--bg-cell));
+  width: calc(var(--n) * var(--bg-cell));
+  height: calc(2 * var(--bg-cell));
+  overflow: hidden;
+  opacity: 0;
+  will-change: transform, opacity;
+  animation: bg-dash-rise var(--dur, 22s) linear infinite;
+  animation-delay: var(--delay, 0s);
+  /* The band is two cells tall with soft top and bottom edges, so as it drifts up a row of dots
+     swells and fades one dot at a time instead of being cut in half by a hard edge. Along its
+     length it ramps in over one cell and trails off, like the packets on the home page. */
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 var(--bg-cell), transparent 100%), linear-gradient(180deg, transparent 0%, #000 50%, transparent 100%);
+  mask-image: linear-gradient(90deg, transparent 0, #000 var(--bg-cell), transparent 100%), linear-gradient(180deg, transparent 0%, #000 50%, transparent 100%);
+  -webkit-mask-composite: source-in;
+  mask-composite: intersect;
+}
+.bg-log.r .bg-dash {
+  left: auto;
+  right: calc(var(--x) * var(--bg-cell));
+  -webkit-mask-image: linear-gradient(270deg, transparent 0, #000 var(--bg-cell), transparent 100%), linear-gradient(180deg, transparent 0%, #000 50%, transparent 100%);
+  mask-image: linear-gradient(270deg, transparent 0, #000 var(--bg-cell), transparent 100%), linear-gradient(180deg, transparent 0%, #000 50%, transparent 100%);
+}
+.bg-dash > i {
   position: absolute;
   left: 0;
-  right: 0;
   top: 0;
-  height: calc(100% + 168px);
+  width: 100%;
+  /* as tall as the whole trip (screen plus the margins either side), because the window travels
+     over it and shows whichever part of the pinned lattice is beneath it */
+  height: calc(100vh + 112px);
   will-change: transform;
-  animation: bg-log-scroll var(--dur, 14s) linear infinite;
+  animation: bg-dash-pin var(--dur, 22s) linear infinite;
+  animation-delay: var(--delay, 0s);
+  background-image: var(--bg-lit);
+  background-size: var(--bg-cell) var(--bg-cell);
 }
-@keyframes bg-log-scroll {
-  from { transform: translate3d(0, 0, 0); }
-  to   { transform: translate3d(0, -168px, 0); }
+@keyframes bg-dash-rise {
+  0%   { transform: translate3d(0, calc(100vh + 56px), 0); opacity: 0; }
+  16%  { opacity: var(--peak, 0.7); }
+  58%  { opacity: var(--peak, 0.7); }
+  100% { transform: translate3d(0, -56px, 0); opacity: 0; }
+}
+@keyframes bg-dash-pin {
+  from { transform: translate3d(0, calc(-100vh - 56px), 0); }
+  to   { transform: translate3d(0, 56px, 0); }
 }
 
 /* ----------------------------------------------------------- calm zone */
@@ -382,6 +460,13 @@
     color-mix(in srgb, var(--page) 55%, transparent) 55%,
     transparent 100%
   );
+}
+/* On a phone the content fills the width, so the haze has to as well; otherwise the lit dots run
+   straight through headings and card text. */
+@media (max-width: 767px) {
+  .bg-calm {
+    background: color-mix(in srgb, var(--page) 78%, transparent);
+  }
 }
 
 /* ----------------------------------------------------------- focus mode */
@@ -633,7 +718,7 @@
     display: none;
   }
   .bg-rack > .led,
-  .bg-log > i {
+  .bg-dash {
     animation: none;
   }
 }

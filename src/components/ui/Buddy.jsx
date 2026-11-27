@@ -93,7 +93,7 @@ function Prop({ mood }) {
   if (mood === 'cheer') {
     // a little open book, held at the bottom-right
     return (
-      <svg aria-hidden="true" viewBox="0 0 40 28" className="buddy-book absolute -bottom-1 -right-2 h-7 w-9 drop-shadow">
+      <svg aria-hidden="true" viewBox="0 0 40 28" className="buddy-book absolute -bottom-1 -right-2 h-7 w-9">
         <path d="M2 4 Q11 1 20 6 V26 Q11 21 2 24 Z" fill="#fff7e6" stroke="#b7770c" strokeWidth="1.5" />
         <path d="M38 4 Q29 1 20 6 V26 Q29 21 38 24 Z" fill="#fff7e6" stroke="#b7770c" strokeWidth="1.5" />
         <path d="M6 9 h9 M6 13 h9 M6 17 h8 M25 9 h9 M25 13 h9 M25 17 h8" stroke="#b7770c" strokeWidth="1" opacity="0.7" />
@@ -334,7 +334,7 @@ export default function Buddy({
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: 4 }}
               transition={{ duration: 0.18 }}
-              className={`buddy-bubble absolute z-10 w-max max-w-[15rem] rounded-2xl border border-line bg-surface px-3 py-2 text-xs font-semibold leading-snug text-fg shadow-lg ${bubbleClass}`}
+              className={`buddy-bubble absolute z-10 w-max max-w-[15rem] rounded-2xl border border-line bg-surface px-3 py-2 text-xs font-semibold leading-snug text-fg ${bubbleClass}`}
             >
               {text}
               <span aria-hidden="true" className={`buddy-bubble-tail buddy-bubble-tail-${bubbleSide}`} />

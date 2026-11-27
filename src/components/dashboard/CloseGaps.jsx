@@ -3,7 +3,7 @@ import { motion } from 'framer-motion'
 import Button from '@/components/ui/Button'
 import Icon from '@/components/ui/Icon'
 import SpineCard from '@/components/ui/SpineCard'
-import { subjectColor } from '@/constants/content'
+import { ink, subjectColor } from '@/constants/content'
 import { fadeInUp } from '@/lib/motion'
 
 /*
@@ -80,7 +80,7 @@ function Row({ index, subject, topic, tag, reason, onStart }) {
         </span>
         <div className="min-w-0 flex-1">
           <p className="flex flex-wrap items-center gap-x-2 gap-y-1">
-            <span className="text-[0.62rem] font-extrabold uppercase tracking-[0.12em]" style={{ color }}>
+            <span className="text-[0.62rem] font-extrabold uppercase tracking-[0.12em]" style={{ color: ink(color) }}>
               {subject}
             </span>
             {tag}

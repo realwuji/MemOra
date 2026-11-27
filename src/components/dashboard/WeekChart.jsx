@@ -145,7 +145,7 @@ export default function WeekChart({ sessions, now, weeks = 8, goalMinutes = 125 
         </svg>
         {hover !== null && (
           <div
-            className="pointer-events-none absolute -top-1 rounded-lg border border-line bg-surface px-2.5 py-1.5 text-xs shadow-lg"
+            className="pointer-events-none absolute -top-1 rounded-lg border border-line bg-surface px-2.5 py-1.5 text-xs"
             style={{
               left: `${((padL + hover * slot + slot / 2) / W) * 100}%`,
               transform: 'translate(-50%, -100%)',

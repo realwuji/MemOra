@@ -338,7 +338,7 @@ export default function FocusMusic() {
   const subLine = track?.title ? track.artist : playing ? 'Playing' : 'Paused'
 
   return (
-    <div ref={wrapperRef} onPointerEnter={() => setArmed(true)} onFocus={() => setArmed(true)} className="fixed bottom-4 right-4 z-[55] flex flex-col items-end gap-2 print:hidden">
+    <div ref={wrapperRef} onPointerEnter={() => setArmed(true)} onFocus={() => setArmed(true)} style={{ bottom: 'max(1rem, env(safe-area-inset-bottom))', right: 'max(1rem, env(safe-area-inset-right))' }} className="fixed z-[55] flex flex-col items-end gap-2 print:hidden">
       {/* The panel stays mounted so the embed keeps playing when minimised. */}
       <div
         className={`music-panel w-[min(30rem,calc(100vw-2rem))] overflow-hidden rounded-3xl border border-line bg-surface transition-[opacity,transform] duration-200 ${
@@ -346,15 +346,6 @@ export default function FocusMusic() {
         }`}
         aria-hidden={!state.open}
       >
-        {/* The current cover art, heavily blurred, washes the whole panel -
-            not just the header - so Spotify's own embed colours read as
-            part of one "now playing" surface rather than a bright block
-            dropped into an unrelated dark panel. See the CSS comment on
-            .music-panel-ambient for why this sits behind everything. */}
-        {currentThumb && (
-          <img src={currentThumb} alt="" aria-hidden="true" decoding="async" className="music-panel-ambient" />
-        )}
-        <span aria-hidden="true" className="music-panel-ambient-scrim" />
         {/* A single scroll container for the whole panel, capped well
             below the viewport height. Splitting the panel into its own
             scroll box per-section (the account list used to be its own
@@ -370,10 +361,6 @@ export default function FocusMusic() {
               already shows the cover, the title and the controls, so this
               deliberately repeats none of them. */}
           <div className="music-hero relative overflow-hidden px-3 py-2">
-            {currentThumb && (
-              <img src={currentThumb} alt="" aria-hidden="true" decoding="async" className="music-hero-bg" />
-            )}
-            <span aria-hidden="true" className="music-hero-scrim absolute inset-0" />
             <div className="relative flex items-center justify-between gap-2">
               <p className="flex min-w-0 items-center gap-1.5 text-[0.66rem] font-extrabold uppercase tracking-[0.14em] text-white/85">
                 <span className="truncate">Your music</span>
@@ -384,14 +371,14 @@ export default function FocusMusic() {
                   href={`https://open.spotify.com/${state.uri}`}
                   target="_blank"
                   rel="noreferrer"
-                  className="rounded-full bg-white/15 px-2.5 py-1 text-[0.68rem] font-bold text-white backdrop-blur-sm transition-colors hover:bg-white/25"
+                  className="rounded-full bg-white/15 px-2.5 py-1 text-[0.68rem] font-bold text-white transition-colors hover:bg-white/25"
                 >
                   Open in Spotify
                 </a>
                 <button
                   type="button"
                   onClick={() => setState((s) => ({ ...s, open: false }))}
-                  className="grid h-7 w-7 place-items-center rounded-full bg-white/15 text-white backdrop-blur-sm transition-colors hover:bg-white/25"
+                  className="grid h-7 w-7 place-items-center rounded-full bg-white/15 text-white transition-colors hover:bg-white/25"
                   aria-label="Minimise music player"
                 >
                   <Icon name="chevronDown" className="h-4 w-4" />
@@ -627,10 +614,6 @@ export default function FocusMusic() {
           rather than a 40px smudge. */}
       {!state.open && (
         <div className="music-pill relative flex w-[min(24rem,calc(100vw-2rem))] items-center gap-2 overflow-hidden rounded-2xl border border-line p-2">
-          {currentThumb && (
-            <img src={currentThumb} alt="" aria-hidden="true" decoding="async" className="music-pill-bg" />
-          )}
-          <span aria-hidden="true" className="music-pill-scrim absolute inset-0" />
           <button
             type="button"
             onClick={() => setState((s) => ({ ...s, open: true }))}
@@ -641,7 +624,7 @@ export default function FocusMusic() {
               <img
                 src={currentThumb}
                 alt=""
-                className={`h-14 w-14 shrink-0 rounded-xl object-cover shadow-md ${playing ? 'music-spin-glow' : ''}`}
+                className={`h-14 w-14 shrink-0 rounded-xl object-cover ${playing ? 'music-spin-glow' : ''}`}
               />
             ) : (
               <span className="grid h-14 w-14 shrink-0 place-items-center rounded-xl bg-brand-soft">
@@ -662,7 +645,7 @@ export default function FocusMusic() {
           <button
             type="button"
             onClick={toggle}
-            className="music-pill-play relative grid h-11 w-11 shrink-0 place-items-center rounded-full shadow-md transition-transform hover:scale-105"
+            className="music-pill-play relative grid h-11 w-11 shrink-0 place-items-center rounded-full transition-transform hover:scale-105"
             aria-label={playing ? 'Pause' : 'Play'}
           >
             <Icon name={playing ? 'pause' : 'play'} className="h-5 w-5" />

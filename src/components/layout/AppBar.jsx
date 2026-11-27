@@ -2,12 +2,17 @@ import { useEffect, useRef, useState } from 'react'
 import { Link, NavLink, useNavigate } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
 import { NAV_LINKS } from '@/constants/content'
+import { APP_PLAIN } from '@/constants/nav-menu'
+import useHeaderMenus from '@/hooks/useHeaderMenus'
 import Icon from '@/components/ui/Icon'
 import SigilWordmark from '@/components/ui/SigilWordmark'
 import ThemeSwitcher from '@/components/layout/ThemeSwitcher'
+import MegaNav from '@/components/layout/MegaNav'
+import InstallMenuItem from '@/components/pwa/InstallMenuItem'
 import { useApp } from '@/context/AppProvider'
+import '@/components/layout/meganav.css'
 
-// Icons for the nav destinations, so the menu reads clearly.
+// Icons for the nav destinations in the small-screen menu, so it reads clearly.
 const NAV_ICONS = {
   '/dashboard': 'home',
   '/progress': 'activity',
@@ -16,36 +21,31 @@ const NAV_ICONS = {
   '/community': 'users',
 }
 
-const itemClass = ({ isActive }) =>
-  `flex items-center gap-2.5 rounded-lg px-3 py-2.5 text-sm font-semibold transition-colors ${
-    isActive ? 'bg-brand-soft text-brand-strong' : 'text-fg hover:bg-raised'
-  }`
-
-// Inline top-bar nav links (shown next to the wordmark on larger screens).
-const navLinkClass = ({ isActive }) =>
-  `text-sm font-semibold transition-colors ${
-    isActive ? 'text-brand-strong' : 'text-muted hover:text-fg'
-  }`
-
+/*
+  The in-app header: a flat, square bar with a hairline under it (no pill, no blur), the wordmark, the
+  primary navigation (a few links and the morphing menus, MegaNav.jsx) and, on the right, the theme
+  switch and the account menu. Below 768px the menus are replaced by the account menu, which lists every
+  destination, so a phone never needs hover. Everything is square, in line with the rest of the product
+  (DESIGN.md, principle 3).
+*/
 export default function AppBar() {
   const { user, account, signOut, showToast } = useApp()
+  // The menus, filled with this student's own state, and the Continue target (hooks/useHeaderMenus.js).
+  const { menus, resume } = useHeaderMenus()
   const navigate = useNavigate()
   const [open, setOpen] = useState(false)
   const initial = (user?.name?.[0] || '?').toUpperCase()
   const menuButtonRef = useRef(null)
 
-  // Closing must hand focus back to the button that opened the menu -
-  // otherwise a keyboard user's focus silently drops onto <body> and they
-  // lose their place on the page (WAI-ARIA menu-button pattern).
+  // Closing must hand focus back to the button that opened the menu, otherwise a keyboard user's focus
+  // silently drops onto <body> (WAI-ARIA menu-button pattern).
   const close = () => {
     setOpen(false)
     menuButtonRef.current?.focus()
   }
 
-  // Signing out has to leave the app - staying on an in-app page after
-  // signing out shows a dashboard that is no longer "yours", with a top bar
-  // still offering Sign out. Land on the marketing page with a confirmation,
-  // the way every other product does it.
+  // Signing out has to leave the app: staying on an in-app page after signing out shows a dashboard
+  // that is no longer "yours". Land on the marketing page with a confirmation.
   const handleSignOut = () => {
     signOut()
     close()
@@ -53,7 +53,6 @@ export default function AppBar() {
     showToast('Signed out')
   }
 
-  // Close the menu with Escape.
   useEffect(() => {
     if (!open) return
     const onKey = (e) => e.key === 'Escape' && close()
@@ -61,16 +60,11 @@ export default function AppBar() {
     return () => window.removeEventListener('keydown', onKey)
   }, [open])
 
-  // Same collapsing treatment as the landing header: a glass panel at all
-  // times (never transparent, so page content can't show through it),
-  // floating as an inset pill once the page scrolls. A discrete "past the
-  // driving plain CSS transitions, rather than a continuous per-pixel
-  // scroll-linked style - the earlier version recalculated an animated
-  // border-radius on a backdrop-filter layer every scroll frame, which is
-  // expensive enough to desync the sticky header from the page on scroll.
+  // A discrete "scrolled past the top" flag (never a per-pixel scroll-linked style, which would
+  // recalculate layout on every frame): it only tightens the padding and firms up the hairline.
   const [scrolled, setScrolled] = useState(false)
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 60)
+    const onScroll = () => setScrolled(window.scrollY > 40)
     onScroll()
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
@@ -81,50 +75,34 @@ export default function AppBar() {
       initial={{ y: -60, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.4, ease: 'easeOut' }}
-      className={`app-bar sticky top-0 z-40 transition-[margin] duration-300 ease-out ${
-        scrolled ? 'mx-3.5 mt-2.5' : 'mx-0 mt-0'
-      }`}
+      className="app-bar sticky top-0 z-40"
+      data-scrolled={scrolled ? 'true' : 'false'}
     >
-      {/* Clipped to the pill shape on its own - the header itself must stay
-          overflow-visible so the mobile menu dropdown can pop out below it. */}
+      <div className="app-bar-bg absolute inset-0" />
       <div
-        className={`glass-bar absolute inset-0 overflow-hidden opacity-100 transition-[border-radius] duration-300 ease-out ${
-          scrolled ? 'rounded-3xl' : 'rounded-none'
-        }`}
-      />
-      <div
-        className={`relative flex w-full items-center justify-between px-6 transition-[padding] duration-300 ease-out sm:px-8 ${
-          scrolled ? 'py-2.5' : 'py-[18px]'
+        className={`relative flex w-full items-center justify-between px-6 transition-[padding] duration-200 ease-out sm:px-8 ${
+          scrolled ? 'py-2' : 'py-3.5'
         }`}
       >
-        <div className="flex items-center gap-7">
-          {/* AppBar only ever renders on in-app pages, so the logo goes back
-              to the dashboard, not the marketing landing page - there's
-              nothing for an already-in-app user to do there. */}
-          <motion.div whileHover={{ scale: 1.03 }}>
-            <Link
-              to="/dashboard"
-              className="flex items-center gap-2 text-xl font-semibold text-fg"
-            >
-              <div className={`origin-left transition-transform duration-300 ease-out ${scrolled ? 'scale-[0.88]' : 'scale-100'}`}>
-                <SigilWordmark animate={true} />
-              </div>
-            </Link>
-          </motion.div>
-
-          {/* Inline nav next to the wordmark (mobile still uses the hamburger). */}
-          <nav className="hidden items-center gap-6 md:flex">
-            {NAV_LINKS.map((l) => (
-              <NavLink key={l.to} to={l.to} className={navLinkClass}>
-                {l.label}
-              </NavLink>
-            ))}
-          </nav>
+        <div className="flex items-center gap-8">
+          {/* AppBar only renders on in-app pages, so the logo goes back to the dashboard. */}
+          <Link to="/dashboard" className="flex items-center text-xl font-semibold text-fg" aria-label="Memoraa dashboard">
+            <SigilWordmark animate={true} />
+          </Link>
+          <MegaNav menus={menus} plain={APP_PLAIN} />
         </div>
 
         <div className="flex items-center gap-3">
+          {/* Continue where you left off: always one click away, naming the actual chapter. */}
+          {resume && (
+            <Link to={resume.to} className="mn-resume" style={{ '--subject': resume.color }} title={`${resume.subject}: ${resume.topic}`}>
+              <i className="srv-led" aria-hidden="true" />
+              <span className="mn-resume-label">Continue</span>
+              <span className="mn-resume-topic">{resume.topic}</span>
+            </Link>
+          )}
           <ThemeSwitcher />
-          {/* Hamburger menu (shown on every screen size). */}
+          {/* Account menu (shown on every screen size; on small screens it also lists the destinations). */}
           <div className="relative">
             <button
               ref={menuButtonRef}
@@ -133,7 +111,7 @@ export default function AppBar() {
               aria-expanded={open}
               aria-haspopup="menu"
               aria-label={open ? 'Close menu' : 'Open menu'}
-              className="glass flex h-10 w-10 items-center justify-center rounded-full text-fg transition-colors hover:[border-color:color-mix(in_srgb,var(--brand)_45%,var(--line))]"
+              className="app-bar-btn"
             >
               <Icon name={open ? 'x' : 'menu'} className="h-5 w-5" />
             </button>
@@ -141,83 +119,71 @@ export default function AppBar() {
             <AnimatePresence>
               {open && (
                 <>
-                  <button
-                    type="button"
-                    aria-hidden="true"
-                    tabIndex={-1}
-                    onClick={close}
-                    className="fixed inset-0 z-40 cursor-default"
-                  />
+                  <button type="button" aria-hidden="true" tabIndex={-1} onClick={close} className="fixed inset-0 z-40 cursor-default" />
                   <motion.div
                     role="menu"
-                    initial={{ opacity: 0, y: -6 }}
+                    initial={{ opacity: 0, y: -4 }}
                     animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -6 }}
-                    transition={{ duration: 0.16 }}
-                    className="glass-strong absolute right-0 top-full z-50 mt-2 w-64 overflow-hidden rounded-2xl"
+                    exit={{ opacity: 0, y: -4 }}
+                    transition={{ duration: 0.14 }}
+                    className="mn-account"
                   >
+                    <div className="srv-titlebar" aria-hidden="true">
+                      <span className="leds">
+                        <i className="srv-led" />
+                        <i className="srv-led" />
+                        <i className="srv-led" />
+                      </span>
+                      <span className="path">~/memoraa/account</span>
+                    </div>
+
                     {/* Who's studying */}
-                    <div className="flex items-center gap-3 border-b border-line px-4 py-3">
-                      <span className="flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-full bg-brand text-sm font-bold text-on-brand">
-                        {user?.avatar ? (
-                          <img src={user.avatar} alt="Your profile photo" className="h-full w-full object-cover" />
-                        ) : (
-                          initial
-                        )}
+                    <div className="mn-who">
+                      <span className="flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden bg-brand text-sm font-bold text-on-brand">
+                        {user?.avatar ? <img src={user.avatar} alt="Your profile photo" className="h-full w-full object-cover" /> : initial}
                       </span>
                       <div className="min-w-0">
                         <p className="truncate text-sm font-semibold text-fg">{user?.name}</p>
-                        {account ? (
-                          <p className="truncate text-xs text-muted">{account.email}</p>
-                        ) : null}
+                        {account ? <p className="truncate text-xs text-muted">{account.email}</p> : null}
                       </div>
                     </div>
 
-                    <nav className="flex flex-col gap-0.5 p-1.5">
-                      {/* Nav links live in the menu only on mobile; desktop has them inline. */}
-                      <div className="flex flex-col gap-0.5 md:hidden">
+                    <nav className="mn-items">
+                      {/* The destinations live here on small screens; from 768px up they are in the bar. */}
+                      <div className="flex flex-col md:hidden">
                         {NAV_LINKS.map((l) => (
-                          <NavLink
-                            key={l.to}
-                            to={l.to}
-                            role="menuitem"
-                            onClick={close}
-                            className={itemClass}
-                          >
-                            <Icon
-                              name={NAV_ICONS[l.to] || 'chevronRight'}
-                              className="h-4 w-4 text-muted"
-                            />
-                            {l.label}
+                          <NavLink key={l.to} to={l.to} role="menuitem" onClick={close} className="mn-link">
+                            <Icon name={NAV_ICONS[l.to] || 'chevronRight'} className="mt-0.5 h-4 w-4 text-muted" />
+                            <span className="mn-text">
+                              <span className="mn-label">{l.label}</span>
+                            </span>
                           </NavLink>
                         ))}
-                        <div className="my-1 border-t border-line" />
+                        <div className="mn-sep" />
                       </div>
 
-                      <NavLink
-                        to="/profile"
-                        role="menuitem"
-                        onClick={close}
-                        className={itemClass}
-                      >
-                        <Icon name="user" className="h-4 w-4 text-muted" />
-                        Settings
+                      <NavLink to="/profile" role="menuitem" onClick={close} className="mn-link">
+                        <Icon name="user" className="mt-0.5 h-4 w-4 text-muted" />
+                        <span className="mn-text">
+                          <span className="mn-label">Settings</span>
+                        </span>
                       </NavLink>
 
+                      <InstallMenuItem onDone={() => setOpen(false)} />
+
                       {account ? (
-                        <button
-                          type="button"
-                          role="menuitem"
-                          onClick={handleSignOut}
-                          className={itemClass({ isActive: false })}
-                        >
-                          <Icon name="logout" className="h-4 w-4 text-muted" />
-                          Sign out
+                        <button type="button" role="menuitem" onClick={handleSignOut} className="mn-link">
+                          <Icon name="logout" className="mt-0.5 h-4 w-4 text-muted" />
+                          <span className="mn-text">
+                            <span className="mn-label">Sign out</span>
+                          </span>
                         </button>
                       ) : (
-                        <NavLink to="/signin" role="menuitem" onClick={close} className={itemClass}>
-                          <Icon name="user" className="h-4 w-4 text-muted" />
-                          Sign in
+                        <NavLink to="/signin" role="menuitem" onClick={close} className="mn-link">
+                          <Icon name="user" className="mt-0.5 h-4 w-4 text-muted" />
+                          <span className="mn-text">
+                            <span className="mn-label">Sign in</span>
+                          </span>
                         </NavLink>
                       )}
                     </nav>

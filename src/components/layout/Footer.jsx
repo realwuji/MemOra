@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import SigilWordmark from '@/components/ui/SigilWordmark'
 import { FOOTER_COLUMNS, SITE } from '@/constants/content'
 import { useApp } from '@/context/AppProvider'
+import { promptInstall, usePwa } from '@/lib/pwa'
 
 /*
   Site footer - same liquid glass material as the header, so the shell reads
@@ -10,7 +11,8 @@ import { useApp } from '@/context/AppProvider'
   there, not touching this component.
 */
 export default function Footer() {
-  const { account } = useApp()
+  const { account, showToast } = useApp()
+  const { canInstall } = usePwa()
   const year = new Date().getFullYear()
   const logoTo = account ? '/dashboard' : '/'
 
@@ -23,12 +25,12 @@ export default function Footer() {
               <p className="text-xs font-semibold uppercase tracking-widest text-muted">
                 {col.heading}
               </p>
-              <ul className="mt-4 space-y-3">
+              <ul className="mt-3 space-y-0.5">
                 {col.links.map((l) => (
                   <li key={l.label}>
                     <Link
                       to={l.to}
-                      className="text-sm font-medium text-fg transition-colors hover:text-brand-strong"
+                      className="inline-flex min-h-9 items-center text-sm font-medium text-fg transition-colors hover:text-brand-strong"
                     >
                       {l.label}
                     </Link>
@@ -43,6 +45,19 @@ export default function Footer() {
           <p className="text-sm text-muted">{SITE.tagline}</p>
           <p className="text-xs text-muted" style={{ fontFamily: 'var(--font-mono-ui)' }}>
             &copy; {year} {SITE.name} &middot; free, no account needed to try it
+            {canInstall && (
+              <>
+                {' '}
+                &middot;{' '}
+                <button
+                  type="button"
+                  className="font-bold text-fg underline decoration-dotted underline-offset-4"
+                  onClick={async () => (await promptInstall()) === 'accepted' && showToast('Memoraa is installing')}
+                >
+                  Install app
+                </button>
+              </>
+            )}
           </p>
         </div>
       </div>

@@ -116,12 +116,6 @@ export default function BandBar({ pack, chapterStates, isYear12 = false, color =
         {segments.map((seg) => (
           <div key={seg.label} className="min-w-0" style={{ flex: `${seg.total} 1 0%` }}>
             <div className="relative" style={{ height }}>
-              {/* Glow effect behind the bar */}
-              <div 
-                className="absolute inset-0 rounded-full opacity-40 blur-sm"
-                style={{ background: 'var(--subject)' }}
-                aria-hidden="true"
-              />
               <div className="spec-map-track relative flex h-full w-full overflow-hidden rounded-full">
                 {FILL_ORDER.filter((b) => seg.counts[b] > 0).map((band, i, arr) => (
                   <span

@@ -18,11 +18,7 @@
   overflow: hidden;
   border: 1px solid color-mix(in srgb, var(--subject) 35%, var(--line));
   border-radius: 1.7rem;
-  background:
-    radial-gradient(70% 120% at 100% 0%, color-mix(in srgb, var(--subject) 26%, transparent), transparent 65%),
-    radial-gradient(50% 90% at 0% 100%, color-mix(in srgb, var(--subject) 12%, transparent), transparent 70%),
-    var(--surface);
-  box-shadow: 0 30px 60px -40px color-mix(in srgb, var(--subject) 70%, #000);
+  background: var(--surface);
 }
 .cp-hero::before {
   content: '';
@@ -82,7 +78,7 @@
   border: 0;
   background: var(--subject);
   color: #fff;
-  box-shadow: 0 14px 28px -14px var(--subject);
+  box-shadow: none;
 }
 .cp-primary small {
   display: block;
@@ -167,7 +163,6 @@
 }
 .cp-ring.is-done .cp-ring-fill {
   stroke: var(--done);
-  filter: drop-shadow(0 0 5px color-mix(in srgb, var(--done) 65%, transparent));
 }
 .cp-ring.is-doing .cp-ring-fill {
   stroke: var(--doing);
@@ -177,7 +172,6 @@
 }
 .cp-ring.is-wrong .cp-ring-fill {
   stroke: #d64545;
-  filter: drop-shadow(0 0 5px color-mix(in srgb, #d64545 60%, transparent));
 }
 .cp-ring.is-right .cp-ring-mid {
   color: #2e9e6b;
@@ -387,7 +381,6 @@
   content: '';
   position: absolute;
   inset: 0;
-  background: radial-gradient(15rem circle at var(--mx, 50%) var(--my, 50%), color-mix(in srgb, var(--subject) 20%, transparent), transparent 70%);
   opacity: 0;
   transition: opacity 0.25s;
   pointer-events: none;
@@ -396,7 +389,7 @@
 .cp-card:focus-visible {
   transform: translateY(-4px);
   border-color: color-mix(in srgb, var(--subject) 70%, var(--line));
-  box-shadow: 0 22px 36px -26px var(--subject);
+  box-shadow: none;
   outline: none;
 }
 .cp-card:hover::after,
@@ -411,7 +404,7 @@
 }
 .cp-card.is-done {
   border-color: color-mix(in srgb, var(--done) 40%, var(--line));
-  background: linear-gradient(135deg, color-mix(in srgb, var(--done) 9%, var(--surface)), var(--surface) 70%);
+  background: var(--surface);
 }
 .cp-card.is-done::before {
   background: var(--done);
@@ -525,7 +518,6 @@
 }
 .cp-card.is-rated {
   border-color: color-mix(in srgb, var(--rate) 68%, var(--line));
-  background-image: linear-gradient(135deg, color-mix(in srgb, var(--rate) 22%, transparent), transparent 70%);
 }
 .cp-card.is-rated::before,
 .cp-card.is-rated .cp-card-status i {
@@ -596,9 +588,7 @@
 .cp-dot-grid i.is-lit {
   background: var(--subject);
   transform: scale(1.35);
-  box-shadow:
-    0 0 6px 1px color-mix(in srgb, var(--subject) 85%, transparent),
-    0 0 14px 3px color-mix(in srgb, var(--subject) 45%, transparent);
+  box-shadow: none;
 }
 @media (max-width: 640px) {
   .cp-dots {
@@ -606,3 +596,120 @@
     text-align: left;
   }
 }
+
+/* ============== Glowing dots (replaces the gradient washes and glows above) ==============
+   This picker used to glow with soft colour: a corner wash and shadow on the hero, a coloured shadow under "Next up", and a cursor-following wash plus a shadow
+   on every card. Those gradient fades are now glowing dots, the same language as the backdrop and
+   the status LEDs: a pinpoint with a faint bloom on a 14px lattice, in the subject's colour (green
+   for done, the rating colour for rated). The cards keep following the pointer: the dots nearest
+   it light up, like the grid cursor. No blur and no gradient wash; only opacity changes. The
+   charged buttons elsewhere are deliberately unchanged. --dc is the dot colour and --dg the pitch.
+   These sit at the END of this file on purpose: this stylesheet loads with the study chunk, after
+   server.css, so a rule here beats the older ones above it at equal specificity (see DESIGN.md). */
+.cp-hero::before,
+.cp-hero::after,
+.cp-primary::after,
+.cp-card::after {
+  content: '';
+  position: absolute;
+  pointer-events: none;
+  background-image: radial-gradient(
+    circle,
+    var(--dc) 0,
+    color-mix(in srgb, var(--dc) 85%, transparent) .5px,
+    color-mix(in srgb, var(--dc) 38%, transparent) 1.1px,
+    color-mix(in srgb, var(--dc) 14%, transparent) 2px,
+    color-mix(in srgb, var(--dc) 4%, transparent) 3.2px,
+    transparent 4.4px
+  );
+  background-size: var(--dg, 14px) var(--dg, 14px);
+}
+
+/* hero: flat surface, hairline border, a field of glowing dots gathering in the top right and a
+   fainter one in the bottom left */
+.cp-hero {
+  --dc: var(--subject);
+  background: var(--surface);
+  border-color: var(--srv-line);
+  box-shadow: none;
+}
+.cp-hero::before {
+  inset: 0;
+  opacity: .9;
+  -webkit-mask-image: radial-gradient(70% 120% at 100% 0%, #000, transparent 65%);
+  mask-image: radial-gradient(70% 120% at 100% 0%, #000, transparent 65%);
+}
+.cp-hero::after {
+  inset: 0;
+  opacity: .4;
+  -webkit-mask-image: radial-gradient(50% 90% at 0% 100%, #000, transparent 70%);
+  mask-image: radial-gradient(50% 90% at 0% 100%, #000, transparent 70%);
+}
+.cp-hero > * { position: relative; z-index: 1; }
+
+/* "Next up": solid fill without the coloured shadow; light dots gather at its right end, and
+   brighten when it is hovered */
+.cp-primary {
+  --dc: #fff;
+  --dg: 10px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: none;
+}
+.cp-primary::after {
+  inset: 0;
+  opacity: .32;
+  transition: opacity .25s ease;
+  -webkit-mask-image: linear-gradient(90deg, transparent 45%, #000);
+  mask-image: linear-gradient(90deg, transparent 45%, #000);
+}
+.cp-primary:hover::after,
+.cp-primary:focus-visible::after { opacity: .85; }
+.cp-primary > * { position: relative; z-index: 1; }
+
+/* chapter cards: no wash, no shadow. On hover the dots around the pointer glow. */
+.cp-card {
+  --dc: var(--subject);
+  --dg: 12px;
+}
+/* keep the content above the dots; the "Start" label is absolutely placed, so it is left alone */
+.cp-card > *:not(.cp-card-go) { position: relative; z-index: 1; }
+.cp-card > .cp-card-go { z-index: 1; }
+.cp-card::after {
+  inset: 0;
+  background-color: transparent;
+  opacity: 0;
+  transition: opacity .25s ease;
+  -webkit-mask-image: radial-gradient(9rem circle at var(--mx, 50%) var(--my, 50%), #000, transparent 72%);
+  mask-image: radial-gradient(9rem circle at var(--mx, 50%) var(--my, 50%), #000, transparent 72%);
+}
+.cp-card:hover,
+.cp-card:focus-visible { box-shadow: none; }
+.cp-card:hover::after,
+.cp-card:focus-visible::after { opacity: .95; }
+/* finished and rated cards: a flat surface, with their colour as dots down the right-hand side
+   instead of a gradient tint */
+.cp-card.is-done {
+  --dc: var(--done);
+  background: var(--surface);
+}
+.cp-card.is-rated {
+  --dc: var(--rate);
+  background-image: none;
+}
+.cp-card.is-done::after,
+.cp-card.is-rated::after {
+  opacity: .55;
+  -webkit-mask-image: linear-gradient(90deg, transparent 45%, #000);
+  mask-image: linear-gradient(90deg, transparent 45%, #000);
+}
+.cp-card.is-done:hover::after,
+.cp-card.is-rated:hover::after,
+.cp-card.is-done:focus-visible::after,
+.cp-card.is-rated:focus-visible::after { opacity: .95; }
+
+[data-theme='high-contrast'] .cp-hero::before,
+[data-theme='high-contrast'] .cp-hero::after,
+[data-theme='high-contrast'] .cp-primary::after,
+[data-theme='high-contrast'] .cp-card::after { display: none; }
+

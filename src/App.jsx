@@ -6,6 +6,7 @@ import Landing from '@/pages/Landing'
 import ScrollToTop from '@/components/layout/ScrollToTop'
 import Seo from '@/components/layout/Seo'
 import Toast from '@/components/ui/Toast'
+import PwaStatus from '@/components/pwa/PwaStatus'
 import PageFallback from '@/components/layout/PageFallback'
 import lazyPage from '@/lib/lazyPage'
 
@@ -89,6 +90,7 @@ export default function App() {
       <Seo />
       <ScrollToTop />
       <Toast />
+      <PwaStatus />
       <Suspense fallback={<PageFallback />}>
       <Routes>
         <Route path="/" element={<Root />} />

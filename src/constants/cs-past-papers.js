@@ -1,4 +1,5 @@
 import rows from '../data/computer-science-past-papers'
+import areas from '../data/computer-science-answer-areas'
 
 /*
   Every OCR A-Level Computer Science question part from the question-bank PDFs, in the same shape
@@ -6,7 +7,8 @@ import rows from '../data/computer-science-past-papers'
   see examconversion.md. The images live in public/past-papers/computer-science.
 
   An examiner's report covers a whole question, so every part of that question points at the same
-  report file (erFile). Topics are not mapped yet.
+  report file (erFile). The topic of each part (one of the 22 chapters of the pack, so the same
+  names as the notes) was assigned by scripts/pastpapers/tag_topics.py; see examconversion.md.
 */
 const BASE = '/past-papers/computer-science'
 
@@ -20,7 +22,9 @@ export const CS_PAST_PAPER_QUESTIONS = rows.map((r) => ({
   msH: r.msH,
   erH: r.erH,
   erFile: r.erFile,
-  topic: null,
+  topic: r.topic,
+  // where a student writes on the image (cells, boxes, answer lines): see components/ui/PaperFields.jsx
+  areas: areas[r.num] || null,
   base: BASE,
   subject: 'Computer Science',
   board: 'OCR',

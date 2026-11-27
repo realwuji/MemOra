@@ -116,6 +116,9 @@ export const SUBJECT_COLORS = {
   'Computer Science': '#e08a2c',
 }
 export const subjectColor = (name) => SUBJECT_COLORS[name] || '#6b7594'
+// A subject colour used as TEXT: pulled toward the text colour so small labels keep a readable contrast on
+// every theme (the raw colours are for fills, edges and LEDs; on white they are only about 2.7 to 3.8:1).
+export const ink = (c) => `color-mix(in srgb, ${c} 58%, var(--fg))`
 
 // Which Icon (components/ui/Icon.jsx) represents each subject - the
 // duotone `subject*` icons defined there, one per SUBJECT_COLORS key.

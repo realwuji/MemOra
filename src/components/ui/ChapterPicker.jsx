@@ -87,12 +87,16 @@ function Card({ topic, n, status, examReady, onPick, index, marks, rating, isNot
   const s = status
   // Maths past papers: questions marked right or wrong fill the ring, green while right
   // answers lead and red once wrong ones do
+  // `marks` is only given for the exam question methods. Those cards speak about questions (how many,
+  // how many marked, right and wrong) and never about confidence; notes, flashcards and the rest
+  // speak about confidence and never about marking.
+  const examCard = Boolean(marks)
   const marked = marks ? marks.right + marks.wrong : 0
   const markPct = marks && marks.total ? Math.round((marked / marks.total) * 100) : 0
   const wrongLeads = marks ? marks.wrong > marks.right : false
   // The last confidence rating (1 to 5 stars) colours the card: red 1 or 2, amber 3, green 4 or 5
-  const rated = !marked && rating ? (rating <= 2 ? 'bad' : rating === 3 ? 'ok' : 'good') : null
-  const confidenceLabel = rated ? `Confidence ${rating}/5` : s.label
+  const rated = !marked && !examCard && rating ? (rating <= 2 ? 'bad' : rating === 3 ? 'ok' : 'good') : null
+  const confidenceLabel = rated ? `Confidence ${rating}/5` : examCard ? `${marks.total} ${marks.total === 1 ? 'question' : 'questions'}` : s.label
   const confidenceRing = isNotes && rated
   const ringPct = marked ? Math.max(4, markPct) : confidenceRing ? (rating - 1) * 25 : s.pct
   const ringStatus = marked ? (wrongLeads ? 'wrong' : 'right') : rated ? (confidenceRing ? 'confidence' : `rate-${rated}`) : s.id
@@ -110,7 +114,7 @@ function Card({ topic, n, status, examReady, onPick, index, marks, rating, isNot
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.45, delay: Math.min(index * 0.025, 0.6), ease: [0.22, 1, 0.36, 1] }}
       className={`cp-card is-${marked ? (wrongLeads ? 'wrong' : 'right') : s.id}${rated ? ` is-rated is-${rated}` : ''}`}
-      aria-label={`${topic}. ${marked ? `${marked} of ${marks.total} questions marked, ${marks.right} right and ${marks.wrong} wrong` : isNotes ? confidenceLabel : s.label}.`}
+      aria-label={`${topic}. ${marked ? `${marked} of ${marks.total} questions marked, ${marks.right} right and ${marks.wrong} wrong` : isNotes || examCard ? confidenceLabel : s.label}.`}
     >
       <span className="cp-card-n">{String(n).padStart(2, '0')}</span>
       <span className="cp-card-body">

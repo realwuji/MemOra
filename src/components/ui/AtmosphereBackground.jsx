@@ -106,29 +106,30 @@ const VPACKETS = [
   { col: 90, dur: 9.8, delay: -1.9, len: 270, up: true },
 ]
 
-// Log lines: for each of 12 rows (one tile = 168px), a few [x, width] bars.
-// Built once into a stack of repeat-y background layers, one layer per bar.
-const LOG_ROWS = [
-  [[8, 60], [76, 90], [174, 40]],
-  [[8, 30], [46, 120]],
-  [[22, 150]],
-  [[8, 44], [60, 26], [94, 100]],
-  [],
-  [[8, 88], [104, 64]],
-  [[22, 36], [66, 140]],
-  [[8, 110]],
-  [[8, 52], [68, 52], [128, 70]],
-  [],
-  [[22, 96], [126, 60]],
-  [[8, 70], [86, 30]],
-]
-const LOG_BAR = 'linear-gradient(to bottom, color-mix(in srgb, var(--fg) 34%, transparent) 0 4px, transparent 4px)'
-const logBars = LOG_ROWS.flatMap((bars, r) => bars.map(([x, w]) => ({ x, w, y: r * CELL + 5 })))
-const LOG_STYLE = {
-  backgroundImage: logBars.map(() => LOG_BAR).join(','),
-  backgroundSize: logBars.map((b) => `${b.w}px ${CELL * 12}px`).join(','),
-  backgroundPosition: logBars.map((b) => `${b.x}px ${b.y}px`).join(','),
-  backgroundRepeat: 'repeat-y',
+// Log lines (log mode): independent dashes of the grid's own dots drifting upward, a few per
+// margin, well apart. `x` is the cell from the page edge, `n` the length in cells, `dur` the
+// seconds to cross the screen (slow on purpose), `delay` a negative offset so they are already
+// mid-flight on load, `peak` the brightest opacity (varied, none above .7, so it stays distant).
+// Fixed values, not random, so the layout is identical on every render, and the two margins differ.
+// See atmosphere.css.
+const LOG_DASHES = {
+  l: [
+    { x: 0, n: 7, dur: 31, delay: -4, peak: 0.6 },
+    { x: 2, n: 4, dur: 38, delay: -23, peak: 0.5 },
+    { x: 1, n: 9, dur: 34, delay: -13, peak: 0.6 },
+    { x: 4, n: 5, dur: 43, delay: -31, peak: 0.45 },
+    { x: 0, n: 3, dur: 36, delay: -19, peak: 0.6 },
+    { x: 3, n: 6, dur: 41, delay: -8, peak: 0.55 },
+    { x: 1, n: 5, dur: 33, delay: -27, peak: 0.65 },
+  ],
+  r: [
+    { x: 0, n: 5, dur: 37, delay: -11, peak: 0.65 },
+    { x: 3, n: 8, dur: 44, delay: -29, peak: 0.5 },
+    { x: 1, n: 4, dur: 32, delay: -2, peak: 0.65 },
+    { x: 2, n: 7, dur: 40, delay: -17, peak: 0.55 },
+    { x: 0, n: 9, dur: 35, delay: -25, peak: 0.6 },
+    { x: 4, n: 3, dur: 46, delay: -36, peak: 0.45 },
+  ],
 }
 
 // `defaultMode` is the effect shown until a [data-bg] section takes over, and
@@ -356,7 +357,7 @@ export default function AtmosphereBackground({ defaultMode = 'packets' }) {
     const collect = () => {
       anims = root
         .getAnimations({ subtree: true })
-        .filter((a) => /^bg-(packet|vpacket|log)/.test(a.animationName || ''))
+        .filter((a) => /^bg-(packet|vpacket|dash)/.test(a.animationName || ''))
     }
     const reset = () => {
       ;['level', 'bass', 'mid', 'treble', 'beat'].forEach((k) => root.style.removeProperty(`--au-${k}`))
@@ -505,9 +506,25 @@ export default function AtmosphereBackground({ defaultMode = 'packets' }) {
       </div>
 
       <div className={on('log')}>
+        {/* The same lone blinking dots as the home page, so the two backdrops are one family. */}
+        {BLINKS.map((b) => (
+          <div
+            key={b.cls}
+            className={`bg-blink ${b.cls} absolute inset-0`}
+            style={{ '--blink': `${b.blink}s`, '--delay': `${b.delay}s` }}
+          />
+        ))}
         {['l', 'r'].map((side) => (
           <div key={side} className={`bg-log ${side}`}>
-            <i style={{ ...LOG_STYLE, '--dur': side === 'l' ? '16s' : '21s' }} />
+            {LOG_DASHES[side].map((d, i) => (
+              <div
+                key={i}
+                className="bg-dash"
+                style={{ '--x': d.x, '--n': d.n, '--dur': `${d.dur}s`, '--delay': `${d.delay}s`, '--peak': d.peak }}
+              >
+                <i />
+              </div>
+            ))}
           </div>
         ))}
       </div>

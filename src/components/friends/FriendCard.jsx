@@ -55,7 +55,7 @@ export default function FriendCard({
       </Banner>
       <div className="px-4 pb-4">
         <div className="relative -mt-9 flex items-end gap-3">
-          <span className="block h-[4.5rem] w-[4.5rem] shrink-0 rounded-full bg-surface p-1 shadow ring-1 ring-line">
+          <span className="block h-[4.5rem] w-[4.5rem] shrink-0 rounded-full bg-surface p-1 ring-1 ring-line">
             <Pfp
               photo={friend.photo}
               pos={friend.photoPos}

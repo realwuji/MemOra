@@ -28,7 +28,7 @@
 */
 
 :root {
-  --srv-r: 0.6rem;
+  --srv-r: 0; /* square, like a terminal (see the square-corners block at the end of this file) */
   --srv-line: color-mix(in srgb, var(--fg) 16%, transparent);
   --font-mono-ui: 'JetBrains Mono Variable', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
 }
@@ -108,7 +108,8 @@ html {
   border: 1px solid color-mix(in srgb, var(--tag, var(--fg)) 38%, transparent);
   border-radius: 0.3rem;
   background: color-mix(in srgb, var(--tag, var(--fg)) 8%, transparent);
-  color: var(--tag, var(--fg));
+  /* the tag colour stays on the edge and the LED; the text is pulled toward --fg so it is always legible */
+  color: color-mix(in srgb, var(--tag, var(--fg)) 58%, var(--fg));
   font-family: var(--font-mono-ui);
   font-size: 0.62rem;
   font-weight: 700;
@@ -151,10 +152,6 @@ html {
 .srv-bar-fill {
   transition: width 0.5s ease-out;
 }
-.xp-shine,
-.xp-tip {
-  display: none;
-}
 
 /* The level ring keeps its meaning but loses the glow and the soft core. */
 .level-ring-fill {
@@ -169,15 +166,18 @@ html {
 /* ------------------------------------------------------------- hero stats */
 .hero-stat {
   border-radius: var(--srv-r);
-  border-color: var(--srv-line);
-  background: transparent;
+  /* the tiles rise into the banner on wide screens, so they need a solid page-coloured surface and a
+     hairline that reads on both the banner and the page (a transparent tile vanished into the banner) */
+  border-color: color-mix(in srgb, var(--fg) 28%, transparent);
+  background: var(--surface);
   box-shadow: none;
 }
 .hero-stat-label {
   font-size: 0.62rem;
   font-weight: 700;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
+  white-space: nowrap;
 }
 .hero-type {
   border-radius: 0.3rem;
@@ -220,13 +220,21 @@ html {
   left: 0;
   right: 0;
   top: 0;
-  height: 1px;
+  height: 12px;
   pointer-events: none;
   opacity: 0;
-  background: linear-gradient(90deg, transparent, var(--subject), transparent) no-repeat;
-  background-size: 30% 100%;
-  background-position: -40% 0;
-  /* The generic card-lift sheen also uses ::after; this overrides its shape. */
+  /* a packet of the card's own dots, in the subject colour, with a soft head and tail */
+  color: var(--subject);
+  background-image: var(--srv-dots);
+  background-size: 12px 12px;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 50%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 50%, transparent);
+  -webkit-mask-size: 30% 100%;
+  mask-size: 30% 100%;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: -40% 0;
+  mask-position: -40% 0;
   border-radius: 0;
 }
 .subject-card:hover::after,
@@ -235,7 +243,7 @@ html {
   animation: srv-sweep 0.9s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 @keyframes srv-sweep {
-  to { background-position: 140% 0; }
+  to { -webkit-mask-position: 140% 0; mask-position: 140% 0; }
 }
 /* Status LED in the corner, in the subject colour. */
 .subject-card > .srv-led {
@@ -461,20 +469,6 @@ html {
   mask-image: linear-gradient(180deg, #000 45%, transparent 100%);
 }
 
-/* ---------------------------------------------------- scanline banner */
-/* Faint horizontal scanlines over the profile banner, like a monitor. */
-.srv-scan {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background: repeating-linear-gradient(
-    0deg,
-    color-mix(in srgb, black 22%, transparent) 0 1px,
-    transparent 1px 3px
-  );
-  opacity: 0.5;
-}
-
 @media (prefers-reduced-motion: reduce) {
   .srv-led,
   .subject-card:hover::after {
@@ -486,8 +480,7 @@ html {
 }
 
 [data-theme='high-contrast'] .subject-card::before,
-[data-theme='high-contrast'] .subject-card::after,
-[data-theme='high-contrast'] .srv-scan {
+[data-theme='high-contrast'] .subject-card::after {
   display: none;
 }
 
@@ -653,8 +646,7 @@ html {
 }
 
 /* ----------------------------------------------------------- owner badge
-   A gold hairline tag with a crown, for the owner's own dashboard. A band of light crosses it
-   every few seconds (transform only). */
+   A flat gold hairline tag with a crown, for the owner's own dashboard. */
 .owner-tag {
   position: relative;
   display: inline-flex;
@@ -664,7 +656,7 @@ html {
   padding: 0.16rem 0.6rem 0.16rem 0.45rem;
   border: 1px solid color-mix(in srgb, #e0a82e 55%, transparent);
   border-radius: 0.3rem;
-  background: linear-gradient(135deg, color-mix(in srgb, #e0a82e 22%, transparent), color-mix(in srgb, #e0a82e 6%, transparent));
+  background: color-mix(in srgb, #e0a82e 12%, transparent);
   color: #e9b949;
   font-family: var(--font-mono-ui);
   font-size: 0.68rem;
@@ -677,25 +669,6 @@ html {
 .owner-tag-crown {
   width: 0.85rem;
   height: 0.85rem;
-  filter: drop-shadow(0 0 4px color-mix(in srgb, #e0a82e 70%, transparent));
-}
-.owner-tag::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  background: linear-gradient(105deg, transparent 35%, color-mix(in srgb, #fff 38%, transparent) 50%, transparent 65%);
-  transform: translate3d(-120%, 0, 0);
-  animation: owner-sheen 5s ease-in-out 1.2s infinite;
-}
-@keyframes owner-sheen {
-  0%,
-  60% {
-    transform: translate3d(-120%, 0, 0);
-  }
-  100% {
-    transform: translate3d(120%, 0, 0);
-  }
 }
 [data-theme='cream'] .owner-tag {
   color: #8a5d00;
@@ -733,6 +706,48 @@ html {
 }
 .exam-sheet .exam-sheet-marks { padding: .35rem .65rem; white-space: nowrap; }
 .exam-sheet-scan { padding-block: .5rem; }
+/* Typing straight onto the paper (PaperFields.jsx). The sheet is a CSS container, so the fields' text is
+   sized in container-width units and stays in proportion to its cell at any display width. The ink is a
+   fixed dark blue-black because the scan is forced white in every theme. A field is invisible until
+   hovered or focused, so the paper looks exactly as printed. */
+.paper-sheet { position: relative; container-type: inline-size; background: #fff; /* the scan is white paper in every theme; typed ink always sits on white */ }
+.paper-field {
+  position: absolute;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0 .3em;
+  border: 0;
+  border-radius: 0;
+  outline: 0;
+  background: transparent;
+  /* blue-black biro */
+  color: #1a2764;
+  caret-color: #1a2764;
+  font-family: 'Caveat Variable', 'Segoe Print', 'Bradley Hand', cursive;
+  font-weight: 600;
+  line-height: 1;
+  text-align: center;
+  transform: rotate(var(--tilt, 0deg));
+  transform-origin: 0 50%;
+}
+.paper-field.is-block {
+  /* wraps from one dotted line to the next; the line height is set inline to the printed line pitch */
+  text-align: left;
+  padding: 0 .2em;
+  resize: none;
+  overflow: hidden; /* never scrolls: Block grows it by whole lines */
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  scrollbar-width: none;
+}
+.paper-field.is-block:focus { box-shadow: none; background: rgba(26, 39, 100, .05); }
+.paper-field:hover { background: rgba(26, 39, 100, .045); }
+.paper-field:focus {
+  background: rgba(26, 39, 100, .07);
+  box-shadow: inset 0 0 0 1px rgba(26, 39, 100, .45);
+}
+[data-font='dyslexic'] .paper-field,
+[data-font='hyperlegible'] .paper-field { font-family: var(--app-font); font-weight: 500; }
 .exam-sheet-pad {
   margin: var(--sheet-gutter);
   border: 1px solid var(--line);
@@ -741,7 +756,75 @@ html {
 }
 .exam-sheet-toolbar { padding: .55rem .75rem; border-bottom: 1px solid var(--line); }
 .exam-sheet-pad canvas { background-color: var(--page); }
+
+/* Typing on the pad (AnswerPad.jsx). The field holds the canvas and a transparent textarea. The text
+   is set in a handwriting face on the SAME 36px pitch as the ruled lines (the component sets the
+   line-height inline from its STEP), so each line of typing sits on a rule. The textarea ignores
+   the pointer unless the Type chip is on, so pen, mouse and finger reach the canvas as before. */
+.exam-pad-field { position: relative; }
+.exam-pad-text {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0 .9rem;
+  border: 0;
+  outline: 0;
+  resize: none;
+  overflow: hidden;
+  background: transparent;
+  color: var(--fg);
+  caret-color: var(--fg);
+  font-family: 'Caveat Variable', 'Segoe Print', 'Bradley Hand', cursive;
+  font-size: 1.85rem;
+  font-weight: 500;
+  white-space: pre-wrap;
+  pointer-events: none;
+  touch-action: pan-y pinch-zoom;
+}
+.exam-pad-text.is-typing { pointer-events: auto; cursor: text; }
+/* The reading fonts are chosen for legibility, so they replace the handwriting face. */
+[data-font='dyslexic'] .exam-pad-text,
+[data-font='hyperlegible'] .exam-pad-text { font-family: var(--app-font); font-size: 1.05rem; }
 .exam-sheet-actions { border-top: 1px solid var(--line); }
+
+/* Extra Space: the working pad grows out of its button. The wrapper animates its own height
+   (grid rows 0fr to 1fr), and the pad inside is revealed by a circle that opens from the
+   button's horizontal position (--pad-x, set in PastPaperQuestion), so it reads as coming
+   out of the button. It animates the pad's box only; nothing else on the card moves except
+   what the height change itself pushes down. Closed, it is hidden after the animation so it
+   cannot be tabbed into (the element is also `inert`). */
+.exam-pad-reveal {
+  display: grid;
+  grid-template-rows: 0fr;
+  visibility: hidden;
+  transition: grid-template-rows .34s cubic-bezier(.2, .7, .2, 1), visibility 0s linear .34s;
+}
+.exam-pad-reveal.is-open {
+  grid-template-rows: 1fr;
+  visibility: visible;
+  transition: grid-template-rows .34s cubic-bezier(.2, .7, .2, 1), visibility 0s;
+}
+.exam-pad-inner {
+  min-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  clip-path: circle(0px at var(--pad-x, 3rem) 0);
+  transition: clip-path .4s cubic-bezier(.2, .7, .2, 1), opacity .22s ease-out;
+}
+.exam-pad-reveal.is-open .exam-pad-inner {
+  opacity: 1;
+  clip-path: circle(160% at var(--pad-x, 3rem) 0);
+}
+@media (prefers-reduced-motion: reduce) {
+  .exam-pad-reveal,
+  .exam-pad-reveal.is-open,
+  .exam-pad-inner,
+  .exam-pad-reveal.is-open .exam-pad-inner {
+    transition: none;
+  }
+}
 .exam-sheet .srv-chip { min-height: 2rem; padding-inline: .65rem; box-shadow: none; }
 .exam-sheet .srv-chip:hover:not(:disabled) { border-color: var(--fg); }
 .exam-sheet-right[aria-pressed="true"], .exam-sheet-wrong[aria-pressed="true"] {
@@ -752,8 +835,124 @@ html {
 .exam-sheet-right { --result: var(--success); }
 .exam-sheet-wrong { --result: var(--danger); }
 @media (prefers-reduced-motion: reduce) {
-  .owner-tag::after {
-    animation: none;
-    opacity: 0;
-  }
+}
+
+/* ----------------------------------------------------------- glowing dots */
+/* THE one replacement for every gradient wash, orb and glow in the product. A "glowing dot" is a
+   pinpoint with a short faint bloom, the same as the backdrop's lit dots (--bg-lit) and the status LEDs;
+   --srv-dots is that dot, coloured by `currentColor`, so any element sets `color` (usually via --dc) and
+   `background-image: var(--srv-dots)` with a `background-size` (the pitch), and fades it with a
+   mask-image. There are no soft colour washes, no blurred orbs, no blurred or coloured drop-shadows and
+   no gloss anywhere (DESIGN.md, "No gradient fades"). Emphasis is dots, a hairline, or a solid edge.
+   A ready-made layer: <span class="dot-field" style="--dc: <colour>; --dm: <mask>"> inside a positioned
+   parent; --dg is the pitch (default 14px). */
+:root {
+  --srv-dots: radial-gradient(
+    circle,
+    currentColor 0,
+    color-mix(in srgb, currentColor 85%, transparent) 0.5px,
+    color-mix(in srgb, currentColor 38%, transparent) 1.1px,
+    color-mix(in srgb, currentColor 14%, transparent) 2px,
+    color-mix(in srgb, currentColor 4%, transparent) 3.2px,
+    transparent 4.4px
+  );
+}
+.dot-field {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  color: var(--dc, var(--fg));
+  background-image: var(--srv-dots);
+  background-size: var(--dg, 14px) var(--dg, 14px);
+  -webkit-mask-image: var(--dm, none);
+  mask-image: var(--dm, none);
+}
+
+/* ------------------------------------------------------------ square corners */
+/* Terminal shapes: nothing in Memoora has rounded corners. Panels, cards, buttons, chips, pills,
+   inputs, menus, avatars, the theme toggle and the header bar are all square.
+
+   This is one rule, not a hundred edits, because corners were set in four different ways: Tailwind's
+   rounded-* utilities (themed radii or `rounded-full`), plain `border-radius` in component
+   stylesheets, `999px` pills and inline styles. `!important` on the universal selector beats all of
+   them, including stylesheets that load later (the study chunk's CSS).
+
+   What stays round, because a square would stop it being the thing it is:
+     - the status LEDs (.srv-led)
+     - the centre badge of the level ring (.level-ring-core), which sits inside a circular SVG ring
+     - anything given the class .keep-round
+   Progress rings themselves are SVG circles, so they are not touched. A half-round element (a
+   circle inside a square frame) always looks like a mistake, so make a whole component round or
+   square, never a mix. */
+:root {
+  --radius-xs: 0;
+  --radius-sm: 0;
+  --radius-md: 0;
+  --radius-lg: 0;
+  --radius-xl: 0;
+  --radius-2xl: 0;
+  --radius-3xl: 0;
+  --radius-4xl: 0;
+}
+*:not(.srv-led):not(.keep-round):not(.level-ring-core),
+*:not(.srv-led):not(.keep-round):not(.level-ring-core)::before,
+*:not(.srv-led):not(.keep-round):not(.level-ring-core)::after {
+  border-radius: 0 !important;
+}
+
+/* ---- app status chips (components/pwa/PwaStatus.jsx): offline, update ready ---- */
+.pwa-dock {
+  position: fixed;
+  left: 1rem;
+  bottom: 1rem;
+  z-index: 65;
+  display: flex;
+  flex-direction: column;
+  gap: .5rem;
+  max-width: min(26rem, calc(100vw - 2rem));
+  pointer-events: none;
+}
+.pwa-chip {
+  pointer-events: auto;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .5rem .7rem;
+  padding: .6rem .8rem;
+  background: var(--surface);
+  color: var(--fg);
+  border: 1px solid color-mix(in srgb, var(--fg) 28%, transparent);
+  font-family: var(--font-mono-ui);
+  font-size: .72rem;
+  line-height: 1.45;
+}
+.pwa-btn {
+  padding: .25rem .65rem;
+  border: 1px solid var(--fg);
+  background: var(--fg);
+  color: var(--page);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+.pwa-btn.alt { background: transparent; color: var(--fg); border-color: var(--srv-line); }
+
+/* ---- real-device behaviour ---- */
+/* No double-tap-zoom delay on anything you tap (the sketch pad sets its own touch-action on its canvas). */
+button, a, [role='button'], input, select, textarea, label, summary { touch-action: manipulation; }
+/* A quiet tap flash in the page's own ink, instead of the browser's grey box. */
+* { -webkit-tap-highlight-color: color-mix(in srgb, var(--fg) 10%, transparent); }
+/* Notches and the home indicator: keep content and the footer out from under them. */
+#root { padding-left: env(safe-area-inset-left); padding-right: env(safe-area-inset-right); }
+.app-footer { padding-bottom: env(safe-area-inset-bottom); }
+.pwa-dock { left: max(1rem, env(safe-area-inset-left)); bottom: max(1rem, env(safe-area-inset-bottom)); }
+/* Fingers need 44px (WCAG 2.5.5, Apple HIG): the compact desktop sizes grow on touch screens. */
+@media (pointer: coarse) {
+  .srv-chip, .pwa-btn, .app-bar-btn, .mn-link, .settings-nav-item, .app-footer a { min-height: 44px; }
+  .srv-chip, .pwa-btn { display: inline-flex; align-items: center; justify-content: center; }
+  .theme-toggle, button.h-9, a.h-9, .app-bar a.inline-flex, .app-bar button.inline-flex { min-height: 44px; }
+  button.h-9, a.h-9 { min-width: 44px; }
+  .exam-sheet .srv-chip { min-height: 44px; }
+  .btn-charge { min-height: 44px; }
+  .app-bar a[aria-label^='Memoraa'] { min-height: 44px; display: inline-flex; align-items: center; }
 }

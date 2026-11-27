@@ -52,7 +52,7 @@
 .ep-row:hover {
   transform: translateY(-2px);
   border-color: var(--brand);
-  box-shadow: 0 16px 28px -22px var(--brand);
+  box-shadow: none;
 }
 .ep-row-marks {
   flex: none;
@@ -117,9 +117,7 @@
   padding: 1.2rem 1.4rem;
   border: 1px solid var(--line);
   border-radius: 1.25rem;
-  background:
-    radial-gradient(70% 70% at 100% 0%, color-mix(in srgb, var(--brand-soft) 70%, transparent), transparent 70%),
-    var(--surface);
+  background: var(--surface);
 }
 .ep-tags {
   display: flex;
@@ -497,4 +495,24 @@
   .ep-cols.ep-single {
     grid-template-columns: minmax(0, 46rem);
   }
+}
+
+/* Dots, not a gradient wash: a flat surface with the backdrop's glowing dots gathering in one corner. */
+.ep-qcard {
+  position: relative;
+  isolation: isolate;
+  background: var(--surface);
+}
+.ep-qcard::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  color: var(--brand);
+  opacity: 0.35;
+  background-image: var(--srv-dots);
+  background-size: 12px 12px;
+  -webkit-mask-image: radial-gradient(70% 70% at 100% 0%, #000, transparent 70%);
+  mask-image: radial-gradient(70% 70% at 100% 0%, #000, transparent 70%);
 }
